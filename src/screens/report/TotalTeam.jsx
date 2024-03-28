@@ -6,28 +6,14 @@ import { useEffect, useState } from "react";
 import { totalTeamAPI } from "../../api/apis";
 import { useIsFocused } from "@react-navigation/native";
 
-const TotalTeam = (
-  {
-    //   data = {
-    //     members: [
-    //       { name: "Naresh", amount: 5423 },
-    //       { name: "Sanjay", amount: 2314 },
-    //       { name: "Dharam", amount: 3452 },
-    //     ],
-    //     total: 11189,
-    //     third: 3729.67,
-    //     you: 5423,
-    //     remaining: 1693.33,
-    //   },
-  }
-) => {
+const TotalTeam = ({ date }) => {
   const isFocused = useIsFocused();
   const [data, setData] = useState({});
 
-  const fetchData = async () => {
+  const fetchData = async (params) => {
     let Data = {};
     try {
-      const res = await totalTeamAPI();
+      const res = await totalTeamAPI(params);
       if (res.status === 200) Data = res.data?.data;
     } catch (error) {
     } finally {
@@ -36,8 +22,8 @@ const TotalTeam = (
   };
 
   useEffect(() => {
-    if (isFocused) fetchData();
-  }, [isFocused]);
+    if (isFocused) fetchData({ date });
+  }, [isFocused, date]);
 
   return (
     <View style={tw`py-3 px-2 border border-[${primary}]`}>

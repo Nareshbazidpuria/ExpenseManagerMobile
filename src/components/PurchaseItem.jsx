@@ -10,18 +10,13 @@ const PurchageItem = ({ data }) => (
     <View style={tw`flex flex-row items-center gap-2`}>
       <Avatar value={data?.user?.name?.[0]} />
       <View>
-        <Text style={tw`font-semibold`}>₹{data?.amount}</Text>
-        <Text>{data?.purpose}</Text>
+        <Text style={tw`font-semibold`}>{data?.purpose}</Text>
+        <Text style={tw`text-xs`}>
+          {moment(data?.createdAt)?.format("hh:mm A DD/MM/YY")}
+        </Text>
       </View>
     </View>
-    <View>
-      <Text style={tw`text-xs`}>
-        {moment(data?.createdAt)?.format("hh:mm A")}
-      </Text>
-      <Text style={tw`text-xs`}>
-        {moment(data?.createdAt)?.format(" DD/MM/YY")}
-      </Text>
-    </View>
+    <Text style={tw`text-xl font-semibold`}>₹{data?.amount}</Text>
   </View>
 );
 

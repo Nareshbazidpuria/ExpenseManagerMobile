@@ -4,6 +4,7 @@ import tw from "twrnc";
 import { useState } from "react";
 import Collapse from "./Collapse";
 import TotalTeam from "./TotalTeam";
+import TotalOwn from "./TotalOwn";
 
 const Report = () => {
   const [date, setDate] = useState();
@@ -18,7 +19,14 @@ const Report = () => {
           col={collapsed}
           setCol={setCollapsed}
           Key={1}
-          child={<TotalTeam />}
+          child={<TotalTeam date={date} />}
+        />
+        <Collapse
+          title="My Total Expenses"
+          col={collapsed}
+          setCol={setCollapsed}
+          Key={2}
+          child={<TotalOwn date={date} />}
         />
       </View>
     </View>
