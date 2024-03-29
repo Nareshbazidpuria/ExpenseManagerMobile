@@ -9,13 +9,16 @@ import {
 } from "react-native";
 import tw from "twrnc";
 import Bicon from "./Bicon";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ProfileCard from "./ProfileCard";
-import { primary } from "../utils/common";
+import { primary, registerPush } from "../utils/common";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { loginAPI } from "../api/apis";
+import { removeNotificationSubscription } from "expo-notifications";
 
 const SelectProfile = () => {
+  const notificationListener = useRef();
+  const responseListener = useRef();
   const message = (msg) => ToastAndroid.show(msg, ToastAndroid.LONG);
   const [changePass, setChangePass] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -23,6 +26,7 @@ const SelectProfile = () => {
   const [payload, setPayload] = useState({
     name: "",
     password: "",
+    expoToken: "",
   });
 
   const checkVisible = async () => {
@@ -55,10 +59,21 @@ const SelectProfile = () => {
     checkVisible();
   }, []);
 
+  useEffect(() => {
+    registerPush().then((token) => {
+      setPayload({ ...payload, expoToken: token?.data });
+    });
+
+    return () => {
+      removeNotificationSubscription(notificationListener.current);
+      removeNotificationSubscription(responseListener.current);
+    };
+  }, []);
+
   return (
     <Modal animationType="slide" transparent={true} visible={visible}>
       <View
-        style={tw`bg-[#00000055] flex items-center pt-[${200}] h-[${
+        style={tw`bg-[#00000066] flex items-center pt-[${200}] h-[${
           Dimensions.get("screen").height / 4
         }]`}
       >
@@ -111,7 +126,7 @@ const SelectProfile = () => {
                     name={name}
                     key={name}
                     value={name[0]}
-                    onPress={() => setPayload({ name })}
+                    onPress={() => setPayload({ ...payload, name })}
                   />
                 )
               )}

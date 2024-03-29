@@ -1,11 +1,13 @@
 import {
   Dimensions,
+  Pressable,
   RefreshControl,
   ScrollView,
   Text,
   View,
 } from "react-native";
-import { FloatingAction } from "react-native-floating-action";
+// import { FloatingAction } from "react-native-floating-action";
+import IonIcon from "@expo/vector-icons/Ionicons";
 import tw from "twrnc";
 import { expenseTypes, primary } from "../../utils/common";
 import PurchageItem from "../../components/PurchaseItem";
@@ -25,18 +27,18 @@ const Home = ({ navigation }) => {
   const [date, setDate] = useState();
   const [list, setList] = useState([]);
 
-  const actions = [
-    {
-      render: () => <FloatingOpt type={expenseTypes.own} />,
-      name: expenseTypes.own,
-      position: 2,
-    },
-    {
-      render: () => <FloatingOpt type={expenseTypes.team} />,
-      name: expenseTypes.team,
-      position: 1,
-    },
-  ];
+  // const actions = [
+  //   {
+  //     render: () => <FloatingOpt type={expenseTypes.own} />,
+  //     name: expenseTypes.own,
+  //     position: 2,
+  //   },
+  //   {
+  //     render: () => <FloatingOpt type={expenseTypes.team} />,
+  //     name: expenseTypes.team,
+  //     position: 1,
+  //   },
+  // ];
 
   const expenseList = async (params) => {
     let data = [];
@@ -86,13 +88,20 @@ const Home = ({ navigation }) => {
           </Text>
         )}
       </ScrollView>
-      <FloatingAction
-        actions={actions}
-        onPressItem={(name) => setVisible(name)}
+      {/* <FloatingAction
+        // actions={actions}
+        // onPressItem={(name) => setVisible(name)}
+        onPressMain={() => setVisible(to)}
         distanceToEdge={{ vertical: 70, horizontal: 10 }}
         actionsPaddingTopBottom={0}
         color={primary}
-      />
+      /> */}
+      <Pressable
+        style={tw`absolute bottom-16 right-3 bg-[${primary}] p-4 rounded-full shadow`}
+        onPress={() => setVisible(to)}
+      >
+        <IonIcon color="white" name="add" size={28} />
+      </Pressable>
       <AddExpense visible={visible} setVisible={setVisible} />
       <SelectProfile />
     </View>
