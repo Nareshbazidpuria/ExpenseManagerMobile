@@ -16,7 +16,7 @@ import SelectDropdown from "react-native-select-dropdown";
 import { addExpenseAPI } from "../api/apis";
 import { expenseTypes, primary } from "../utils/common";
 
-const AddExpense = ({ visible, setVisible }) => {
+const AddExpense = ({ visible, setVisible, setRefresh }) => {
   const to = visible;
   const other = useRef();
   const defaultPayload = { amount: 0, purpose: "", additional: "" };
@@ -49,6 +49,7 @@ const AddExpense = ({ visible, setVisible }) => {
         message(res?.data?.message);
         setVisible(false);
         setPayload(defaultPayload);
+        if (setRefresh) setRefresh(new Date());
       }
     } catch (error) {
       console.log(error);
@@ -78,7 +79,7 @@ const AddExpense = ({ visible, setVisible }) => {
           keyB ? 100 : 200
         }] h-[${Dimensions.get("screen").height / 4}]`}
       >
-        <View style={tw`bg-white w-72 py-4 rounded shadow`}>
+        <View style={tw`bg-white w-80 py-4 rounded shadow`}>
           {loading ? (
             <View style={tw`flex h-56 justify-center`}>
               <ActivityIndicator color={primary} size={50} />
@@ -86,7 +87,11 @@ const AddExpense = ({ visible, setVisible }) => {
           ) : (
             <>
               <Text style={tw`text-center mb-5 text-xl font-semibold`}>
-                Add Expenses ({to === expenseTypes.own ? "Own" : "Team"})
+                Add Expenses (
+                {{ [expenseTypes.own]: "Own", [expenseTypes.team]: "Team" }[
+                  to
+                ] || to}
+                )
               </Text>
               <View style={tw``}>
                 <View style={tw`p-4`}>
@@ -107,7 +112,7 @@ const AddExpense = ({ visible, setVisible }) => {
                       "Grocery",
                       "Onion 🧅",
                       "Tomato 🍅",
-                      "Vegitables 🥔",
+                      "Vegitables",
                       "Milk 🥛",
                     ]}
                     onSelect={(purpose, index) =>

@@ -5,6 +5,12 @@
 export const primary = "#00807b";
 // export const primary = "#6e0b65";
 
+export const users = [
+  "Naresh Bazidpuria",
+  "Sanjay Nandiwal",
+  "Dharamjeet Singh",
+];
+
 export const expenseTypes = {
   own: "own",
   team: "team",

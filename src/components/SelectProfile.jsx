@@ -11,7 +11,7 @@ import tw from "twrnc";
 import Bicon from "./Bicon";
 import { useEffect, useState } from "react";
 import ProfileCard from "./ProfileCard";
-import { primary } from "../utils/common";
+import { primary, users } from "../utils/common";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { loginAPI } from "../api/apis";
 // import { removeNotificationSubscription } from "expo-notifications";
@@ -120,16 +120,14 @@ const SelectProfile = () => {
               <Text style={tw`text-lg text-center font-semibold mb-2`}>
                 Select your profile
               </Text>
-              {["Naresh Bazidpuria", "Sanjay Nandiwal", "Dharamjeet Singh"].map(
-                (name) => (
-                  <ProfileCard
-                    name={name}
-                    key={name}
-                    value={name[0]}
-                    onPress={() => setPayload({ ...payload, name })}
-                  />
-                )
-              )}
+              {users.map((name) => (
+                <ProfileCard
+                  name={name}
+                  key={name}
+                  value={name[0]}
+                  onPress={() => setPayload({ ...payload, name })}
+                />
+              ))}
             </>
           )}
         </View>

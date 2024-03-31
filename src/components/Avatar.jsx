@@ -12,7 +12,7 @@ const Avatar = ({ value }) =>
   ) : (
     <View
       style={tw`bg-[${
-        value === "S" ? "#0b6e4f" : primary
+        value === "S" ? "#6e0b65" : primary
       }] h-10 w-10 rounded-full flex justify-center items-center`}
     >
       <Text style={tw`text-xl font-bold text-white`}>{value}</Text>

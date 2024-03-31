@@ -1,15 +1,14 @@
 import {
   Dimensions,
+  Image,
   Pressable,
   RefreshControl,
   ScrollView,
-  Text,
   View,
 } from "react-native";
 import IonIcon from "@expo/vector-icons/Ionicons";
 import tw from "twrnc";
 import { expenseTypes, primary } from "../../utils/common";
-import PurchageItem from "../../components/PurchaseItem";
 import AddExpense from "../../components/AddExpense";
 import { useEffect, useState } from "react";
 import { expenseListAPI } from "../../api/apis";
@@ -18,6 +17,7 @@ import { useIsFocused } from "@react-navigation/native";
 import TopBar from "../../components/Topbar";
 import SwipeComp from "../../components/SwipeComp";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import empty from "../../assets/empty.gif";
 
 const Home = ({ navigation }) => {
   const [to, setTo] = useState(expenseTypes.team);
@@ -65,7 +65,7 @@ const Home = ({ navigation }) => {
     <View>
       <TopBar date={date} setDate={setDate} />
       <ScrollView
-        style={tw`h-[${(Dimensions.get("window").height * 0.951) / 4}]`}
+        style={tw`h-[${(Dimensions.get("window").height * 0.9) / 4}]`}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -85,13 +85,17 @@ const Home = ({ navigation }) => {
             />
           ))
         ) : (
-          <Text style={tw`text-center text-base mt-56`}>
-            There are no any expenses in this month
-          </Text>
+          <View
+            style={tw`flex h-[${
+              Dimensions.get("screen").height / 4.5
+            }] items-center justify-center bg-white`}
+          >
+            <Image source={empty} style={tw`rounded-full w-80 h-80`} />
+          </View>
         )}
       </ScrollView>
       <Pressable
-        style={tw`absolute bottom-16 right-3 bg-[${primary}] p-4 rounded-full shadow`}
+        style={tw`absolute bottom-5 right-3 bg-[${primary}] p-4 rounded-full shadow`}
         onPress={() => setVisible(to)}
       >
         <IonIcon color="white" name="add" size={28} />

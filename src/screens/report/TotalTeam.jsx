@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { totalTeamAPI } from "../../api/apis";
 import { useIsFocused } from "@react-navigation/native";
 
-const TotalTeam = ({ date }) => {
+const TotalTeam = ({ date, refresh }) => {
   const isFocused = useIsFocused();
   const [data, setData] = useState({});
 
@@ -23,7 +23,7 @@ const TotalTeam = ({ date }) => {
 
   useEffect(() => {
     if (isFocused) fetchData({ date });
-  }, [isFocused, date]);
+  }, [isFocused, date, refresh]);
 
   return (
     <View style={tw`py-3 px-2 border border-[${primary}]`}>
