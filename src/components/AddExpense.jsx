@@ -11,13 +11,14 @@ import {
 } from "react-native";
 import tw from "twrnc";
 import Bicon from "./Bicon";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import SelectDropdown from "react-native-select-dropdown";
 import { addExpenseAPI } from "../api/apis";
 import { expenseTypes, primary } from "../utils/common";
 
 const AddExpense = ({ visible, setVisible }) => {
   const to = visible;
+  const other = useRef();
   const defaultPayload = { amount: 0, purpose: "", additional: "" };
   const message = (msg) => ToastAndroid.show(msg, ToastAndroid.LONG);
   const [keyB, setKeyB] = useState(false);
@@ -67,6 +68,7 @@ const AddExpense = ({ visible, setVisible }) => {
 
   useEffect(() => {
     setPayload({ ...payload, additional: "" });
+    if (payload.purpose === "Write your own ...") other?.current?.focus();
   }, [payload.purpose]);
 
   return (
@@ -121,6 +123,7 @@ const AddExpense = ({ visible, setVisible }) => {
                     <>
                       <Text>Other</Text>
                       <TextInput
+                        ref={other}
                         style={tw`border-b border-gray-400 `}
                         value={payload.additional}
                         onChangeText={(additional) =>

@@ -6,18 +6,18 @@ import {
   Text,
   View,
 } from "react-native";
-// import { FloatingAction } from "react-native-floating-action";
 import IonIcon from "@expo/vector-icons/Ionicons";
 import tw from "twrnc";
 import { expenseTypes, primary } from "../../utils/common";
 import PurchageItem from "../../components/PurchaseItem";
-import FloatingOpt from "../../components/FloatingOpt";
 import AddExpense from "../../components/AddExpense";
 import { useEffect, useState } from "react";
 import { expenseListAPI } from "../../api/apis";
 import SelectProfile from "../../components/SelectProfile";
 import { useIsFocused } from "@react-navigation/native";
 import TopBar from "../../components/Topbar";
+import SwipeComp from "../../components/SwipeComp";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Home = ({ navigation }) => {
   const [to, setTo] = useState(expenseTypes.team);
@@ -26,19 +26,9 @@ const Home = ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
   const [date, setDate] = useState();
   const [list, setList] = useState([]);
-
-  // const actions = [
-  //   {
-  //     render: () => <FloatingOpt type={expenseTypes.own} />,
-  //     name: expenseTypes.own,
-  //     position: 2,
-  //   },
-  //   {
-  //     render: () => <FloatingOpt type={expenseTypes.team} />,
-  //     name: expenseTypes.team,
-  //     position: 1,
-  //   },
-  // ];
+  const [swiped, setSwiped] = useState();
+  const [me, setMe] = useState();
+  const [deleted, setDeleted] = useState();
 
   const expenseList = async (params) => {
     let data = [];
@@ -54,11 +44,20 @@ const Home = ({ navigation }) => {
     }
   };
 
+  const findMe = async () => {
+    setMe(await AsyncStorage.getItem("user"));
+  };
+
   useEffect(() => {
     if (!visible) expenseList({ date, to });
   }, [visible, date, to]);
 
   useEffect(() => {
+    if (deleted) expenseList({ date, to });
+  }, [deleted]);
+
+  useEffect(() => {
+    findMe();
     setTo(navigation.getState().index ? expenseTypes.own : expenseTypes.team);
   }, [isFocused]);
 
@@ -66,12 +65,6 @@ const Home = ({ navigation }) => {
     <View>
       <TopBar date={date} setDate={setDate} />
       <ScrollView
-        // onTouchStart={(e) =>
-        //   console.log(e.nativeEvent.pageY, e.nativeEvent.pageX)
-        // }
-        // onTouchEnd={(e) => {
-        //   console.log(e.nativeEvent.pageY, e.nativeEvent.pageX);
-        // }}
         style={tw`h-[${(Dimensions.get("window").height * 0.951) / 4}]`}
         refreshControl={
           <RefreshControl
@@ -81,21 +74,22 @@ const Home = ({ navigation }) => {
         }
       >
         {list?.length ? (
-          list.map((data) => <PurchageItem data={data} key={data?.createdAt} />)
+          list.map((data) => (
+            <SwipeComp
+              data={data}
+              key={data?.createdAt}
+              swiped={swiped}
+              setSwiped={setSwiped}
+              me={me}
+              setDeleted={setDeleted}
+            />
+          ))
         ) : (
           <Text style={tw`text-center text-base mt-56`}>
             There are no any expenses in this month
           </Text>
         )}
       </ScrollView>
-      {/* <FloatingAction
-        // actions={actions}
-        // onPressItem={(name) => setVisible(name)}
-        onPressMain={() => setVisible(to)}
-        distanceToEdge={{ vertical: 70, horizontal: 10 }}
-        actionsPaddingTopBottom={0}
-        color={primary}
-      /> */}
       <Pressable
         style={tw`absolute bottom-16 right-3 bg-[${primary}] p-4 rounded-full shadow`}
         onPress={() => setVisible(to)}

@@ -31,21 +31,21 @@ const TotalOwn = ({ date }) => {
 
   return (
     <View style={tw`py-3 px-2 border border-[${primary}]`}>
-      {/* {data?.total ? ( */}
-      <>
-        <View style={tw`flex flex-row flex-wrap`}>
-          {data.map(({ _id, amount }) => (
-            <View style={tw`flex flex-row gap-2 w-1/2 items-center`}>
-              <Text style={tw`text-base w-20`}>{_id}:</Text>
-              <Text style={tw`font-semibold text-lg`}>₹ {amount}</Text>
-            </View>
-          ))}
-        </View>
-        <Text style={tw`font-semibold text-xs mt-2`}>Total: ₹ {total}</Text>
-      </>
-      {/* ) : (
+      {data?.length ? (
+        <>
+          <View style={tw`flex flex-row flex-wrap`}>
+            {data.map(({ _id, amount }) => (
+              <View style={tw`flex flex-row gap-2 w-1/2 items-center`}>
+                <Text style={tw`text-base w-28`}>{_id}:</Text>
+                <Text style={tw`font-semibold text-lg`}>₹ {amount}</Text>
+              </View>
+            ))}
+          </View>
+          <Text style={tw`font-semibold text-xs mt-2`}>Total: ₹ {total}</Text>
+        </>
+      ) : (
         <Text>No Records</Text>
-      )} */}
+      )}
     </View>
   );
 };

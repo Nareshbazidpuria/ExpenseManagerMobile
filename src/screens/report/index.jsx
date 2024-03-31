@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { RefreshControl, ScrollView, View } from "react-native";
 import TopBar from "../../components/Topbar";
 import tw from "twrnc";
 import { useState } from "react";
@@ -8,12 +8,25 @@ import TotalOwn from "./TotalOwn";
 
 const Report = () => {
   const [date, setDate] = useState();
+  const [refreshing, setRefreshing] = useState(false);
   const [collapsed, setCollapsed] = useState({ 1: false, 2: false });
 
   return (
     <View>
       <TopBar date={date} setDate={setDate} />
-      <View style={tw`mx-1`}>
+      <ScrollView
+        style={tw`mx-1`}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => {
+              setRefreshing(true);
+              setDate(new Date());
+              setRefreshing(false);
+            }}
+          />
+        }
+      >
         <Collapse
           title="Total Team Expenses"
           col={collapsed}
@@ -28,7 +41,7 @@ const Report = () => {
           Key={2}
           child={<TotalOwn date={date} />}
         />
-      </View>
+      </ScrollView>
     </View>
   );
 };

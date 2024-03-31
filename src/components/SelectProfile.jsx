@@ -9,16 +9,16 @@ import {
 } from "react-native";
 import tw from "twrnc";
 import Bicon from "./Bicon";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import ProfileCard from "./ProfileCard";
-import { primary, registerPush } from "../utils/common";
+import { primary } from "../utils/common";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { loginAPI } from "../api/apis";
-import { removeNotificationSubscription } from "expo-notifications";
+// import { removeNotificationSubscription } from "expo-notifications";
 
 const SelectProfile = () => {
-  const notificationListener = useRef();
-  const responseListener = useRef();
+  // const notificationListener = useRef();
+  // const responseListener = useRef();
   const message = (msg) => ToastAndroid.show(msg, ToastAndroid.LONG);
   const [changePass, setChangePass] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -59,16 +59,16 @@ const SelectProfile = () => {
     checkVisible();
   }, []);
 
-  useEffect(() => {
-    registerPush().then((token) => {
-      setPayload({ ...payload, expoToken: token?.data });
-    });
+  // useEffect(() => {
+  //   registerPush().then((token) => {
+  //     setPayload({ ...payload, expoToken: token?.data });
+  //   });
 
-    return () => {
-      removeNotificationSubscription(notificationListener.current);
-      removeNotificationSubscription(responseListener.current);
-    };
-  }, []);
+  //   return () => {
+  //     removeNotificationSubscription(notificationListener.current);
+  //     removeNotificationSubscription(responseListener.current);
+  //   };
+  // }, []);
 
   return (
     <Modal animationType="slide" transparent={true} visible={visible}>
