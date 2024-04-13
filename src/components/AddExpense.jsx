@@ -13,10 +13,10 @@ import tw from "twrnc";
 import Bicon from "./Bicon";
 import { useEffect, useRef, useState } from "react";
 import SelectDropdown from "react-native-select-dropdown";
-import { addExpenseAPI } from "../api/apis";
+import { addExpenseAPI, editExpenseAPI } from "../api/apis";
 import { expenseTypes, primary } from "../utils/common";
 
-const AddExpense = ({ visible, setVisible, setRefresh }) => {
+const AddExpense = ({ visible, setVisible, setRefresh, edit, setEdit }) => {
   const to = visible;
   const other = useRef();
   const defaultPayload = { amount: 0, purpose: "", additional: "" };
@@ -29,6 +29,14 @@ const AddExpense = ({ visible, setVisible, setRefresh }) => {
     purpose: "",
     additional: "",
   });
+  const addOptions = [
+    "Write your own ...",
+    "Grocery",
+    "Onion 🧅",
+    "Tomato 🍅",
+    "Vegitables",
+    "Milk 🥛",
+  ];
 
   const valid = (payload) => {
     const err = {};
@@ -44,11 +52,14 @@ const AddExpense = ({ visible, setVisible, setRefresh }) => {
     try {
       setLoading(true);
       if (!valid(payload)) return;
-      const res = await addExpenseAPI({ ...payload, to });
+      const res = edit
+        ? await editExpenseAPI(edit?._id, { ...payload, to })
+        : await addExpenseAPI({ ...payload, to });
       if (res?.status === 201) {
         message(res?.data?.message);
         setVisible(false);
         setPayload(defaultPayload);
+        if (setEdit) setEdit();
         if (setRefresh) setRefresh(new Date());
       }
     } catch (error) {
@@ -72,6 +83,17 @@ const AddExpense = ({ visible, setVisible, setRefresh }) => {
     if (payload.purpose === "Write your own ...") other?.current?.focus();
   }, [payload.purpose]);
 
+  useEffect(() => {
+    setVisible(edit?.to);
+    setPayload({
+      amount: edit?.amount,
+      purpose: addOptions?.includes(edit?.purpose)
+        ? edit?.purpose
+        : addOptions[0],
+      additional: edit?.purpose,
+    });
+  }, [edit]);
+
   return (
     <Modal animationType="slide" transparent={true} visible={!!visible}>
       <View
@@ -87,7 +109,7 @@ const AddExpense = ({ visible, setVisible, setRefresh }) => {
           ) : (
             <>
               <Text style={tw`text-center mb-5 text-xl font-semibold`}>
-                Add Expenses (
+                {edit ? "Edit" : "Add"} Expenses (
                 {{ [expenseTypes.own]: "Own", [expenseTypes.team]: "Team" }[
                   to
                 ] || to}
@@ -107,21 +129,13 @@ const AddExpense = ({ visible, setVisible, setRefresh }) => {
                   <Text style={tw` text-xs text-red-400`}>{error.amount}</Text>
                   <Text>Purpose</Text>
                   <SelectDropdown
-                    data={[
-                      "Write your own ...",
-                      "Grocery",
-                      "Onion 🧅",
-                      "Tomato 🍅",
-                      "Vegitables",
-                      "Milk 🥛",
-                    ]}
-                    onSelect={(purpose, index) =>
-                      setPayload({ ...payload, purpose })
-                    }
+                    data={addOptions}
+                    onSelect={(purpose) => setPayload({ ...payload, purpose })}
                     buttonStyle={tw`w-full bg-white border-b p-0 border-gray-400 text-sm `}
                     rowStyle={tw`p-0`}
                     rowTextStyle={tw`text-sm m-0 text-left pl-2`}
                     buttonTextStyle={tw`text-sm m-0 text-left`}
+                    defaultValue={payload?.purpose}
                   />
                   <Text style={tw` text-xs text-red-400`}>{error.purpose}</Text>
                   {payload.purpose === "Write your own ..." && (
@@ -131,6 +145,7 @@ const AddExpense = ({ visible, setVisible, setRefresh }) => {
                         ref={other}
                         style={tw`border-b border-gray-400 `}
                         value={payload.additional}
+                        defaultValue={payload.additional}
                         onChangeText={(additional) =>
                           setPayload({ ...payload, additional })
                         }
@@ -151,6 +166,7 @@ const AddExpense = ({ visible, setVisible, setRefresh }) => {
                     setVisible(false);
                     setPayload(defaultPayload);
                     setError({});
+                    if (setEdit) setEdit();
                   }}
                 />
                 <Bicon title="Save" cls="w-2/5" onPress={addExpense} />

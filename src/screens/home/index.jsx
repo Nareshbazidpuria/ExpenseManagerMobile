@@ -29,6 +29,7 @@ const Home = ({ navigation }) => {
   const [swiped, setSwiped] = useState();
   const [me, setMe] = useState();
   const [deleted, setDeleted] = useState();
+  const [edit, setEdit] = useState();
 
   const expenseList = async (params) => {
     let data = [];
@@ -82,6 +83,7 @@ const Home = ({ navigation }) => {
               setSwiped={setSwiped}
               me={me}
               setDeleted={setDeleted}
+              setEdit={setEdit}
             />
           ))
         ) : (
@@ -100,7 +102,7 @@ const Home = ({ navigation }) => {
       >
         <IonIcon color="white" name="add" size={28} />
       </Pressable>
-      <AddExpense visible={visible} setVisible={setVisible} />
+      <AddExpense visible={visible} setVisible={setVisible} edit={edit} />
       <SelectProfile />
     </View>
   );
