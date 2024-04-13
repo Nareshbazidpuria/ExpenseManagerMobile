@@ -52,7 +52,7 @@ const Report = () => {
     <View>
       <TopBar date={date} setDate={setDate} />
       <ScrollView
-        style={tw`mx-1 h-[${Dimensions.get("screen").height / 4 - 68}]`}
+        style={tw`mx-1 h-[${Dimensions.get("window").height / 4.55}]`}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -92,6 +92,7 @@ const Report = () => {
                 <Individual
                   data={individual?.find((e) => user === e?.to?.name)}
                   me={me}
+                  setRefresh={setRefresh}
                 />
               }
             />

@@ -63,7 +63,8 @@ const AddExpense = ({ visible, setVisible, setRefresh, edit, setEdit }) => {
         if (setRefresh) setRefresh(new Date());
       }
     } catch (error) {
-      console.log(error);
+      if (error?.data?.message) message(error.data.message);
+      else console.log(error);
     } finally {
       setLoading(false);
     }
@@ -84,14 +85,16 @@ const AddExpense = ({ visible, setVisible, setRefresh, edit, setEdit }) => {
   }, [payload.purpose]);
 
   useEffect(() => {
-    setVisible(edit?.to);
-    setPayload({
-      amount: edit?.amount,
-      purpose: addOptions?.includes(edit?.purpose)
-        ? edit?.purpose
-        : addOptions[0],
-      additional: edit?.purpose,
-    });
+    if (edit) {
+      setVisible(edit?.to);
+      setPayload({
+        amount: edit?.amount,
+        purpose: addOptions?.includes(edit?.purpose)
+          ? edit?.purpose
+          : addOptions[0],
+        additional: edit?.purpose,
+      });
+    }
   }, [edit]);
 
   return (
@@ -144,8 +147,8 @@ const AddExpense = ({ visible, setVisible, setRefresh, edit, setEdit }) => {
                       <TextInput
                         ref={other}
                         style={tw`border-b border-gray-400 `}
-                        value={payload.additional}
-                        defaultValue={payload.additional}
+                        value={edit?.purpose || payload.additional}
+                        defaultValue={edit?.purpose || payload.additional}
                         onChangeText={(additional) =>
                           setPayload({ ...payload, additional })
                         }
