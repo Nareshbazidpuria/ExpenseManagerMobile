@@ -36,11 +36,11 @@ const TotalOwn = ({ date, refresh }) => {
             {data.map(({ _id, amount }) => (
               <View style={tw`flex flex-row gap-2 w-1/2 items-center`}>
                 <Text style={tw`text-base w-24`}>{_id}:</Text>
-                <Text style={tw`font-semibold text-lg`}>₹ {amount}</Text>
+                <Text style={tw`font-semibold text-base`}>₹{amount}</Text>
               </View>
             ))}
           </View>
-          <Text style={tw`font-semibold text-xs mt-2`}>Total: ₹ {total}</Text>
+          <Text style={tw`font-semibold text-xs mt-2`}>Total: ₹{total}</Text>
         </>
       ) : (
         <Text>No Records</Text>

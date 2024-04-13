@@ -1,4 +1,4 @@
-import { RefreshControl, ScrollView, View } from "react-native";
+import { Dimensions, RefreshControl, ScrollView, View } from "react-native";
 import TopBar from "../../components/Topbar";
 import tw from "twrnc";
 import { useEffect, useState } from "react";
@@ -52,7 +52,7 @@ const Report = () => {
     <View>
       <TopBar date={date} setDate={setDate} />
       <ScrollView
-        style={tw`mx-1`}
+        style={tw`mx-1 h-[${Dimensions.get("screen").height / 4 - 68}]`}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}

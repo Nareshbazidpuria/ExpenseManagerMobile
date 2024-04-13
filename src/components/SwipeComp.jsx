@@ -42,7 +42,7 @@ const SwipeComp = ({ data, swiped, setSwiped, me, setDeleted }) => {
       onSwipeRelease={() => setSwiped(data?._id)}
       rightButtons={[
         <Pressable
-          style={tw`bg-red-600 m-1 w-16 rounded-full h-16 flex items-center justify-center`}
+          style={tw`bg-red-600 m-1.5 w-15 rounded-full h-15 flex items-center justify-center`}
           onPress={deleteExpense}
         >
           {loading ? (
@@ -52,6 +52,18 @@ const SwipeComp = ({ data, swiped, setSwiped, me, setDeleted }) => {
           )}
         </Pressable>,
       ]}
+      // leftButtons={[
+      //   <Pressable
+      //     style={tw`bg-green-600 m-1.5 w-15 rounded-full h-15 flex items-center justify-center right-0 absolute`}
+      //     onPress={deleteExpense}
+      //   >
+      //     {loading ? (
+      //       <ActivityIndicator size={25} color="white" />
+      //     ) : (
+      //       <IonIcon name="pencil" color="white" size={25} />
+      //     )}
+      //   </Pressable>,
+      // ]}
       swipeReleaseAnimationConfig={{
         toValue: { x: 0, y: 0 },
         duration: 250,

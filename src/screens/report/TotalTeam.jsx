@@ -33,16 +33,16 @@ const TotalTeam = ({ date, refresh }) => {
             {data?.members?.map(({ name, amount }) => (
               <View style={tw`flex flex-row items-center gap-2`}>
                 <Avatar value={name?.[0]} />
-                <Text style={tw`font-semibold text-lg`}>₹ {amount}</Text>
+                <Text style={tw`font-semibold text-base`}>₹{amount}</Text>
               </View>
             ))}
           </View>
           <View style={tw`flex flex-row items-center justify-between`}>
             <Text style={tw`font-semibold text-xs mt-2`}>
-              Total: ₹ {data?.total}
+              Total: ₹{data?.total}
             </Text>
             <Text style={tw`font-semibold text-xs mt-2`}>
-              3rd: ₹ {(data.third || 0)?.toFixed(2)}
+              3rd: ₹{(data.third || 0)?.toFixed(2)}
             </Text>
             <View style={tw`mt-2 flex flex-row gap-1 items-center`}>
               <Text style={tw`font-semibold text-xs`}>Remaining:</Text>
@@ -51,7 +51,7 @@ const TotalTeam = ({ date, refresh }) => {
                   data?.remaining >= 0 ? "#00c70a" : "#ff0000"
                 }]`}
               >
-                ₹ {(data?.remaining || 0)?.toFixed(2)}
+                ₹{(data?.remaining || 0)?.toFixed(2)}
               </Text>
             </View>
           </View>

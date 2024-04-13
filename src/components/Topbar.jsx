@@ -9,7 +9,7 @@ const TopBar = ({ date, setDate }) => (
     style={tw`flex flex-row items-center justify-between p-2 bg-[${primary}]`}
   >
     <IonIcon
-      style={tw`text-xl text-white`}
+      style={tw`text-xl text-white w-20`}
       name="chevron-back-outline"
       onPress={() => setDate(moment(date).subtract(1, "month"))}
     />
@@ -19,12 +19,12 @@ const TopBar = ({ date, setDate }) => (
     {moment(date).startOf("month").toString() !==
     moment().startOf("month").toString() ? (
       <IonIcon
-        style={tw`text-xl text-white`}
+        style={tw`text-xl text-white w-20 text-right`}
         name="chevron-forward-outline"
         onPress={() => setDate(moment(date).add(1, "month"))}
       />
     ) : (
-      <Text></Text>
+      <Text style={tw`w-20`}></Text>
     )}
   </View>
 );
