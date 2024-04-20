@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { primary } from "./src/utils/common";
 import HomeScreen from "./src/routes/Screens";
 import { PermissionsAndroid } from "react-native";
+import Home from "./src/screens/home";
 
 export let navigateRef;
 
@@ -30,12 +31,13 @@ const App = () => {
     <NavigationContainer ref={navigateRef}>
       <StatusBar style="light" translucent={false} backgroundColor={primary} />
       <Stack.Navigator
-        initialRouteName="Home"
+        initialRouteName="HomeScreen"
         screenOptions={{
           headerShown: false,
         }}
       >
         <Stack.Screen name="HomeScreen" component={HomeScreen} />
+        <Stack.Screen name="Home" component={Home} />
       </Stack.Navigator>
     </NavigationContainer>
   );

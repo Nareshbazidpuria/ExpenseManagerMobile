@@ -8,7 +8,8 @@ export const primary = "#00807b";
 export const users = [
   "Naresh Bazidpuria",
   "Sanjay Nandiwal",
-  "Dharamjeet Singh",
+  "Satwinder Shergill",
+  "Himanshu Bisht",
 ];
 
 export const expenseTypes = {

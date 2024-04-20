@@ -6,14 +6,14 @@ import { useEffect, useState } from "react";
 import { totalTeamAPI } from "../../api/apis";
 import { useIsFocused } from "@react-navigation/native";
 
-const TotalTeam = ({ date, refresh }) => {
+const TotalTeam = ({ date, refresh, group }) => {
   const isFocused = useIsFocused();
   const [data, setData] = useState({});
 
   const fetchData = async (params) => {
     let Data = {};
     try {
-      const res = await totalTeamAPI(params);
+      const res = await totalTeamAPI({ ...params, to: group?._id });
       if (res.status === 200) Data = res.data?.data;
     } catch (error) {
     } finally {
@@ -29,22 +29,20 @@ const TotalTeam = ({ date, refresh }) => {
     <View style={tw`py-3 px-2 border border-[${primary}]`}>
       {data?.total ? (
         <>
-          <View style={tw`flex flex-row justify-between`}>
+          <View style={tw`flex flex-row justify-between flex-wrap`}>
             {data?.members?.map(({ name, amount }) => (
-              <View style={tw`flex flex-row items-center gap-2`}>
+              <View style={tw`flex flex-row items-center gap-2 w-1/2 mb-2`}>
                 <Avatar value={name?.[0]} />
                 <Text style={tw`font-semibold text-base`}>₹{amount}</Text>
               </View>
             ))}
           </View>
           <View style={tw`flex flex-row items-center justify-between`}>
-            <Text style={tw`font-semibold text-xs mt-2`}>
-              Total: ₹{data?.total}
+            <Text style={tw`font-semibold text-xs`}>Total: ₹{data?.total}</Text>
+            <Text style={tw`font-semibold text-xs`}>
+              Per Person: ₹{(data.third || 0)?.toFixed(2)}
             </Text>
-            <Text style={tw`font-semibold text-xs mt-2`}>
-              3rd: ₹{(data.third || 0)?.toFixed(2)}
-            </Text>
-            <View style={tw`mt-2 flex flex-row gap-1 items-center`}>
+            <View style={tw`flex flex-row gap-1 items-center`}>
               <Text style={tw`font-semibold text-xs`}>Remaining:</Text>
               <Text
                 style={tw`font-semibold text-xs text-[${

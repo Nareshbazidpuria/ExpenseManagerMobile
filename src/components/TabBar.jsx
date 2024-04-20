@@ -53,6 +53,7 @@ const TabBar = ({ state, descriptors, navigation }) => (
             name={
               {
                 Team: "people-circle-outline",
+                Groups: "people-circle-outline",
                 Own: "person-circle-outline",
                 Report: "stats-chart",
               }[label]

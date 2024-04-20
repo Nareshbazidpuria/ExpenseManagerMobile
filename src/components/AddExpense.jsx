@@ -17,7 +17,7 @@ import { addExpenseAPI, editExpenseAPI } from "../api/apis";
 import { expenseTypes, primary } from "../utils/common";
 
 const AddExpense = ({ visible, setVisible, setRefresh, edit, setEdit }) => {
-  const to = visible;
+  const to = typeof visible === "object" ? visible?._id : visible;
   const other = useRef();
   const defaultPayload = { amount: 0, purpose: "", additional: "" };
   const message = (msg) => ToastAndroid.show(msg, ToastAndroid.LONG);
@@ -115,7 +115,7 @@ const AddExpense = ({ visible, setVisible, setRefresh, edit, setEdit }) => {
                 {edit ? "Edit" : "Add"} Expenses (
                 {{ [expenseTypes.own]: "Own", [expenseTypes.team]: "Team" }[
                   to
-                ] || to}
+                ] || (typeof visible === "object" ? visible.name : to)}
                 )
               </Text>
               <View style={tw``}>

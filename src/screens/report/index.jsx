@@ -7,7 +7,7 @@ import TotalTeam from "./TotalTeam";
 import TotalOwn from "./TotalOwn";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { users } from "../../utils/common";
-import { individualAPI } from "../../api/apis";
+import { groupListAPI, individualAPI } from "../../api/apis";
 import Individual from "./Individual";
 
 const Report = () => {
@@ -16,11 +16,17 @@ const Report = () => {
   const [individual, setIndividual] = useState([]);
   const [me, setMe] = useState();
   const [refresh, setRefresh] = useState();
+  const [list, setList] = useState([]);
   const [collapsed, setCollapsed] = useState({
     1: false,
     2: false,
     3: false,
     4: false,
+    5: false,
+    6: false,
+    7: false,
+    8: false,
+    9: false,
   });
 
   const getIndividual = async () => {
@@ -34,12 +40,30 @@ const Report = () => {
     }
   };
 
+  const groupList = async () => {
+    let data = [];
+    try {
+      setRefreshing(true);
+      const res = await groupListAPI();
+      if (res?.status === 200) data = res?.data?.data;
+    } catch (error) {
+      console.log("error", error);
+    } finally {
+      setList(data);
+      setRefreshing(false);
+    }
+  };
+
   useEffect(() => {
+    groupList();
     getIndividual();
   }, [date]);
 
   useEffect(() => {
-    if (refresh) getIndividual();
+    if (refresh) {
+      getIndividual();
+      groupList();
+    }
   }, [refresh]);
 
   useEffect(() => {
@@ -65,19 +89,21 @@ const Report = () => {
         }
       >
         <Collapse
-          title="Total Team Expenses"
+          title="My Expenses"
           col={collapsed}
           setCol={setCollapsed}
           Key={1}
-          child={<TotalTeam date={date} refresh={refresh} />}
-        />
-        <Collapse
-          title="My Total Expenses"
-          col={collapsed}
-          setCol={setCollapsed}
-          Key={2}
           child={<TotalOwn date={date} refresh={refresh} />}
         />
+        {(list || []).map((group, i) => (
+          <Collapse
+            title={group?.name}
+            col={collapsed}
+            setCol={setCollapsed}
+            Key={i + 2}
+            child={<TotalTeam date={date} refresh={refresh} group={group} />}
+          />
+        ))}
         {users
           .filter((user) => user !== me?.name)
           .map((user, i) => (
@@ -86,7 +112,7 @@ const Report = () => {
               to={user}
               col={collapsed}
               setCol={setCollapsed}
-              Key={i + 3}
+              Key={i + 6}
               setRefresh={setRefresh}
               child={
                 <Individual

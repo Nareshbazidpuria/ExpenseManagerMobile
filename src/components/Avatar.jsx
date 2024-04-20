@@ -1,19 +1,19 @@
 import { Image, Text, View } from "react-native";
 import tw from "twrnc";
 import { primary } from "../utils/common";
-import n from "../assets/n.jpg";
+import n from "../assets/n.gif";
 
-const Avatar = ({ value }) =>
-  value === "N" ? (
-    <Image
-      source={n}
-      style={tw`h-10 w-10 rounded-full border border-[${primary}]`}
-    />
+const Avatar = ({ value, w = 10 }) =>
+  ["N", "NB"].includes(value) ? (
+    <View style={tw`rounded-full overflow-hidden border border-[${primary}]`}>
+      <Image source={n} style={tw`h-[${w}] w-[${w}] rounded-full `} />
+    </View>
   ) : (
     <View
       style={tw`bg-[${
-        value === "S" ? "#6e0b65" : primary
-      }] h-10 w-10 rounded-full flex justify-center items-center`}
+        { S: "#6e0b65", SN: "#6e0b65", HB: "#0f4bab", H: "#0f4bab" }[value] ||
+        primary
+      }] h-[${w}] w-[${w}] rounded-full flex justify-center items-center`}
     >
       <Text style={tw`text-xl font-bold text-white`}>{value}</Text>
     </View>
