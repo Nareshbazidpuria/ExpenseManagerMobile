@@ -71,7 +71,7 @@ const Home = ({ route }) => {
       <TopBar date={date} setDate={setDate} />
       <ScrollView
         style={tw`h-[${
-          (Dimensions.get("window").height * (data ? 0.95 : 0.9)) / 4
+          (Dimensions.get("window").height * (data ? 0.96 : 0.9)) / 4
         }]`}
         refreshControl={
           <RefreshControl
@@ -103,7 +103,7 @@ const Home = ({ route }) => {
         )}
       </ScrollView>
       <Pressable
-        style={tw`absolute bottom-5 right-3 bg-[${primary}] p-4 rounded-full shadow`}
+        style={tw`absolute bottom-8 right-3 bg-[${primary}] p-4 rounded-full shadow`}
         onPress={() => setVisible(data || to)}
       >
         <IonIcon color="white" name="add" size={28} />

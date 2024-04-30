@@ -32,7 +32,7 @@ const TotalTeam = ({ date, refresh, group }) => {
           <View style={tw`flex flex-row justify-between flex-wrap`}>
             {data?.members?.map(({ name, amount }) => (
               <View style={tw`flex flex-row items-center gap-2 w-1/2 mb-2`}>
-                <Avatar value={name?.[0]} />
+                <Avatar value={name} />
                 <Text style={tw`font-semibold text-base`}>₹{amount}</Text>
               </View>
             ))}

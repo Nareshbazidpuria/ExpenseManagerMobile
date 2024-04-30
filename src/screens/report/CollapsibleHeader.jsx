@@ -4,8 +4,17 @@ import IonIcon from "@expo/vector-icons/Ionicons";
 import { primary } from "../../utils/common";
 import AddExpense from "../../components/AddExpense";
 import { useEffect, useState } from "react";
+import Avatar from "../../components/Avatar";
 
-const CollapsibleHeader = ({ col, setCol, Key, title, to, setRefresh }) => {
+const CollapsibleHeader = ({
+  col,
+  setCol,
+  Key,
+  title,
+  to,
+  setRefresh,
+  members,
+}) => {
   const [visible, setVisible] = useState();
 
   useEffect(() => {
@@ -20,7 +29,10 @@ const CollapsibleHeader = ({ col, setCol, Key, title, to, setRefresh }) => {
         style={tw`p-2 bg-[${primary}] flex flex-row justify-between items-center mt-2`}
       >
         <Text style={tw`text-white text-base font-semibold`}>{title}</Text>
-        <View style={tw`flex flex-row gap-2`}>
+        <View style={tw`flex flex-row gap-2 items-center`}>
+          {members?.map((e) => (
+            <Avatar value={e} w="6" />
+          ))}
           {to && (
             <Pressable
               style={tw`bg-white rounded-full w-6 h-6 `}

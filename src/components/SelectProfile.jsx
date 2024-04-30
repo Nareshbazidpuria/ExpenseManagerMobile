@@ -125,7 +125,7 @@ const SelectProfile = ({ setRefresh }) => {
                 <ProfileCard
                   name={name}
                   key={name}
-                  value={name[0]}
+                  value={name}
                   onPress={() => setPayload({ ...payload, name })}
                 />
               ))}

@@ -101,6 +101,7 @@ const Report = () => {
             col={collapsed}
             setCol={setCollapsed}
             Key={i + 2}
+            members={group?.members}
             child={<TotalTeam date={date} refresh={refresh} group={group} />}
           />
         ))}

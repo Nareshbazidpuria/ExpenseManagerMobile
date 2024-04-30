@@ -10,13 +10,7 @@ const Group = ({ data, navigation }) => (
     <Text style={tw`font-semibold text-xl`}>{data?.name}</Text>
     <View style={tw`flex flex-row gap-3 items-center`}>
       {data?.members?.map((name) => (
-        <Avatar
-          value={name
-            ?.split(" ")
-            ?.map((chars) => chars?.[0])
-            ?.join("")}
-          w="12"
-        />
+        <Avatar value={name} w="12" />
       ))}
     </View>
   </Pressable>
