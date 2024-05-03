@@ -31,11 +31,12 @@ const AddExpense = ({ visible, setVisible, setRefresh, edit, setEdit }) => {
   });
   const addOptions = [
     "Write your own ...",
-    "Grocery",
+    "Milk 🥛",
+    "Banana 🍌",
     "Onion 🧅",
     "Tomato 🍅",
     "Vegitables",
-    "Milk 🥛",
+    "Grocery",
   ];
 
   const valid = (payload) => {
@@ -80,8 +81,8 @@ const AddExpense = ({ visible, setVisible, setRefresh, edit, setEdit }) => {
   }, []);
 
   useEffect(() => {
-    setPayload({ ...payload, additional: "" });
     if (payload.purpose === "Write your own ...") other?.current?.focus();
+    else setPayload({ ...payload, additional: "" });
   }, [payload.purpose]);
 
   useEffect(() => {
@@ -147,8 +148,8 @@ const AddExpense = ({ visible, setVisible, setRefresh, edit, setEdit }) => {
                       <TextInput
                         ref={other}
                         style={tw`border-b border-gray-400 `}
-                        value={edit?.purpose || payload.additional}
-                        defaultValue={edit?.purpose || payload.additional}
+                        value={payload.additional}
+                        defaultValue={payload.additional}
                         onChangeText={(additional) =>
                           setPayload({ ...payload, additional })
                         }

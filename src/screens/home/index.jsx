@@ -108,7 +108,7 @@ const Home = ({ route }) => {
       >
         <IonIcon color="white" name="add" size={28} />
       </Pressable>
-      <AddExpense visible={visible} setVisible={setVisible} edit={edit} />
+      <AddExpense visible={visible} setVisible={setVisible} edit={edit} setEdit={setEdit}/>
       <SelectProfile />
     </View>
   );
