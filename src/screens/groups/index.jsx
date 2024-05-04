@@ -14,6 +14,7 @@ import SelectProfile from "../../components/SelectProfile";
 import empty from "../../assets/empty.gif";
 import Group from "./Group";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import NoInternet from "../../components/NoInternet";
 
 const Groups = ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
@@ -78,6 +79,7 @@ const Groups = ({ navigation }) => {
         )}
       </ScrollView>
       <SelectProfile setRefresh={setRefresh} />
+      <NoInternet />
     </View>
   );
 };

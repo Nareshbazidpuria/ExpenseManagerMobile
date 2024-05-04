@@ -12,7 +12,6 @@ import { expenseTypes, primary } from "../../utils/common";
 import AddExpense from "../../components/AddExpense";
 import { useEffect, useState } from "react";
 import { expenseListAPI } from "../../api/apis";
-import SelectProfile from "../../components/SelectProfile";
 import { useIsFocused } from "@react-navigation/native";
 import TopBar from "../../components/Topbar";
 import SwipeComp from "../../components/SwipeComp";
@@ -21,7 +20,7 @@ import empty from "../../assets/empty.gif";
 
 const Home = ({ route }) => {
   const { data } = route.params || {};
-  const [to, setTo] = useState(data?.name || expenseTypes.own);
+  const [to] = useState(data?.name || expenseTypes.own);
   const isFocused = useIsFocused();
   const [visible, setVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -63,7 +62,6 @@ const Home = ({ route }) => {
 
   useEffect(() => {
     findMe();
-    // setTo(navigation.getState().index ? expenseTypes.own : expenseTypes.team);
   }, [isFocused]);
 
   return (
@@ -108,8 +106,12 @@ const Home = ({ route }) => {
       >
         <IonIcon color="white" name="add" size={28} />
       </Pressable>
-      <AddExpense visible={visible} setVisible={setVisible} edit={edit} setEdit={setEdit}/>
-      <SelectProfile />
+      <AddExpense
+        visible={visible}
+        setVisible={setVisible}
+        edit={edit}
+        setEdit={setEdit}
+      />
     </View>
   );
 };
