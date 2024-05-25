@@ -16,7 +16,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { loginAPI } from "../api/apis";
 // import { removeNotificationSubscription } from "expo-notifications";
 
-const SelectProfile = () => {
+const SelectProfile = ({ setRefresh }) => {
   // const notificationListener = useRef();
   // const responseListener = useRef();
   const message = (msg) => ToastAndroid.show(msg, ToastAndroid.LONG);
@@ -43,6 +43,7 @@ const SelectProfile = () => {
           setPayload({ ...payload, password: "" });
         } else {
           await AsyncStorage.setItem("user", JSON.stringify(res.data?.user));
+          if (setRefresh) setRefresh(Date.now());
           setPayload({});
           checkVisible();
           setChangePass(false);
@@ -73,7 +74,7 @@ const SelectProfile = () => {
   return (
     <Modal animationType="slide" transparent={true} visible={visible}>
       <View
-        style={tw`bg-[#00000066] flex items-center pt-[${200}] h-[${
+        style={tw`bg-[${primary}] flex items-center pt-[${200}] h-[${
           Dimensions.get("screen").height / 4
         }]`}
       >
@@ -124,7 +125,7 @@ const SelectProfile = () => {
                 <ProfileCard
                   name={name}
                   key={name}
-                  value={name[0]}
+                  value={name}
                   onPress={() => setPayload({ ...payload, name })}
                 />
               ))}

@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
-export const baseURL = "http://192.168.63.201:4040";
+export const baseURL = "http://192.168.169.201:4040";
 // export const baseURL = "https://expensemanager-047k.onrender.com";
 
 export const Axios = axios.create({ baseURL });
@@ -20,9 +20,7 @@ Axios.interceptors.response.use(
 Axios.interceptors.request.use(
   async (config) => {
     try {
-      config.headers.user = JSON.parse(
-        (await AsyncStorage.getItem("user")) || {}
-      )._id;
+      config.headers.token = await AsyncStorage.getItem("token");
     } catch (error) {}
     return config;
   },

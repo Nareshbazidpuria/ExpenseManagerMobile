@@ -1,19 +1,33 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Home from "../screens/home";
 import TabBar from "../components/TabBar";
 import Report from "../screens/report";
+import Groups from "../screens/groups";
+import Expenses from "../screens/expenses";
+import { useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Tab = createBottomTabNavigator();
 
-const HomeScreen = () => (
-  <Tab.Navigator
-    tabBar={(props) => <TabBar {...props} />}
-    screenOptions={{ headerShown: false }}
-  >
-    <Tab.Screen name="Team" component={Home} />
-    <Tab.Screen name="Own" component={Home} />
-    <Tab.Screen name="Report" component={Report} />
-  </Tab.Navigator>
-);
+const Home = ({ navigation }) => {
+  const checkLoggedIn = async () => {
+    const loggedIn = await AsyncStorage.getItem("user");
+    if (!loggedIn) navigation?.navigate("Login");
+  };
 
-export default HomeScreen;
+  useEffect(() => {
+    checkLoggedIn();
+  });
+
+  return (
+    <Tab.Navigator
+      tabBar={(props) => <TabBar {...props} />}
+      screenOptions={{ headerShown: false }}
+    >
+      <Tab.Screen name="Groups" component={Groups} />
+      <Tab.Screen name="Own" component={Expenses} />
+      <Tab.Screen name="Report" component={Report} />
+    </Tab.Navigator>
+  );
+};
+
+export default Home;

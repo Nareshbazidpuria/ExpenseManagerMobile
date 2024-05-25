@@ -7,7 +7,7 @@ import IonIcon from "@expo/vector-icons/Ionicons";
 const IndividualItem = ({ avatar, e, onPress }) => (
   <Pressable
     style={tw`flex flex-row items-center gap-2 min-w-1/2 my-1`}
-    onPress={onPress}
+    onLongPress={onPress}
   >
     <Avatar value={avatar} />
     <View>

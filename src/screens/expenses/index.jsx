@@ -12,15 +12,15 @@ import { expenseTypes, primary } from "../../utils/common";
 import AddExpense from "../../components/AddExpense";
 import { useEffect, useState } from "react";
 import { expenseListAPI } from "../../api/apis";
-import SelectProfile from "../../components/SelectProfile";
 import { useIsFocused } from "@react-navigation/native";
 import TopBar from "../../components/Topbar";
 import SwipeComp from "../../components/SwipeComp";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import empty from "../../assets/empty.gif";
 
-const Home = ({ navigation }) => {
-  const [to, setTo] = useState(expenseTypes.team);
+const Expenses = ({ route, navigation }) => {
+  const { data } = route.params || {};
+  const [to] = useState(data?.name || expenseTypes.own);
   const isFocused = useIsFocused();
   const [visible, setVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -32,15 +32,18 @@ const Home = ({ navigation }) => {
   const [edit, setEdit] = useState();
 
   const expenseList = async (params) => {
-    let data = [];
+    let resp = [];
     try {
+      if (params?.to && params?.to === data?.name) {
+        params.to = data._id;
+      }
       setRefreshing(true);
       const res = await expenseListAPI(params);
-      if (res?.status === 200) data = res?.data?.data;
+      if (res?.status === 200) resp = res?.data?.data;
     } catch (error) {
       console.log("error", error);
     } finally {
-      setList(data);
+      setList(resp);
       setRefreshing(false);
     }
   };
@@ -59,14 +62,24 @@ const Home = ({ navigation }) => {
 
   useEffect(() => {
     findMe();
-    setTo(navigation.getState().index ? expenseTypes.own : expenseTypes.team);
   }, [isFocused]);
+
+  const checkLoggedIn = async () => {
+    const loggedIn = await AsyncStorage.getItem("user");
+    if (!loggedIn) navigation?.navigate("Login");
+  };
+
+  useEffect(() => {
+    checkLoggedIn();
+  });
 
   return (
     <View>
       <TopBar date={date} setDate={setDate} />
       <ScrollView
-        style={tw`h-[${(Dimensions.get("window").height * 0.9) / 4}]`}
+        style={tw`h-[${
+          (Dimensions.get("window").height * (data ? 0.96 : 0.9)) / 4
+        }]`}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -97,15 +110,19 @@ const Home = ({ navigation }) => {
         )}
       </ScrollView>
       <Pressable
-        style={tw`absolute bottom-5 right-3 bg-[${primary}] p-4 rounded-full shadow`}
-        onPress={() => setVisible(to)}
+        style={tw`absolute bottom-8 right-3 bg-[${primary}] p-4 rounded-full shadow`}
+        onPress={() => setVisible(data || to)}
       >
         <IonIcon color="white" name="add" size={28} />
       </Pressable>
-      <AddExpense visible={visible} setVisible={setVisible} edit={edit} />
-      <SelectProfile />
+      <AddExpense
+        visible={visible}
+        setVisible={setVisible}
+        edit={edit}
+        setEdit={setEdit}
+      />
     </View>
   );
 };
 
-export default Home;
+export default Expenses;

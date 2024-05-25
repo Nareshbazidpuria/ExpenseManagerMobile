@@ -17,10 +17,10 @@ const Individual = ({ data, me, setRefresh }) => {
             {[
               ...data.me?.map((e) => ({
                 ...e,
-                avatar: me?.name?.[0],
+                avatar: me?.name,
                 to: data?.to,
               })),
-              ...data.you?.map((e) => ({ ...e, avatar: data?.to?.name?.[0] })),
+              ...data.you?.map((e) => ({ ...e, avatar: data?.to?.name })),
             ]
               ?.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
               ?.map((e) => (
