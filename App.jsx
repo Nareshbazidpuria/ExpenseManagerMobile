@@ -3,9 +3,11 @@ import { NavigationContainer } from "@react-navigation/native";
 import { useEffect, useRef } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { primary } from "./src/utils/common";
-import HomeScreen from "./src/routes/Screens";
 import { PermissionsAndroid } from "react-native";
-import Home from "./src/screens/home";
+import LoginSignup from "./src/screens/login";
+import Expenses from "./src/screens/expenses";
+import Home from "./src/routes/Screens";
+import Profile from "./src/screens/profile";
 
 export let navigateRef;
 
@@ -31,13 +33,13 @@ const App = () => {
     <NavigationContainer ref={navigateRef}>
       <StatusBar style="light" translucent={false} backgroundColor={primary} />
       <Stack.Navigator
-        initialRouteName="HomeScreen"
-        screenOptions={{
-          headerShown: false,
-        }}
+        initialRouteName="Home"
+        screenOptions={{ headerShown: false }}
       >
-        <Stack.Screen name="HomeScreen" component={HomeScreen} />
         <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Expenses" component={Expenses} />
+        <Stack.Screen name="Login" component={LoginSignup} />
+        <Stack.Screen name="Profile" component={Profile} />
       </Stack.Navigator>
     </NavigationContainer>
   );

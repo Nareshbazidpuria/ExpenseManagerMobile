@@ -3,14 +3,16 @@ import IonIcon from "@expo/vector-icons/Ionicons";
 import tw from "twrnc";
 import { primary } from "../utils/common";
 
-const Bicon = ({ title, name, bg = primary, onPress = () => {}, cls }) => (
+const Bicon = ({ title, name, bg = primary, onPress, cls, txtCls }) => (
   <Pressable
     style={tw`flex flex-row items-center gap-1 p-2 bg-[${bg}] rounded w-22 justify-center border ${
       bg !== primary ? "border-gray-300" : `border-[${primary}]`
     } ${cls}`}
     onPress={onPress}
   >
-    <Text style={tw`${bg === primary ? "text-white" : ""}`}>{title}</Text>
+    <Text style={tw`${bg === primary ? "text-white" : ""} ${txtCls}`}>
+      {title}
+    </Text>
     <IonIcon
       name={name}
       size={15}

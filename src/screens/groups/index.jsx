@@ -15,6 +15,7 @@ import empty from "../../assets/empty.gif";
 import Group from "./Group";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NoInternet from "../../components/NoInternet";
+import LoginSignup from "../login";
 
 const Groups = ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
@@ -23,7 +24,7 @@ const Groups = ({ navigation }) => {
   const [list, setList] = useState([]);
 
   const findMe = async () => {
-    setMe(JSON.parse((await AsyncStorage.getItem("user")) || "{}"));
+    setMe(await AsyncStorage.getItem("user"));
   };
 
   const groupList = async () => {
@@ -52,8 +53,14 @@ const Groups = ({ navigation }) => {
       >
         <Text style={tw`text-2xl text-white font-semibold`}>Groups</Text>
         {me && (
-          <Text style={tw`text-base text-white font-normal`}>
-            Hi, <Text style={tw`text-base font-semibold`}>{me.name}</Text>
+          <Text
+            style={tw`text-base text-white font-normal`}
+            onPress={() => navigation.navigate("Profile")}
+          >
+            Hi,&nbsp;
+            <Text style={tw`text-base font-semibold`}>
+              {me?.replace(/"/g, "")}
+            </Text>
           </Text>
         )}
       </View>
@@ -78,7 +85,8 @@ const Groups = ({ navigation }) => {
           </View>
         )}
       </ScrollView>
-      <SelectProfile setRefresh={setRefresh} />
+      {/* <LoginSignup setRefresh={setRefresh} /> */}
+      {/* <SelectProfile setRefresh={setRefresh} /> */}
       <NoInternet />
     </View>
   );

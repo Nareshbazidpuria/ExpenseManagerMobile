@@ -18,7 +18,7 @@ import SwipeComp from "../../components/SwipeComp";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import empty from "../../assets/empty.gif";
 
-const Home = ({ route }) => {
+const Expenses = ({ route, navigation }) => {
   const { data } = route.params || {};
   const [to] = useState(data?.name || expenseTypes.own);
   const isFocused = useIsFocused();
@@ -63,6 +63,15 @@ const Home = ({ route }) => {
   useEffect(() => {
     findMe();
   }, [isFocused]);
+
+  const checkLoggedIn = async () => {
+    const loggedIn = await AsyncStorage.getItem("user");
+    if (!loggedIn) navigation?.navigate("Login");
+  };
+
+  useEffect(() => {
+    checkLoggedIn();
+  });
 
   return (
     <View>
@@ -116,4 +125,4 @@ const Home = ({ route }) => {
   );
 };
 
-export default Home;
+export default Expenses;

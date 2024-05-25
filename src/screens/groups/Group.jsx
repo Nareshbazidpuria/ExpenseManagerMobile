@@ -5,7 +5,7 @@ import tw from "twrnc";
 const Group = ({ data, navigation }) => (
   <Pressable
     style={tw`flex flex-row gap-3 items-center justify-between py-2 px-4 m-1 rounded bg-white shadow`}
-    onPress={() => navigation.navigate("Home", { data })}
+    onPress={() => navigation.navigate("Expenses", { data })}
   >
     <Text style={tw`font-semibold text-xl`}>{data?.name}</Text>
     <View style={tw`flex flex-row gap-3 items-center`}>
