@@ -2,26 +2,8 @@ import { Pressable, Text, View } from "react-native";
 import tw from "twrnc";
 import IonIcon from "@expo/vector-icons/Ionicons";
 import { primary } from "../../utils/common";
-import AddExpense from "../../components/AddExpense";
-import { useEffect, useState } from "react";
-import Avatar from "../../components/Avatar";
 
-const CollapsibleHeader = ({
-  col,
-  setCol,
-  Key,
-  title,
-  to,
-  setRefresh,
-  members,
-}) => {
-  const [visible, setVisible] = useState();
-
-  useEffect(() => {
-    if (!visible) {
-    }
-  }, [visible]);
-
+const CollapsibleHeader = ({ col, setCol, Key, title }) => {
   return (
     <>
       <Pressable
@@ -30,34 +12,12 @@ const CollapsibleHeader = ({
       >
         <Text style={tw`text-white text-base font-semibold`}>{title}</Text>
         <View style={tw`flex flex-row gap-2 items-center`}>
-          {members?.map((e) => (
-            <Avatar value={e} w="6" />
-          ))}
-          {to && (
-            <Pressable
-              style={tw`bg-white rounded-full w-6 h-6 `}
-              onPress={(e) => {
-                e?.stopPropagation();
-                setVisible(to);
-              }}
-            >
-              <IonIcon
-                style={tw`text-base text-center text-[${primary}]`}
-                name="add"
-              />
-            </Pressable>
-          )}
           <IonIcon
             style={tw`text-base text-white`}
             name={`chevron-${col?.[Key] ? "forward" : "down"}-outline`}
           />
         </View>
       </Pressable>
-      <AddExpense
-        visible={visible}
-        setVisible={setVisible}
-        setRefresh={setRefresh}
-      />
     </>
   );
 };

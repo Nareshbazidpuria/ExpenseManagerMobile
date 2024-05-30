@@ -1,6 +1,7 @@
 import {
   Dimensions,
   Image,
+  Pressable,
   RefreshControl,
   ScrollView,
   Text,
@@ -10,22 +11,18 @@ import tw from "twrnc";
 import { primary } from "../../utils/common";
 import { useEffect, useState } from "react";
 import { groupListAPI } from "../../api/apis";
-import SelectProfile from "../../components/SelectProfile";
 import empty from "../../assets/empty.gif";
 import Group from "./Group";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NoInternet from "../../components/NoInternet";
-import LoginSignup from "../login";
+import { useIsFocused } from "@react-navigation/native";
+import IonIcon from "@expo/vector-icons/Ionicons";
 
 const Groups = ({ navigation }) => {
+  const isFocused = useIsFocused();
   const [refreshing, setRefreshing] = useState(false);
-  const [refresh, setRefresh] = useState();
   const [me, setMe] = useState();
   const [list, setList] = useState([]);
-
-  const findMe = async () => {
-    setMe(await AsyncStorage.getItem("user"));
-  };
 
   const groupList = async () => {
     let data = [];
@@ -34,17 +31,26 @@ const Groups = ({ navigation }) => {
       const res = await groupListAPI();
       if (res?.status === 200) data = res?.data?.data;
     } catch (error) {
-      console.log("error", error);
+      console.log(error?.data || error);
     } finally {
-      findMe();
       setList(data);
       setRefreshing(false);
     }
   };
 
+  const checkLoggedIn = async () => {
+    const loggedIn = await AsyncStorage.getItem("user");
+    if (!loggedIn) navigation?.navigate("Login");
+    else setMe(JSON.parse(loggedIn));
+  };
+
+  useEffect(() => {
+    checkLoggedIn();
+  }, [isFocused, refreshing]);
+
   useEffect(() => {
     groupList();
-  }, [refresh]);
+  }, [isFocused]);
 
   return (
     <View>
@@ -59,7 +65,7 @@ const Groups = ({ navigation }) => {
           >
             Hi,&nbsp;
             <Text style={tw`text-base font-semibold`}>
-              {me?.replace(/"/g, "")}
+              {me?.name?.replace(/"/g, "")}
             </Text>
           </Text>
         )}
@@ -85,9 +91,13 @@ const Groups = ({ navigation }) => {
           </View>
         )}
       </ScrollView>
-      {/* <LoginSignup setRefresh={setRefresh} /> */}
-      {/* <SelectProfile setRefresh={setRefresh} /> */}
       <NoInternet />
+      <Pressable
+        style={tw`absolute bottom-8 right-3 bg-[${primary}] p-4 rounded-full shadow`}
+        onPress={() => navigation.navigate("CreateGroup")}
+      >
+        <IonIcon color="white" name="add" size={28} />
+      </Pressable>
     </View>
   );
 };

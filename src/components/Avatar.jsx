@@ -20,7 +20,7 @@ const Avatar = ({ value, w = 10 }) => {
       }] h-[${w}] w-[${w}] rounded-full flex justify-center items-center`}
     >
       <Text style={tw`text-${w >= 10 ? "xl" : "xs"} font-bold text-white`}>
-        {value}
+        {value?.substring(0, 2)}
       </Text>
     </View>
   );

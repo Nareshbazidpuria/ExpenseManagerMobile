@@ -1,26 +1,9 @@
 import CollapsibleHeader from "./CollapsibleHeader";
 import Collapsible from "react-native-collapsible";
 
-const Collapse = ({
-  col,
-  setCol,
-  Key,
-  child,
-  title,
-  to,
-  setRefresh,
-  members,
-}) => (
+const Collapse = ({ col, setCol, Key, child, title }) => (
   <>
-    <CollapsibleHeader
-      col={col}
-      Key={Key}
-      setCol={setCol}
-      title={title}
-      to={to}
-      setRefresh={setRefresh}
-      members={members}
-    />
+    <CollapsibleHeader col={col} Key={Key} setCol={setCol} title={title} />
     <Collapsible collapsed={col?.[Key]}>{child}</Collapsible>
   </>
 );

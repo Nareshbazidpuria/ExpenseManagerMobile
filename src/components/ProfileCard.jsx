@@ -7,7 +7,7 @@ const ProfileCard = ({ value, name, onPress }) => (
     style={tw`flex flex-row my-2 items-center gap-2`}
     onPress={onPress}
   >
-    <Avatar value={value} />
+    <Avatar value={value || name} />
     <Text style={tw`font-bold text-base`}>{name}</Text>
   </Pressable>
 );

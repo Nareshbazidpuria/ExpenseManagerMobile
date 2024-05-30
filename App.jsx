@@ -8,6 +8,8 @@ import LoginSignup from "./src/screens/login";
 import Expenses from "./src/screens/expenses";
 import Home from "./src/routes/Screens";
 import Profile from "./src/screens/profile";
+import CreateGroup from "./src/screens/groups/CreateGroup";
+import GroupDetails from "./src/screens/groups/GroupDetails";
 
 export let navigateRef;
 
@@ -40,6 +42,8 @@ const App = () => {
         <Stack.Screen name="Expenses" component={Expenses} />
         <Stack.Screen name="Login" component={LoginSignup} />
         <Stack.Screen name="Profile" component={Profile} />
+        <Stack.Screen name="CreateGroup" component={CreateGroup} />
+        <Stack.Screen name="GroupDetails" component={GroupDetails} />
       </Stack.Navigator>
     </NavigationContainer>
   );

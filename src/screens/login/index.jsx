@@ -57,7 +57,10 @@ const LoginSignup = ({ navigation }) => {
         if (signUp) setSignUp(false);
         else {
           setPayload({});
-          await AsyncStorage.setItem("user", res.data?.data?.name);
+          await AsyncStorage.setItem(
+            "user",
+            JSON.stringify(res.data?.data?.user)
+          );
           await AsyncStorage.setItem("token", res.data?.data?.accessToken);
           navigation.navigate("Home");
         }
@@ -109,7 +112,7 @@ const LoginSignup = ({ navigation }) => {
         ) : (
           <>
             <Text style={tw`text-lg text-center font-semibold mb-2`}>
-              Login to Expense Manager
+              {signUp ? "Signup" : "Login"} to Expense Manager
             </Text>
             <View style={tw`p-4`}>
               {signUp && (

@@ -7,9 +7,9 @@ import { useIsFocused } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { logoutAPI, profileAPI } from "../../api/auth";
 import Avatar from "../../components/Avatar";
-import ProfileOpt from "./ProfileOpt";
+import ProfileOpt from "../profile/ProfileOpt";
 
-const Profile = ({ route, navigation }) => {
+const GroupDetails = ({ route, navigation }) => {
   const isFocused = useIsFocused();
 
   const [profile, setProfile] = useState({});
@@ -50,7 +50,7 @@ const Profile = ({ route, navigation }) => {
       <View
         style={tw`p-2 bg-[${primary}] flex flex-row justify-between items-center`}
       >
-        <Text style={tw`text-2xl text-white font-semibold`}>Profile</Text>
+        <Text style={tw`text-2xl text-white font-semibold`}>Group Details</Text>
       </View>
       <View
         style={tw`p-5 flex flex-row items-center gap-5 border-b border-gray-300 `}
@@ -78,4 +78,4 @@ const Profile = ({ route, navigation }) => {
   );
 };
 
-export default Profile;
+export default GroupDetails;
