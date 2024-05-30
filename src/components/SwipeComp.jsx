@@ -36,7 +36,7 @@ const SwipeComp = ({ data, swiped, setSwiped, me, setDeleted, setEdit }) => {
     if (swipeable && swiped !== data?._id) swipeable.recenter();
   }, [swiped]);
 
-  return JSON.parse(me || "{}")._id === data?.user?._id ? (
+  return me?._id === data?.user?._id ? (
     <Swipeable
       onRef={(ref) => setSwipeable(ref)}
       onSwipeRelease={() => setSwiped(data?._id)}

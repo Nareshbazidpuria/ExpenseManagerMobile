@@ -4,6 +4,7 @@ import {
   Pressable,
   RefreshControl,
   ScrollView,
+  Text,
   View,
 } from "react-native";
 import IonIcon from "@expo/vector-icons/Ionicons";
@@ -34,9 +35,7 @@ const Expenses = ({ route, navigation }) => {
   const expenseList = async (params) => {
     let resp = [];
     try {
-      if (params?.to && params?.to === data?.name) {
-        params.to = data._id;
-      }
+      if (params?.to && params?.to === data?.name) params.to = data._id;
       setRefreshing(true);
       const res = await expenseListAPI(params);
       if (res?.status === 200) resp = res?.data?.data;
@@ -48,10 +47,6 @@ const Expenses = ({ route, navigation }) => {
     }
   };
 
-  const findMe = async () => {
-    setMe(await AsyncStorage.getItem("user"));
-  };
-
   useEffect(() => {
     if (!visible) expenseList({ date, to });
   }, [visible, date, to]);
@@ -60,22 +55,41 @@ const Expenses = ({ route, navigation }) => {
     if (deleted) expenseList({ date, to });
   }, [deleted]);
 
-  useEffect(() => {
-    findMe();
-  }, [isFocused]);
-
   const checkLoggedIn = async () => {
     const loggedIn = await AsyncStorage.getItem("user");
     if (!loggedIn) navigation?.navigate("Login");
+    else setMe(JSON.parse(loggedIn));
   };
 
   useEffect(() => {
     checkLoggedIn();
-  });
+  }, [isFocused]);
 
   return (
     <View>
-      <TopBar date={date} setDate={setDate} />
+      <View style={tw`flex flex-row`}>
+        {to !== expenseTypes.own && (
+          <Pressable
+            style={tw`p-2 bg-[${primary}] w-1/2`}
+            onPress={() => navigation.navigate("GroupDetails")}
+          >
+            <Text
+              numberOfLines={1}
+              style={tw`text-lg text-white font-semibold`}
+            >
+              {to}
+            </Text>
+            <Text style={tw`text-xs text-white`}>
+              {data?.members?.length} members
+            </Text>
+          </Pressable>
+        )}
+        <TopBar
+          date={date}
+          setDate={setDate}
+          cls={to === expenseTypes.own ? "w-full" : "w-1/2"}
+        />
+      </View>
       <ScrollView
         style={tw`h-[${
           (Dimensions.get("window").height * (data ? 0.96 : 0.9)) / 4

@@ -4,14 +4,20 @@ import tw from "twrnc";
 
 const Group = ({ data, navigation }) => (
   <Pressable
-    style={tw`flex flex-row gap-3 items-center justify-between py-2 px-4 m-1 rounded bg-white shadow`}
+    style={tw`flex flex-row gap-2 items-center py-2 px-3 bg-white border-b border-gray-200`}
     onPress={() => navigation.navigate("Expenses", { data })}
   >
-    <Text style={tw`font-semibold text-xl`}>{data?.name}</Text>
-    <View style={tw`flex flex-row gap-3 items-center`}>
-      {data?.members?.map((name) => (
-        <Avatar value={name} w="12" />
-      ))}
+    <Avatar value={data?.admin} w="12" />
+    <View style={tw`flex flex-row justify-between w-[82%] items-center`}>
+      <View style={tw`w-[70%]`}>
+        <Text style={tw`font-semibold text-lg`}>{data?.name}</Text>
+        <Text style={tw`font-semibold text-gray-400`}>
+          Admin: {data?.admin}
+        </Text>
+      </View>
+      <Text style={tw`font-semibold text-gray-400`}>
+        {data?.members?.length} members
+      </Text>
     </View>
   </Pressable>
 );

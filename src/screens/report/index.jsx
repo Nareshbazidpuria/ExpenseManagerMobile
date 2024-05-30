@@ -1,4 +1,10 @@
-import { Dimensions, RefreshControl, ScrollView, View } from "react-native";
+import {
+  Dimensions,
+  RefreshControl,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 import TopBar from "../../components/Topbar";
 import tw from "twrnc";
 import { useEffect, useState } from "react";
@@ -97,33 +103,20 @@ const Report = () => {
         />
         {(list || []).map((group, i) => (
           <Collapse
-            title={group?.name}
+            title={
+              <>
+                {group?.name}
+                <Text style={tw`text-gray-300`}>
+                  &nbsp;({group?.members?.length} members)
+                </Text>
+              </>
+            }
             col={collapsed}
             setCol={setCollapsed}
             Key={i + 2}
-            members={group?.members}
             child={<TotalTeam date={date} refresh={refresh} group={group} />}
           />
         ))}
-        {users
-          .filter((user) => user !== me?.name)
-          .map((user, i) => (
-            <Collapse
-              title={user}
-              to={user}
-              col={collapsed}
-              setCol={setCollapsed}
-              Key={i + 6}
-              setRefresh={setRefresh}
-              child={
-                <Individual
-                  data={individual?.find((e) => user === e?.to?.name)}
-                  me={me}
-                  setRefresh={setRefresh}
-                />
-              }
-            />
-          ))}
       </ScrollView>
     </View>
   );
