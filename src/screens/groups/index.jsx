@@ -17,12 +17,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import NoInternet from "../../components/NoInternet";
 import { useIsFocused } from "@react-navigation/native";
 import IonIcon from "@expo/vector-icons/Ionicons";
+import { alertListAPI } from "../../api/notification";
 
 const Groups = ({ navigation }) => {
   const isFocused = useIsFocused();
   const [refreshing, setRefreshing] = useState(false);
   const [me, setMe] = useState();
   const [list, setList] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const groupList = async () => {
     let data = [];
@@ -38,6 +40,18 @@ const Groups = ({ navigation }) => {
     }
   };
 
+  const getUnreadNotificationsCount = async () => {
+    let count = 0;
+    try {
+      const res = await alertListAPI({ unread: true });
+      if (res?.status === 200) count = res.data?.data?.[0]?.count;
+    } catch (error) {
+      console.log(error?.data || error);
+    } finally {
+      setUnreadCount(count);
+    }
+  };
+
   const checkLoggedIn = async () => {
     const loggedIn = await AsyncStorage.getItem("user");
     if (!loggedIn) navigation?.navigate("Login");
@@ -50,6 +64,7 @@ const Groups = ({ navigation }) => {
 
   useEffect(() => {
     groupList();
+    getUnreadNotificationsCount();
   }, [isFocused]);
 
   return (
@@ -59,15 +74,24 @@ const Groups = ({ navigation }) => {
       >
         <Text style={tw`text-2xl text-white font-semibold`}>Groups</Text>
         {me && (
-          <Text
-            style={tw`text-base text-white font-normal`}
-            onPress={() => navigation.navigate("Profile")}
-          >
-            Hi,&nbsp;
-            <Text style={tw`text-base font-semibold`}>
-              {me?.name?.replace(/"/g, "")}
+          <View style={tw`flex flex-row items-center`}>
+            <Text
+              style={tw`text-base text-white font-normal`}
+              onPress={() => navigation.navigate("Profile")}
+            >
+              Hi,&nbsp;
+              <Text style={tw`text-base font-semibold`}>
+                {me?.name?.replace(/"/g, "")}
+              </Text>
             </Text>
-          </Text>
+            {!!unreadCount && (
+              <View style={tw`bg-white rounded-full px-1 py-.5`}>
+                <Text style={tw`text-xs font-semibold text-[${primary}]`}>
+                  {unreadCount}
+                </Text>
+              </View>
+            )}
+          </View>
         )}
       </View>
       <ScrollView
@@ -75,12 +99,17 @@ const Groups = ({ navigation }) => {
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
-            onRefresh={() => groupList()}
+            onRefresh={() => {
+              groupList();
+              getUnreadNotificationsCount();
+            }}
           />
         }
       >
         {list?.length ? (
-          list.map((data) => <Group data={data} navigation={navigation} />)
+          list.map((data, i) => (
+            <Group key={"groups-" + i} data={data} navigation={navigation} />
+          ))
         ) : (
           <View
             style={tw`flex h-[${

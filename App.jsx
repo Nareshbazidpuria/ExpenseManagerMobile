@@ -10,6 +10,7 @@ import Home from "./src/routes/Screens";
 import Profile from "./src/screens/profile";
 import CreateGroup from "./src/screens/groups/CreateGroup";
 import GroupDetails from "./src/screens/groups/GroupDetails";
+import Notifications from "./src/screens/notifications";
 
 export let navigateRef;
 
@@ -44,6 +45,7 @@ const App = () => {
         <Stack.Screen name="Profile" component={Profile} />
         <Stack.Screen name="CreateGroup" component={CreateGroup} />
         <Stack.Screen name="GroupDetails" component={GroupDetails} />
+        <Stack.Screen name="Notifications" component={Notifications} />
       </Stack.Navigator>
     </NavigationContainer>
   );

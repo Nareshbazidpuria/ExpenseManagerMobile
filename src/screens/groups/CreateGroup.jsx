@@ -1,5 +1,6 @@
 import {
   ActivityIndicator,
+  ScrollView,
   Text,
   TextInput,
   ToastAndroid,
@@ -11,6 +12,7 @@ import { useState } from "react";
 import Bicon from "../../components/Bicon";
 import Member from "../../components/Member";
 import { createGroupAPI, getMemberAPI } from "../../api/group";
+import Avatar from "../../components/Avatar";
 
 const CreateGroup = ({ navigation }) => {
   const message = (msg) => ToastAndroid.show(msg, ToastAndroid.LONG);
@@ -75,13 +77,15 @@ const CreateGroup = ({ navigation }) => {
           return;
         }
       } else if (secretCode?.length > 11) {
-        setError({ secretCode: "Invalid secret code 1" });
+        setError({ secretCode: "Invalid secret code" });
         return;
       }
     } catch (error) {
-      setError({ secretCode: "Invalid secret code 2" });
-      if (error?.data?.message) message(error.data.message);
-      else console.log(error);
+      if (error?.data?.message) setError({ secretCode: error.data.message });
+      else {
+        console.log(error);
+        setError({ secretCode: "Invalid secret code" });
+      }
     }
     setPayload({ ...payload, secretCode });
   };
@@ -97,16 +101,27 @@ const CreateGroup = ({ navigation }) => {
 
   return (
     <View>
+      <View
+        style={tw`p-2 bg-[${primary}] flex flex-row justify-between items-center`}
+      >
+        <Text style={tw`text-2xl text-white font-semibold`}>
+          Create a New Group
+        </Text>
+      </View>
       <View style={tw`p-4`}>
         {loading ? (
           <ActivityIndicator color={primary} size={50} />
         ) : (
           <>
-            <View style={tw`p-4`}>
+            <View style={tw`p-2`}>
+              <View style={tw`mx-auto mb-5`}>
+                <Avatar value={payload.name || "New Group"} w={35} />
+              </View>
               <Text>Name</Text>
               <TextInput
                 style={tw`border-b border-gray-400 `}
                 value={payload.name}
+                autoCapitalize="words"
                 onChangeText={(name) => setPayload({ ...payload, name })}
               />
               <Text style={tw`text-xs text-red-400`}>{error.name}</Text>
@@ -115,21 +130,24 @@ const CreateGroup = ({ navigation }) => {
                 style={tw`border-b border-gray-400 `}
                 value={payload.secretCode}
                 onChangeText={onSecretCode}
+                autoCapitalize="characters"
               />
               <Text style={tw`text-xs text-red-400`}>{error.secretCode}</Text>
               <Text>Members</Text>
-              <View style={tw`py-2`}>
+              <ScrollView
+                style={tw`border border-gray-400 min-h-12 mt-2 rounded-lg max-h-64`}
+              >
                 {payload.members?.map(({ name, _id }) => (
                   <Member key={_id} name={name} close={() => remove(_id)} />
                 ))}
-              </View>
+              </ScrollView>
+              <Bicon
+                title="Create"
+                cls="w-full mt-5"
+                txtCls="font-bold text-base"
+                onPress={create}
+              />
             </View>
-            <Bicon
-              title="Create"
-              cls="w-full"
-              txtCls="font-bold text-base"
-              onPress={create}
-            />
           </>
         )}
       </View>

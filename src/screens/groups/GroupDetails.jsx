@@ -8,42 +8,34 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { logoutAPI, profileAPI } from "../../api/auth";
 import Avatar from "../../components/Avatar";
 import ProfileOpt from "../profile/ProfileOpt";
+import { groupDetailsAPI } from "../../api/group";
+import Member from "../../components/Member";
+import EditGroup from "./EditGroup";
 
 const GroupDetails = ({ route, navigation }) => {
+  const { id } = route.params || {};
   const isFocused = useIsFocused();
 
-  const [profile, setProfile] = useState({});
+  const [group, setGroup] = useState({});
+  const [edit, setEdit] = useState();
 
-  const getProfile = async () => {
+  const details = async () => {
     try {
-      const res = await profileAPI();
-      if (res?.status === 200) setProfile(res.data?.data);
-    } catch (error) {
-      console.log(error?.data || error);
-    }
-  };
-
-  const logout = async () => {
-    try {
-      const res = await logoutAPI();
-      if (res?.status === 200) {
-        await AsyncStorage.clear();
-        checkLoggedIn();
-      }
-    } catch (error) {
-      console.log(error?.data || error);
-    }
+      const res = await groupDetailsAPI(id);
+      if (res?.status === 200) setGroup(res.data?.data);
+      else setGroup({});
+    } catch (error) {}
   };
 
   const checkLoggedIn = async () => {
     const loggedIn = await AsyncStorage.getItem("user");
     if (!loggedIn) navigation?.navigate("Login");
-    else getProfile();
+    else details();
   };
 
   useEffect(() => {
-    checkLoggedIn();
-  }, [isFocused]);
+    if (!edit) checkLoggedIn();
+  }, [isFocused, edit]);
 
   return (
     <View>
@@ -52,28 +44,30 @@ const GroupDetails = ({ route, navigation }) => {
       >
         <Text style={tw`text-2xl text-white font-semibold`}>Group Details</Text>
       </View>
-      <View
-        style={tw`p-5 flex flex-row items-center gap-5 border-b border-gray-300 `}
-      >
-        <Avatar value={profile.name} w={20} />
+      <View style={tw`p-5 flex flex-row items-center gap-5`}>
+        <Avatar value={group.name} w={20} />
         <View>
-          <Text style={tw`text-lg font-bold`}>{profile.name}</Text>
-          <Text>{profile.email}</Text>
+          <View style={tw`flex flex-row gap-2 items-center`}>
+            <Text style={tw`text-xl font-bold`}>{group.name}</Text>
+            <IonIcon
+              name="pencil"
+              color={primary}
+              size={20}
+              onPress={() => setEdit(1)}
+            />
+          </View>
+          <Text>{group.members?.length} members</Text>
         </View>
       </View>
-      <ProfileOpt
-        label="Secret Code"
-        value={profile.secretCode}
-        icon="lock-closed"
-      />
-      <ProfileOpt
-        label="Monthly Expense Limit"
-        value="Not Set"
-        icon="calendar-number"
-      />
-      <ProfileOpt label="Change Password" icon="key" />
-      <ProfileOpt label="Delete Account" icon="trash" />
-      <ProfileOpt label="Logout" icon="log-out" onPress={logout} />
+      <Text style={tw`p-2 font-bold border-b border-gray-300`}>Members</Text>
+      <View style={tw`p-2 border-b border-gray-300`}>
+        {group.members?.map(({ name, _id }) => (
+          <Member key={_id} name={name} />
+        ))}
+      </View>
+      {/* <ProfileOpt label="Add new member" icon="add-circle" /> */}
+      <ProfileOpt label="Delete Group" icon="trash" />
+      {edit && <EditGroup cancel={() => setEdit(false)} group={group} />}
     </View>
   );
 };

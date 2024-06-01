@@ -37,6 +37,7 @@ const TabBar = ({ state, descriptors, navigation }) => (
 
       return (
         <TouchableOpacity
+          key={"tabbar-" + index}
           accessibilityRole="button"
           accessibilityState={isFocused ? { selected: true } : {}}
           accessibilityLabel={options.tabBarAccessibilityLabel}
@@ -44,7 +45,7 @@ const TabBar = ({ state, descriptors, navigation }) => (
           onPress={onPress}
           onLongPress={onLongPress}
           style={tw`flex-1 items-center py-2 bg-[${
-            isFocused ? primary : "gray"
+            isFocused ? primary : "#ffffff"
           }]`}
         >
           <IonIcon
