@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Share, Text, View } from "react-native";
 import IonIcon from "@expo/vector-icons/Ionicons";
 import tw from "twrnc";
 import { primary } from "../../utils/common";
@@ -8,11 +8,15 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { logoutAPI, profileAPI } from "../../api/auth";
 import Avatar from "../../components/Avatar";
 import ProfileOpt from "./ProfileOpt";
+import Popup from "../../components/Popup";
+import EditProfile from "./EditProfile";
+import ChangePwd from "./ChangePwd";
+import Bicon from "../../components/Bicon";
 
-const Profile = ({ route, navigation }) => {
+const Profile = ({ navigation }) => {
   const isFocused = useIsFocused();
-
   const [profile, setProfile] = useState({});
+  const [content, setContent] = useState();
 
   const getProfile = async () => {
     try {
@@ -35,6 +39,37 @@ const Profile = ({ route, navigation }) => {
     }
   };
 
+  const confirmLogout = (
+    <View style={tw`p-2`}>
+      <Text style={tw`text-center font-bold text-lg my-5`}>
+        Are you sure you want to logout ?
+      </Text>
+      <View style={tw`flex flex-row justify-between mt-2`}>
+        <Bicon
+          title="No"
+          cls="w-[48%]"
+          bg="#ffffff"
+          txtCls="font-bold text-base"
+          onPress={() => setContent(null)}
+        />
+        <Bicon
+          title="Yes"
+          cls="w-[48%]"
+          txtCls="font-bold text-base"
+          onPress={logout}
+        />
+      </View>
+    </View>
+  );
+
+  const share = async (name, secretCode) => {
+    try {
+      await Share.share({
+        message: `${name}'s secret code is - ${secretCode}`,
+      });
+    } catch (error) {}
+  };
+
   const checkLoggedIn = async () => {
     const loggedIn = await AsyncStorage.getItem("user");
     if (!loggedIn) navigation?.navigate("Login");
@@ -51,6 +86,22 @@ const Profile = ({ route, navigation }) => {
         style={tw`p-2 bg-[${primary}] flex flex-row justify-between items-center`}
       >
         <Text style={tw`text-2xl text-white font-semibold`}>Profile</Text>
+        <IonIcon
+          name="pencil"
+          size={20}
+          color="white"
+          onPress={() =>
+            setContent(
+              <EditProfile
+                profile={profile}
+                cancel={() => {
+                  setContent(null);
+                  getProfile();
+                }}
+              />
+            )
+          }
+        />
       </View>
       <View
         style={tw`p-5 flex flex-row items-center gap-5 border-b border-gray-300 `}
@@ -65,15 +116,45 @@ const Profile = ({ route, navigation }) => {
         label="Secret Code"
         value={profile.secretCode}
         icon="lock-closed"
+        onPress={() => share(profile.name, profile.secretCode)}
       />
       <ProfileOpt
         label="Monthly Expense Limit"
-        value="Not Set"
+        value={profile.monthlyLimit || "Not Set"}
         icon="calendar-number"
       />
-      <ProfileOpt label="Change Password" icon="key" />
-      <ProfileOpt label="Delete Account" icon="trash" />
-      <ProfileOpt label="Logout" icon="log-out" onPress={logout} />
+      <ProfileOpt
+        label="Notifications"
+        icon="notifications"
+        onPress={() => navigation?.navigate("Notifications")}
+        extra={
+          !!profile?.unreadAlertsCount && (
+            <Text
+              style={tw`font-bold text-xs bg-[${primary}] px-1.5 py-.5 rounded-full text-white`}
+            >
+              {profile?.unreadAlertsCount}
+            </Text>
+          )
+        }
+      />
+      <ProfileOpt
+        label="Change Password"
+        icon="key"
+        onPress={() =>
+          setContent(<ChangePwd cancel={() => setContent(null)} />)
+        }
+      />
+      <ProfileOpt
+        label="Delete Account"
+        icon="trash"
+        onPress={() => alert("Not available yet")}
+      />
+      <ProfileOpt
+        label="Logout"
+        icon="log-out"
+        onPress={() => setContent(confirmLogout)}
+      />
+      {content && <Popup content={content} />}
     </View>
   );
 };

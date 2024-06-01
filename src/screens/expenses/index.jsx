@@ -71,7 +71,9 @@ const Expenses = ({ route, navigation }) => {
         {to !== expenseTypes.own && (
           <Pressable
             style={tw`p-2 bg-[${primary}] w-1/2`}
-            onPress={() => navigation.navigate("GroupDetails")}
+            onPress={() =>
+              navigation.navigate("GroupDetails", { id: data?._id })
+            }
           >
             <Text
               numberOfLines={1}
@@ -102,10 +104,10 @@ const Expenses = ({ route, navigation }) => {
         }
       >
         {list?.length ? (
-          list.map((data) => (
+          list.map((data, i) => (
             <SwipeComp
               data={data}
-              key={data?.createdAt}
+              key={"swiipee-" + i}
               swiped={swiped}
               setSwiped={setSwiped}
               me={me}
@@ -124,7 +126,7 @@ const Expenses = ({ route, navigation }) => {
         )}
       </ScrollView>
       <Pressable
-        style={tw`absolute bottom-8 right-3 bg-[${primary}] p-4 rounded-full shadow`}
+        style={tw`absolute bottom-12 right-3 bg-[${primary}] p-4 rounded-full shadow`}
         onPress={() => setVisible(data || to)}
       >
         <IonIcon color="white" name="add" size={28} />

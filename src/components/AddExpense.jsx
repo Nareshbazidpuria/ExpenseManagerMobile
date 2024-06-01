@@ -113,11 +113,10 @@ const AddExpense = ({ visible, setVisible, setRefresh, edit, setEdit }) => {
           ) : (
             <>
               <Text style={tw`text-center mb-5 text-xl font-semibold`}>
-                {edit ? "Edit" : "Add"} Expenses (
-                {{ [expenseTypes.own]: "Own", [expenseTypes.team]: "Team" }[
-                  to
-                ] || (typeof visible === "object" ? visible.name : to)}
-                )
+                {edit ? "Edit" : "Add"} Expenses
+                {to === expenseTypes.own
+                  ? " (Own)"
+                  : typeof visible === "object" && ` (${visible.name})`}
               </Text>
               <View style={tw``}>
                 <View style={tw`p-4`}>
@@ -125,26 +124,22 @@ const AddExpense = ({ visible, setVisible, setRefresh, edit, setEdit }) => {
                   <TextInput
                     style={tw`border-b border-gray-400 `}
                     keyboardType="numeric"
+                    inputMode="numeric"
                     value={payload.amount?.toString()}
                     onChangeText={(amount) =>
-                      setPayload({ ...payload, amount: parseInt(amount || 0) })
+                      setPayload({
+                        ...payload,
+                        amount: isNaN(parseInt(amount || 0))
+                          ? 0
+                          : parseInt(amount || 0),
+                      })
                     }
                   />
-                  <Text style={tw` text-xs text-red-400`}>{error.amount}</Text>
+                  <Text style={tw`text-xs text-red-400`}>{error.amount}</Text>
                   <Text>Purpose</Text>
-                  <SelectDropdown
-                    data={addOptions}
-                    onSelect={(purpose) => setPayload({ ...payload, purpose })}
-                    buttonStyle={tw`w-full bg-white border-b p-0 border-gray-400 text-sm `}
-                    rowStyle={tw`p-0`}
-                    rowTextStyle={tw`text-sm m-0 text-left pl-2`}
-                    buttonTextStyle={tw`text-sm m-0 text-left`}
-                    defaultValue={payload?.purpose}
-                  />
-                  <Text style={tw` text-xs text-red-400`}>{error.purpose}</Text>
-                  {payload.purpose === "Write your own ..." && (
+                  {payload.purpose === "Write your own ..." ? (
                     <>
-                      <Text>Other</Text>
+                      {/* <Text>Other</Text> */}
                       <TextInput
                         ref={other}
                         style={tw`border-b border-gray-400 `}
@@ -156,6 +151,24 @@ const AddExpense = ({ visible, setVisible, setRefresh, edit, setEdit }) => {
                       />
                       <Text style={tw` text-xs text-red-400`}>
                         {error.additional}
+                      </Text>
+                    </>
+                  ) : (
+                    <>
+                      {/* <Text>Purpose</Text> */}
+                      <SelectDropdown
+                        data={addOptions}
+                        onSelect={(purpose) =>
+                          setPayload({ ...payload, purpose })
+                        }
+                        buttonStyle={tw`w-full bg-white border-b p-0 border-gray-400 text-sm `}
+                        rowStyle={tw`p-0`}
+                        rowTextStyle={tw`text-sm m-0 text-left pl-2`}
+                        buttonTextStyle={tw`text-sm m-0 text-left`}
+                        defaultValue={payload?.purpose}
+                      />
+                      <Text style={tw` text-xs text-red-400`}>
+                        {error.purpose}
                       </Text>
                     </>
                   )}

@@ -11,40 +11,16 @@ import { useEffect, useState } from "react";
 import Collapse from "./Collapse";
 import TotalTeam from "./TotalTeam";
 import TotalOwn from "./TotalOwn";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { users } from "../../utils/common";
-import { groupListAPI, individualAPI } from "../../api/apis";
-import Individual from "./Individual";
+import { groupListAPI } from "../../api/apis";
+import { useIsFocused } from "@react-navigation/native";
 
 const Report = () => {
+  const isFocused = useIsFocused();
   const [date, setDate] = useState();
   const [refreshing, setRefreshing] = useState(false);
-  const [individual, setIndividual] = useState([]);
-  const [me, setMe] = useState();
   const [refresh, setRefresh] = useState();
   const [list, setList] = useState([]);
-  const [collapsed, setCollapsed] = useState({
-    1: false,
-    2: false,
-    3: false,
-    4: false,
-    5: false,
-    6: false,
-    7: false,
-    8: false,
-    9: false,
-  });
-
-  const getIndividual = async () => {
-    let data = [];
-    try {
-      const res = await individualAPI({ date });
-      if (res?.status === 200) data = res.data?.data;
-    } catch (error) {
-    } finally {
-      setIndividual(data);
-    }
-  };
+  const [collapsed, setCollapsed] = useState({});
 
   const groupList = async () => {
     let data = [];
@@ -57,26 +33,22 @@ const Report = () => {
     } finally {
       setList(data);
       setRefreshing(false);
+      setTimeout(() => {
+        const col = { 1: false };
+        data?.forEach?.((_, i) => (col[i + 2] = false));
+        setCollapsed(col);
+      }, 200);
     }
   };
 
   useEffect(() => {
     groupList();
-    getIndividual();
   }, [date]);
 
   useEffect(() => {
-    if (refresh) {
-      getIndividual();
-      groupList();
-    }
-  }, [refresh]);
-
-  useEffect(() => {
-    AsyncStorage.getItem("user").then((user) =>
-      setMe(JSON.parse(user || "{}"))
-    );
-  }, []);
+    if (refresh || isFocused) groupList();
+    else if (!isFocused) setCollapsed({});
+  }, [refresh, isFocused]);
 
   return (
     <View>
@@ -114,6 +86,7 @@ const Report = () => {
             col={collapsed}
             setCol={setCollapsed}
             Key={i + 2}
+            key={i + 2}
             child={<TotalTeam date={date} refresh={refresh} group={group} />}
           />
         ))}
