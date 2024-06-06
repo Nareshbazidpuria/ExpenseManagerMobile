@@ -2,7 +2,7 @@ import { Pressable, Text, View } from "react-native";
 import tw from "twrnc";
 import IonIcon from "@expo/vector-icons/Ionicons";
 
-const ProfileOpt = ({ label, icon, onPress, value, extra }) => (
+const ProfileOpt = ({ label, icon, onPress, value, extra, extraValue }) => (
   <Pressable
     style={tw`px-5 py-2 border-b border-gray-300 flex flex-row items-center gap-5`}
     onPress={onPress}
@@ -15,6 +15,7 @@ const ProfileOpt = ({ label, icon, onPress, value, extra }) => (
           {value}
         </Text>
       )}
+      {extraValue}
     </View>
     {extra}
   </Pressable>

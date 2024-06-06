@@ -11,6 +11,7 @@ import Profile from "./src/screens/profile";
 import CreateGroup from "./src/screens/groups/CreateGroup";
 import GroupDetails from "./src/screens/groups/GroupDetails";
 import Notifications from "./src/screens/notifications";
+import ForgotPwd from "./src/screens/forgotPwd";
 
 export let navigateRef;
 
@@ -46,6 +47,7 @@ const App = () => {
         <Stack.Screen name="CreateGroup" component={CreateGroup} />
         <Stack.Screen name="GroupDetails" component={GroupDetails} />
         <Stack.Screen name="Notifications" component={Notifications} />
+        <Stack.Screen name="ForgotPwd" component={ForgotPwd} />
       </Stack.Navigator>
     </NavigationContainer>
   );

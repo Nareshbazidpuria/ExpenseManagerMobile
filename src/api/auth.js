@@ -13,4 +13,6 @@ export const loginAPI = (payload) => Axios.post(login, payload);
 export const profileAPI = () => Axios.get(profile);
 export const editProfileAPI = (payload) => Axios.put(profile, payload);
 export const changePwdAPI = (payload) => Axios.post(changePwd, payload);
+export const forgotPwdAPI = (payload) => Axios.post(forgotPwd, payload);
+export const resetPwdAPI = (payload) => Axios.post(resetPwd, payload);
 export const logoutAPI = () => Axios.post(logout);

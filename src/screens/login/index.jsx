@@ -152,6 +152,14 @@ const LoginSignup = ({ navigation }) => {
                 checkBoxColor={primary}
                 rightText="Show Password"
               />
+              <Text
+                style={tw`font-semibold text-xs text-[${primary}] text-right`}
+                onPress={() =>
+                  navigation?.navigate("ForgotPwd", payload?.email)
+                }
+              >
+                Forgot password ?
+              </Text>
             </View>
             <Bicon
               title={signUp ? "Signup" : "Login"}
