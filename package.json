@@ -24,10 +24,12 @@
     "react-native": "0.73.6",
     "react-native-check-box": "^2.1.7",
     "react-native-collapsible": "^1.6.1",
+    "react-native-otp-textinput": "^1.1.5",
     "react-native-safe-area-context": "^4.9.0",
     "react-native-screens": "^3.29.0",
     "react-native-select-dropdown": "^3.4.0",
     "react-native-swipeable": "^0.6.0",
+    "rn-inkpad": "^1.0.0",
     "twrnc": "^4.2.0"
   },
   "devDependencies": {

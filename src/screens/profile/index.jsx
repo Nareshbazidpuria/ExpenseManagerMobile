@@ -1,4 +1,4 @@
-import { Pressable, Share, Text, View } from "react-native";
+import { Dimensions, Pressable, Share, Text, View } from "react-native";
 import IonIcon from "@expo/vector-icons/Ionicons";
 import tw from "twrnc";
 import { primary } from "../../utils/common";
@@ -12,6 +12,8 @@ import Popup from "../../components/Popup";
 import EditProfile from "./EditProfile";
 import ChangePwd from "./ChangePwd";
 import Bicon from "../../components/Bicon";
+import { ProgressBar } from "rn-inkpad";
+import ConfirmLogout from "./ConfirmLogout";
 
 const Profile = ({ navigation }) => {
   const isFocused = useIsFocused();
@@ -32,35 +34,13 @@ const Profile = ({ navigation }) => {
       const res = await logoutAPI();
       if (res?.status === 200) {
         await AsyncStorage.clear();
+        setContent(null);
         checkLoggedIn();
       }
     } catch (error) {
       console.log(error?.data || error);
     }
   };
-
-  const confirmLogout = (
-    <View style={tw`p-2`}>
-      <Text style={tw`text-center font-bold text-lg my-5`}>
-        Are you sure you want to logout ?
-      </Text>
-      <View style={tw`flex flex-row justify-between mt-2`}>
-        <Bicon
-          title="No"
-          cls="w-[48%]"
-          bg="#ffffff"
-          txtCls="font-bold text-base"
-          onPress={() => setContent(null)}
-        />
-        <Bicon
-          title="Yes"
-          cls="w-[48%]"
-          txtCls="font-bold text-base"
-          onPress={logout}
-        />
-      </View>
-    </View>
-  );
 
   const share = async (name, secretCode) => {
     try {
@@ -120,8 +100,29 @@ const Profile = ({ navigation }) => {
       />
       <ProfileOpt
         label="Monthly Expense Limit"
-        value={profile.monthlyLimit || "Not Set"}
+        value={!profile.monthlyLimit && "Not Set"}
         icon="calendar-number"
+        extraValue={
+          !!profile.monthlyLimit && (
+            <View
+              style={tw`mt-2 w-[${
+                Dimensions.get("screen").width / 4 - 65
+              }] flex flex-row gap-2 items-center`}
+            >
+              <ProgressBar
+                value={(profile.totalExpenses / profile.monthlyLimit) * 100}
+                rounded
+                progressColor={
+                  profile.totalExpenses > profile.monthlyLimit ? "red" : primary
+                }
+                textColor="#21295C"
+              />
+              <Text style={tw`font-bold text-xs`}>
+                {profile.totalExpenses}/{profile.monthlyLimit}
+              </Text>
+            </View>
+          )
+        }
       />
       <ProfileOpt
         label="Notifications"
@@ -152,7 +153,9 @@ const Profile = ({ navigation }) => {
       <ProfileOpt
         label="Logout"
         icon="log-out"
-        onPress={() => setContent(confirmLogout)}
+        onPress={() =>
+          setContent(<ConfirmLogout setContent={setContent} logout={logout} />)
+        }
       />
       {content && <Popup content={content} />}
     </View>
