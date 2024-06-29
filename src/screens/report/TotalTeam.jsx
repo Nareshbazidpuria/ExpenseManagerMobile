@@ -42,9 +42,11 @@ const TotalTeam = ({ date, refresh, group }) => {
           </View>
           <View style={tw`flex flex-row items-center justify-between`}>
             <Text style={tw`font-semibold text-xs`}>Total: ₹{data?.total}</Text>
-            <Text style={tw`font-semibold text-xs`}>
-              Per Person: ₹{(data.third || 0)?.toFixed(2)}
-            </Text>
+            {group?.members?.length > 2 && (
+              <Text style={tw`font-semibold text-xs`}>
+                Per Person: ₹{(data.third || 0)?.toFixed(2)}
+              </Text>
+            )}
             <View style={tw`flex flex-row gap-1 items-center`}>
               <Text style={tw`font-semibold text-xs`}>Remaining:</Text>
               <Text

@@ -13,6 +13,7 @@ import Bicon from "../../components/Bicon";
 import Member from "../../components/Member";
 import { createGroupAPI, getMemberAPI } from "../../api/group";
 import Avatar from "../../components/Avatar";
+import Info from "../../components/Info";
 
 const CreateGroup = ({ navigation }) => {
   const message = (msg) => ToastAndroid.show(msg, ToastAndroid.LONG);
@@ -125,7 +126,7 @@ const CreateGroup = ({ navigation }) => {
                 onChangeText={(name) => setPayload({ ...payload, name })}
               />
               <Text style={tw`text-xs text-red-400`}>{error.name}</Text>
-              <Text>Secret Code</Text>
+              <Text>Member's Secret Code</Text>
               <TextInput
                 style={tw`border-b border-gray-400 `}
                 value={payload.secretCode}
@@ -137,6 +138,7 @@ const CreateGroup = ({ navigation }) => {
               <ScrollView
                 style={tw`border border-gray-400 min-h-12 mt-2 rounded-lg max-h-64`}
               >
+                <Member key={"_id"} name={"You"} />
                 {payload.members?.map(({ name, _id }) => (
                   <Member key={_id} name={name} close={() => remove(_id)} />
                 ))}
@@ -151,6 +153,7 @@ const CreateGroup = ({ navigation }) => {
           </>
         )}
       </View>
+      <Info />
     </View>
   );
 };
