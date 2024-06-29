@@ -1,11 +1,10 @@
-import { Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import IonIcon from "@expo/vector-icons/Ionicons";
 import tw from "twrnc";
 import { primary } from "../../utils/common";
 import { useEffect, useState } from "react";
 import { useIsFocused } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { logoutAPI, profileAPI } from "../../api/auth";
 import Avatar from "../../components/Avatar";
 import ProfileOpt from "../profile/ProfileOpt";
 import { groupDetailsAPI } from "../../api/group";

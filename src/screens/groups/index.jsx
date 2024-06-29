@@ -25,6 +25,7 @@ const Groups = ({ navigation }) => {
   const [me, setMe] = useState();
   const [list, setList] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [visible, setVisible] = useState();
 
   const groupList = async () => {
     let data = [];
@@ -65,7 +66,7 @@ const Groups = ({ navigation }) => {
   useEffect(() => {
     groupList();
     getUnreadNotificationsCount();
-  }, [isFocused]);
+  }, [isFocused, visible]);
 
   return (
     <View>
@@ -74,7 +75,7 @@ const Groups = ({ navigation }) => {
       >
         <Text style={tw`text-2xl text-white font-semibold`}>Groups</Text>
         {me && (
-          <View style={tw`flex flex-row items-center`}>
+          <View style={tw`flex flex-row items-center gap-1`}>
             <Text
               style={tw`text-base text-white font-normal`}
               onPress={() => navigation.navigate("Profile")}
@@ -85,7 +86,7 @@ const Groups = ({ navigation }) => {
               </Text>
             </Text>
             {!!unreadCount && (
-              <View style={tw`bg-white rounded-full px-1 py-.5`}>
+              <View style={tw`bg-white rounded-full px-1.7 py-.5`}>
                 <Text style={tw`text-xs font-semibold text-[${primary}]`}>
                   {unreadCount}
                 </Text>
@@ -107,9 +108,33 @@ const Groups = ({ navigation }) => {
         }
       >
         {list?.length ? (
-          list.map((data, i) => (
-            <Group key={"groups-" + i} data={data} navigation={navigation} />
-          ))
+          <>
+            {list.map(
+              (data, i) =>
+                data?.members?.length > 2 && (
+                  <Group
+                    key={"groups-" + i}
+                    data={data}
+                    navigation={navigation}
+                  />
+                )
+            )}
+            <Text
+              style={tw`p-2 text-base bg-[${primary}] text-white font-bold`}
+            >
+              Personal
+            </Text>
+            {list.map(
+              (data, i) =>
+                data?.members?.length === 2 && (
+                  <Group
+                    key={"groups-" + i}
+                    data={data}
+                    navigation={navigation}
+                  />
+                )
+            )}
+          </>
         ) : (
           <View
             style={tw`flex h-[${
@@ -120,7 +145,7 @@ const Groups = ({ navigation }) => {
           </View>
         )}
       </ScrollView>
-      <NoInternet />
+      <NoInternet visible={visible} setVisible={setVisible} />
       <Pressable
         style={tw`absolute bottom-8 right-3 bg-[${primary}] p-4 rounded-full shadow`}
         onPress={() => navigation.navigate("CreateGroup")}

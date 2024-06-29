@@ -73,23 +73,52 @@ const Report = () => {
           Key={1}
           child={<TotalOwn date={date} refresh={refresh} />}
         />
-        {(list || []).map((group, i) => (
-          <Collapse
-            title={
-              <>
-                {group?.name}
-                <Text style={tw`text-gray-300`}>
-                  &nbsp;({group?.members?.length} members)
-                </Text>
-              </>
-            }
-            col={collapsed}
-            setCol={setCollapsed}
-            Key={i + 2}
-            key={i + 2}
-            child={<TotalTeam date={date} refresh={refresh} group={group} />}
-          />
-        ))}
+        {(list || []).map(
+          (group, i) =>
+            group?.members?.length > 2 && (
+              <Collapse
+                title={
+                  <>
+                    {group?.name}
+                    <Text style={tw`text-gray-300`}>
+                      &nbsp;({group?.members?.length} members)
+                    </Text>
+                  </>
+                }
+                col={collapsed}
+                setCol={setCollapsed}
+                Key={i + 2}
+                key={i + 2}
+                child={
+                  <TotalTeam date={date} refresh={refresh} group={group} />
+                }
+              />
+            )
+        )}
+        {(list || []).map(
+          (group, i) =>
+            group?.members?.length === 2 && (
+              <Collapse
+                title={
+                  group?.memberss?.[0]?.name || (
+                    <>
+                      {group?.name}
+                      <Text style={tw`text-gray-300`}>
+                        &nbsp;({group?.members?.length} members)
+                      </Text>
+                    </>
+                  )
+                }
+                col={collapsed}
+                setCol={setCollapsed}
+                Key={i + 2}
+                key={i + 2}
+                child={
+                  <TotalTeam date={date} refresh={refresh} group={group} />
+                }
+              />
+            )
+        )}
       </ScrollView>
     </View>
   );

@@ -1,4 +1,4 @@
-import { Dimensions, Pressable, Share, Text, View } from "react-native";
+import { Dimensions, Share, Text, View } from "react-native";
 import IonIcon from "@expo/vector-icons/Ionicons";
 import tw from "twrnc";
 import { primary } from "../../utils/common";
@@ -11,7 +11,6 @@ import ProfileOpt from "./ProfileOpt";
 import Popup from "../../components/Popup";
 import EditProfile from "./EditProfile";
 import ChangePwd from "./ChangePwd";
-import Bicon from "../../components/Bicon";
 import { ProgressBar } from "rn-inkpad";
 import ConfirmLogout from "./ConfirmLogout";
 

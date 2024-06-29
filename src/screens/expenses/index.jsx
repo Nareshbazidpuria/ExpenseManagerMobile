@@ -72,6 +72,7 @@ const Expenses = ({ route, navigation }) => {
           <Pressable
             style={tw`p-2 bg-[${primary}] w-1/2`}
             onPress={() =>
+              !data?.memberss?.[0]?.name &&
               navigation.navigate("GroupDetails", { id: data?._id })
             }
           >
@@ -79,11 +80,13 @@ const Expenses = ({ route, navigation }) => {
               numberOfLines={1}
               style={tw`text-lg text-white font-semibold`}
             >
-              {to}
+              {data?.memberss?.[0]?.name || to}
             </Text>
-            <Text style={tw`text-xs text-white`}>
-              {data?.members?.length} members
-            </Text>
+            {!data?.memberss?.[0]?.name && (
+              <Text style={tw`text-xs text-white`}>
+                {data?.members?.length} members
+              </Text>
+            )}
           </Pressable>
         )}
         <TopBar

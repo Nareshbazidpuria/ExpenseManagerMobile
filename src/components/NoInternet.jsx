@@ -6,9 +6,7 @@ import { useEffect, useState } from "react";
 import NetInfo from "@react-native-community/netinfo";
 import offline from "../assets/offline.gif";
 
-const NoInternet = () => {
-  const [visible, setVisible] = useState();
-
+const NoInternet = ({ visible, setVisible }) => {
   useEffect(() => {
     if (!visible)
       NetInfo.fetch().then(({ isConnected }) => {
@@ -20,7 +18,7 @@ const NoInternet = () => {
     <Modal animationType="slide" transparent={true} visible={visible}>
       <View
         style={tw`bg-[${primary}] flex items-center justify-center h-[${
-          Dimensions.get("screen").height / 4
+          Dimensions.get("window").height / 4
         }]`}
       >
         <View

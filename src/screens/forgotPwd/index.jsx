@@ -13,7 +13,7 @@ import Bicon from "../../components/Bicon";
 import { Keyboard } from "react-native";
 import { forgotPwdAPI, resetPwdAPI } from "../../api/auth";
 import CheckBox from "react-native-check-box";
-import OTPTextInput from "react-native-otp-textinput";
+// import OTPTextInput from "react-native-otp-textinput";
 
 const ForgotPwd = ({ route, navigation }) => {
   const message = (msg) => ToastAndroid.show(msg, ToastAndroid.LONG);
@@ -93,12 +93,17 @@ const ForgotPwd = ({ route, navigation }) => {
               {otpSent ? (
                 <>
                   <Text>Enter OTP</Text>
-                  <OTPTextInput
+                  {/* <OTPTextInput
                     defaultValue={payload.otp}
                     inputCount={6}
                     textInputStyle={tw`w-8`}
                     tintColor={primary}
                     handleTextChange={(otp) => setPayload({ ...payload, otp })}
+                  /> */}
+                  <TextInput
+                    value={payload.otp}
+                    style={tw`border-b border-gray-400 `}
+                    onChangeText={(otp) => setPayload({ ...payload, otp })}
                   />
                   <Text style={tw`text-xs text-red-400`}>{error.otp}</Text>
                   <Text>Enter new password</Text>

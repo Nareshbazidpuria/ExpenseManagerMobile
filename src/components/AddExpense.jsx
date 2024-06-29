@@ -127,7 +127,8 @@ const AddExpense = ({ visible, setVisible, setRefresh, edit, setEdit }) => {
                   {edit ? "Edit" : "Add"} Expenses
                   {to === expenseTypes.own
                     ? " (Own)"
-                    : typeof visible === "object" && ` (${visible.name})`}
+                    : typeof visible === "object" &&
+                      ` (${visible?.memberss?.[0]?.name || visible.name})`}
                 </Text>
                 <View style={tw``}>
                   <View style={tw`p-4`}>
