@@ -10,11 +10,11 @@ export const Axios = axios.create({ baseURL });
 Axios.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error?.response?.data?.data?.update)
-      navigateRef?.current.navigate(
-        "DownloadApk",
-        error?.response?.data?.data?.update
-      );
+    // if (error?.response?.data?.data?.update)
+    //   navigateRef?.current.navigate(
+    //     "DownloadApk",
+    //     error?.response?.data?.data?.update
+    //   );
 
     if (error?.response?.status === 401) {
       await AsyncStorage.clear();

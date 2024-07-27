@@ -12,7 +12,7 @@ import CreateGroup from "./src/screens/groups/CreateGroup";
 import GroupDetails from "./src/screens/groups/GroupDetails";
 import Notifications from "./src/screens/notifications";
 import ForgotPwd from "./src/screens/forgotPwd";
-import DownloadApk from "./src/components/DownloadApk";
+// import DownloadApk from "./src/components/DownloadApk";
 
 export let navigateRef;
 
@@ -49,7 +49,7 @@ const App = () => {
         <Stack.Screen name="GroupDetails" component={GroupDetails} />
         <Stack.Screen name="Notifications" component={Notifications} />
         <Stack.Screen name="ForgotPwd" component={ForgotPwd} />
-        <Stack.Screen name="DownloadApk" component={DownloadApk} />
+        {/* <Stack.Screen name="DownloadApk" component={DownloadApk} /> */}
       </Stack.Navigator>
     </NavigationContainer>
   );
