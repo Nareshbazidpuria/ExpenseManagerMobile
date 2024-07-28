@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { totalTeamAPI } from "../../api/apis";
 import { useIsFocused } from "@react-navigation/native";
 
-const TotalTeam = ({ date, refresh, group }) => {
+const TotalTeam = ({ date, refresh, group, grpData }) => {
   const isFocused = useIsFocused();
   const [data, setData] = useState({});
 
@@ -18,6 +18,8 @@ const TotalTeam = ({ date, refresh, group }) => {
     } catch (error) {
     } finally {
       setData(Data);
+      if (!Object.keys(Data || {}).length)
+        grpData?.[1]?.({ ...grpData?.[0], [group._id]: "empty" });
     }
   };
 

@@ -14,15 +14,17 @@ import TotalOwn from "./TotalOwn";
 import { groupListAPI } from "../../api/apis";
 import { useIsFocused } from "@react-navigation/native";
 
-const Report = () => {
-  const isFocused = useIsFocused();
-  const [date, setDate] = useState();
-  const [refreshing, setRefreshing] = useState(false);
-  const [refresh, setRefresh] = useState();
-  const [list, setList] = useState([]);
-  const [collapsed, setCollapsed] = useState({});
+const Report = ({ navigation }) => {
+  const isFocused = useIsFocused(),
+    [date, setDate] = useState(),
+    [refreshing, setRefreshing] = useState(false),
+    [refresh, setRefresh] = useState(),
+    [list, setList] = useState([]),
+    [collapsed, setCollapsed] = useState({}),
+    [data, setData] = useState({});
 
   const groupList = async () => {
+    setData({});
     let data = [];
     try {
       setRefreshing(true);
@@ -75,32 +77,51 @@ const Report = () => {
         />
         {(list || []).map(
           (group, i) =>
-            group?.members?.length > 2 && (
+            group?.members?.length > 2 &&
+            data[group._id] !== "empty" && (
               <Collapse
                 title={
-                  <>
+                  <Text
+                    onPress={() =>
+                      navigation.navigate("Expenses", { data: group })
+                    }
+                  >
                     {group?.name}
                     <Text style={tw`text-gray-300`}>
                       &nbsp;({group?.members?.length} members)
                     </Text>
-                  </>
+                  </Text>
                 }
                 col={collapsed}
                 setCol={setCollapsed}
                 Key={i + 2}
                 key={i + 2}
                 child={
-                  <TotalTeam date={date} refresh={refresh} group={group} />
+                  <TotalTeam
+                    date={date}
+                    refresh={refresh}
+                    group={group}
+                    grpData={[data, setData]}
+                  />
                 }
               />
             )
         )}
         {(list || []).map(
           (group, i) =>
-            group?.members?.length === 2 && (
+            group?.members?.length === 2 &&
+            data[group._id] !== "empty" && (
               <Collapse
                 title={
-                  group?.memberss?.[0]?.name || (
+                  group?.memberss?.[0]?.name ? (
+                    <Text
+                      onPress={() =>
+                        navigation.navigate("Expenses", { data: group })
+                      }
+                    >
+                      {group?.memberss?.[0]?.name}
+                    </Text>
+                  ) : (
                     <>
                       {group?.name}
                       <Text style={tw`text-gray-300`}>
@@ -114,7 +135,12 @@ const Report = () => {
                 Key={i + 2}
                 key={i + 2}
                 child={
-                  <TotalTeam date={date} refresh={refresh} group={group} />
+                  <TotalTeam
+                    date={date}
+                    refresh={refresh}
+                    group={group}
+                    grpData={[data, setData]}
+                  />
                 }
               />
             )
