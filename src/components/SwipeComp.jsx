@@ -9,7 +9,7 @@ import IonIcon from "@expo/vector-icons/Ionicons";
 import Swipeable from "react-native-swipeable";
 import { useEffect, useState } from "react";
 import PurchageItem from "./PurchaseItem";
-import { deleteExpenseAPI } from "../api/apis";
+import { deleteExpenseAPI, verifyExpenseAPI } from "../api/apis";
 
 const SwipeComp = ({ data, swiped, setSwiped, me, setDeleted, setEdit }) => {
   const message = (msg) => ToastAndroid.show(msg, ToastAndroid.LONG);
@@ -29,6 +29,22 @@ const SwipeComp = ({ data, swiped, setSwiped, me, setDeleted, setEdit }) => {
     } finally {
       setLoading(false);
       if (swipeable) swipeable.recenter();
+    }
+  };
+
+  const verifyExpense = async () => {
+    try {
+      setLoading(true);
+      const res = await verifyExpenseAPI(data?._id);
+      if (res?.status === 200) {
+        message(res?.data?.message);
+        setDeleted(Date.now());
+      }
+    } catch (error) {
+      if (error?.data?.message) message(error.data.message);
+      else console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -74,10 +90,15 @@ const SwipeComp = ({ data, swiped, setSwiped, me, setDeleted, setEdit }) => {
         useNativeDriver: true,
       }}
     >
-      <PurchageItem data={data} />
+      <PurchageItem data={data} me={me} />
     </Swipeable>
   ) : (
-    <PurchageItem data={data} />
+    <PurchageItem
+      data={data}
+      loading={loading}
+      verifyExpense={verifyExpense}
+      me={me}
+    />
   );
 };
 
