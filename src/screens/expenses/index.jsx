@@ -97,7 +97,7 @@ const Expenses = ({ route, navigation }) => {
       </View>
       <ScrollView
         style={tw`h-[${
-          (Dimensions.get("window").height * (data ? 0.96 : 0.9)) / 4
+          (Dimensions.get("window").height * (data ? 0.92 : 0.9)) / 4
         }]`}
         refreshControl={
           <RefreshControl
@@ -128,12 +128,14 @@ const Expenses = ({ route, navigation }) => {
           </View>
         )}
       </ScrollView>
-      <Pressable
-        style={tw`absolute bottom-12 right-3 bg-[${primary}] p-4 rounded-full shadow`}
-        onPress={() => setVisible(data || to)}
-      >
-        <IonIcon color="white" name="add" size={28} />
-      </Pressable>
+      <View style={tw`absolute bottom-5 flex items-center w-full`}>
+        <Pressable
+          style={tw`bg-[${primary}] p-4 rounded-full shadow`}
+          onPress={() => setVisible(data || to)}
+        >
+          <IonIcon color="white" name="add" size={28} />
+        </Pressable>
+      </View>
       <AddExpense
         visible={visible}
         setVisible={setVisible}
