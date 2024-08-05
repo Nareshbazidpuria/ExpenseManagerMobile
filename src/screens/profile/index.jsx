@@ -5,7 +5,7 @@ import { primary } from "../../utils/common";
 import { useEffect, useState } from "react";
 import { useIsFocused } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { logoutAPI, profileAPI } from "../../api/auth";
+import { editProfileAPI, logoutAPI, profileAPI } from "../../api/auth";
 import Avatar from "../../components/Avatar";
 import ProfileOpt from "./ProfileOpt";
 import Popup from "../../components/Popup";
@@ -13,6 +13,7 @@ import EditProfile from "./EditProfile";
 import ChangePwd from "./ChangePwd";
 import { ProgressBar } from "rn-inkpad";
 import ConfirmLogout from "./ConfirmLogout";
+import HiddenGroups from "./HiddenGroups";
 
 const Profile = ({ navigation }) => {
   const isFocused = useIsFocused();
@@ -25,6 +26,24 @@ const Profile = ({ navigation }) => {
       if (res?.status === 200) setProfile(res.data?.data);
     } catch (error) {
       console.log(error?.data || error);
+    }
+  };
+
+  const unhide = async (selected) => {
+    try {
+      const res = await editProfileAPI({
+        type: "unhide",
+        hiddenGroups: profile.hiddenGroups?.filter(
+          (id) => !selected.includes(id)
+        ),
+      });
+      if (res?.status === 200) {
+        getProfile();
+        setContent(null);
+      }
+    } catch (error) {
+      if (error?.data?.message) message(error.data.message);
+      else console.log(error);
     }
   };
 
@@ -148,6 +167,19 @@ const Profile = ({ navigation }) => {
         label="Delete Account"
         icon="trash"
         onPress={() => alert("Not available yet")}
+      />
+      <ProfileOpt
+        label="Hidden Groups"
+        icon="eye-off"
+        onPress={() =>
+          setContent(
+            <HiddenGroups
+              setContent={setContent}
+              hiddenGroups={profile.hiddenGroups}
+              unhide={unhide}
+            />
+          )
+        }
       />
       <ProfileOpt
         label="Logout"
