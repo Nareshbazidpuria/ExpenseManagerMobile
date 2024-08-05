@@ -1,20 +1,14 @@
-import { TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import IonIcon from "@expo/vector-icons/Ionicons";
 import tw from "twrnc";
 import { primary } from "../utils/common";
 
 const TabBar = ({ state, descriptors, navigation }) => (
-  <View style={tw`flex-row bg-white`}>
+  <View style={tw`flex-row bg-white items-end h-15`}>
     {state.routes.map((route, index) => {
-      const { options } = descriptors[route.key];
-      const label =
-        options.tabBarLabel !== undefined
-          ? options.tabBarLabel
-          : options.title !== undefined
-          ? options.title
-          : route.name;
-
-      const isFocused = state.index === index;
+      const { options } = descriptors[route.key],
+        label = options.tabBarLabel || options.title || route.name,
+        isFocused = state.index === index;
 
       const onPress = () => {
         const event = navigation.emit({
@@ -28,13 +22,6 @@ const TabBar = ({ state, descriptors, navigation }) => (
         }
       };
 
-      const onLongPress = () => {
-        navigation.emit({
-          type: "tabLongPress",
-          target: route.key,
-        });
-      };
-
       return (
         <TouchableOpacity
           key={"tabbar-" + index}
@@ -43,23 +30,31 @@ const TabBar = ({ state, descriptors, navigation }) => (
           accessibilityLabel={options.tabBarAccessibilityLabel}
           testID={options.tabBarTestID}
           onPress={onPress}
-          onLongPress={onLongPress}
-          style={tw`flex-1 items-center py-2 bg-[${
-            isFocused ? primary : "#ffffff"
-          }]`}
+          style={tw`flex-1 items-center py-2`}
         >
-          <IonIcon
-            size={label === "Report" ? 22 : 28}
-            color={isFocused ? "white" : "gray"}
-            name={
-              {
-                Team: "people-circle-outline",
-                Groups: "people-circle-outline",
-                Own: "person-circle-outline",
-                Report: "stats-chart",
-              }[label]
-            }
-          />
+          <View
+            style={tw`absolute bg-white ${
+              isFocused
+                ? "bottom-7 rounded-full p-4 border-[1] border-[#f2f2f2]"
+                : "bottom-6"
+            }`}
+          >
+            <IonIcon
+              size={24}
+              color={isFocused ? primary : "gray"}
+              name={
+                {
+                  Groups: "home-outline",
+                  Own: "wallet-outline",
+                  Report: "pie-chart-outline",
+                  Profile: "person-outline",
+                }[label]
+              }
+            />
+          </View>
+          <Text style={tw`font-bold text-[${isFocused ? primary : "#787878"}]`}>
+            {label}
+          </Text>
         </TouchableOpacity>
       );
     })}

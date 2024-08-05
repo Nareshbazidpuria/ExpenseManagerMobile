@@ -5,6 +5,7 @@ import Groups from "../screens/groups";
 import Expenses from "../screens/expenses";
 import { useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Profile from "../screens/profile";
 
 const Tab = createBottomTabNavigator();
 
@@ -26,6 +27,7 @@ const Home = ({ navigation }) => {
       <Tab.Screen name="Groups" component={Groups} />
       <Tab.Screen name="Own" component={Expenses} />
       <Tab.Screen name="Report" component={Report} />
+      <Tab.Screen name="Profile" component={Profile} />
     </Tab.Navigator>
   );
 };

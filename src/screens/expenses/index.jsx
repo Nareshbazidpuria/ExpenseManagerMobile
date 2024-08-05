@@ -1,6 +1,5 @@
 import {
   Dimensions,
-  Image,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -17,7 +16,6 @@ import { useIsFocused } from "@react-navigation/native";
 import TopBar from "../../components/Topbar";
 import SwipeComp from "../../components/SwipeComp";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import empty from "../../assets/empty.gif";
 
 const Expenses = ({ route, navigation }) => {
   const { data } = route.params || {};
@@ -121,14 +119,15 @@ const Expenses = ({ route, navigation }) => {
         ) : (
           <View
             style={tw`flex h-[${
-              Dimensions.get("screen").height / 4.5
-            }] items-center justify-center bg-white`}
+              Dimensions.get("window").height / 4.5
+            }] items-center justify-center bg-[#f2f2f2]`}
           >
-            <Image source={empty} style={tw`rounded-full w-80 h-80`} />
+            <IonIcon name="folder-open-outline" size={70} />
+            <Text style={tw`text-lg font-semibold`}>No Records</Text>
           </View>
         )}
       </ScrollView>
-      <View style={tw`absolute bottom-5 flex items-center w-full`}>
+      <View style={tw`absolute bottom-12 flex items-center w-full`}>
         <Pressable
           style={tw`bg-[${primary}] p-4 rounded-full shadow`}
           onPress={() => setVisible(data || to)}
