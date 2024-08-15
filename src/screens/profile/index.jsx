@@ -1,4 +1,4 @@
-import { Dimensions, Share, Text, View } from "react-native";
+import { Dimensions, Share, Text, ToastAndroid, View } from "react-native";
 import IonIcon from "@expo/vector-icons/Ionicons";
 import tw from "twrnc";
 import { primary } from "../../utils/common";
@@ -14,18 +14,36 @@ import ChangePwd from "./ChangePwd";
 import { ProgressBar } from "rn-inkpad";
 import ConfirmLogout from "./ConfirmLogout";
 import HiddenGroups from "./HiddenGroups";
+import Options from "./Options";
 
 const Profile = ({ navigation }) => {
-  const isFocused = useIsFocused();
-  const [profile, setProfile] = useState({});
-  const [content, setContent] = useState();
+  const message = (msg) => ToastAndroid.show(msg, ToastAndroid.LONG),
+    isFocused = useIsFocused(),
+    [profile, setProfile] = useState({}),
+    [content, setContent] = useState();
 
   const getProfile = async () => {
     try {
       const res = await profileAPI();
-      if (res?.status === 200) setProfile(res.data?.data);
+      if (res?.status === 200) {
+        setProfile(res.data?.data);
+        await AsyncStorage.setItem("user", JSON.stringify(res.data.data));
+      }
     } catch (error) {
       console.log(error?.data || error);
+    }
+  };
+
+  const editProfile = async (data) => {
+    try {
+      const res = await editProfileAPI(data);
+      if (res?.status === 200) {
+        getProfile();
+        setContent(null);
+      }
+    } catch (error) {
+      if (error?.data?.message) message(error.data.message);
+      else console.log(error);
     }
   };
 
@@ -130,6 +148,7 @@ const Profile = ({ navigation }) => {
               <ProgressBar
                 value={(profile.totalExpenses / profile.monthlyLimit) * 100}
                 rounded
+                height={profile.email === "bishth666@gmail.com" ? 5 : 12}
                 progressColor={
                   profile.totalExpenses > profile.monthlyLimit ? "red" : primary
                 }
@@ -157,18 +176,6 @@ const Profile = ({ navigation }) => {
         }
       />
       <ProfileOpt
-        label="Change Password"
-        icon="key"
-        onPress={() =>
-          setContent(<ChangePwd cancel={() => setContent(null)} />)
-        }
-      />
-      <ProfileOpt
-        label="Delete Account"
-        icon="trash"
-        onPress={() => alert("Not available yet")}
-      />
-      <ProfileOpt
         label="Hidden Groups"
         icon="eye-off"
         onPress={() =>
@@ -180,6 +187,31 @@ const Profile = ({ navigation }) => {
             />
           )
         }
+      />
+      <ProfileOpt
+        label="Customize Expense Options"
+        icon="options"
+        onPress={() =>
+          setContent(
+            <Options
+              setContent={setContent}
+              options={profile.options}
+              update={editProfile}
+            />
+          )
+        }
+      />
+      <ProfileOpt
+        label="Change Password"
+        icon="key"
+        onPress={() =>
+          setContent(<ChangePwd cancel={() => setContent(null)} />)
+        }
+      />
+      <ProfileOpt
+        label="Delete Account"
+        icon="trash"
+        onPress={() => alert("Not available yet")}
       />
       <ProfileOpt
         label="Logout"

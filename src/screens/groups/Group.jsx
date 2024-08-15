@@ -37,6 +37,12 @@ const Group = ({ data, navigation, selected, setSelected }) => {
             size={28}
             style={tw`text-[${primary}]`}
           />
+        ) : data.unverifiedCount ? (
+          <Text
+            style={tw`bg-[${primary}] text-white font-bold p-1 rounded-full min-w-6 h-6 text-center`}
+          >
+            {data.unverifiedCount}
+          </Text>
         ) : (
           !name && (
             <Text style={tw`font-semibold text-gray-400`}>

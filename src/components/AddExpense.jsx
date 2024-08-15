@@ -17,30 +17,22 @@ import { addExpenseAPI, editExpenseAPI } from "../api/apis";
 import { expenseTypes, primary } from "../utils/common";
 import Popup from "./Popup";
 import LimitCrossed from "./LimitCrossed";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useIsFocused } from "@react-navigation/native";
 
 const AddExpense = ({ visible, setVisible, setRefresh, edit, setEdit }) => {
-  const to = typeof visible === "object" ? visible?._id : visible;
-  const other = useRef();
-  const defaultPayload = { amount: 0, purpose: "", additional: "" };
-  const message = (msg) => ToastAndroid.show(msg, ToastAndroid.LONG);
-  const [keyB, setKeyB] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [payload, setPayload] = useState(defaultPayload);
-  const [content, setContent] = useState();
-  const [error, setError] = useState({
-    amount: "",
-    purpose: "",
-    additional: "",
-  });
-  const addOptions = [
-    "Write your own ...",
-    "Milk 🥛",
-    "Banana 🍌",
-    "Onion 🧅",
-    "Tomato 🍅",
-    "Vegitables",
-    "Grocery",
-  ];
+  const to = typeof visible === "object" ? visible?._id : visible,
+    other = useRef(),
+    isFocused = useIsFocused(),
+    defaultPayload = { amount: 0, purpose: "", additional: "" },
+    message = (msg) => ToastAndroid.show(msg, ToastAndroid.LONG),
+    [keyB, setKeyB] = useState(false),
+    [loading, setLoading] = useState(false),
+    [payload, setPayload] = useState(defaultPayload),
+    [content, setContent] = useState(),
+    [me, setMe] = useState({}),
+    [error, setError] = useState({ amount: "", purpose: "", additional: "" }),
+    [addOptions, setAddOptions] = useState(["Write your own ..."]);
 
   const valid = (payload) => {
     const err = {};
@@ -108,6 +100,18 @@ const AddExpense = ({ visible, setVisible, setRefresh, edit, setEdit }) => {
     }
   }, [edit]);
 
+  useEffect(() => {
+    AsyncStorage.getItem("user")
+      .then((data) => {
+        setMe(JSON.parse(data || "{}"));
+        setAddOptions([
+          ...(addOptions || []),
+          ...(JSON.parse(data || "{}")?.options || []),
+        ]);
+      })
+      .catch((e) => console.log(e));
+  }, [isFocused]);
+
   return (
     <>
       <Modal animationType="slide" transparent={true} visible={!!visible}>
@@ -169,12 +173,12 @@ const AddExpense = ({ visible, setVisible, setRefresh, edit, setEdit }) => {
                       <>
                         {/* <Text>Purpose</Text> */}
                         <SelectDropdown
-                          data={addOptions}
+                          data={[...new Set(addOptions)]}
                           onSelect={(purpose) =>
                             setPayload({ ...payload, purpose })
                           }
-                          buttonStyle={tw`w-full bg-white border-b p-0 border-gray-400 text-sm `}
-                          rowStyle={tw`p-0`}
+                          buttonStyle={tw`w-full bg-white border-b p-0 border-gray-400 text-sm`}
+                          rowStyle={tw`p-0 h-8`}
                           rowTextStyle={tw`text-sm m-0 text-left pl-2`}
                           buttonTextStyle={tw`text-sm m-0 text-left`}
                           defaultValue={payload?.purpose}
