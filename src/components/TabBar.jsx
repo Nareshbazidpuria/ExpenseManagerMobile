@@ -33,10 +33,15 @@ const TabBar = ({ state, descriptors, navigation }) => (
           style={tw`flex-1 items-center py-2`}
         >
           <View
-            style={tw`absolute bg-white ${
+            style={tw`absolute h-8 w-16 bg-white ${
               isFocused
-                ? "bottom-7 rounded-full p-4 border-[1] border-[#f2f2f2]"
+                ? "bottom-7 rounded-b-full bg-[#f2f2f2] p-4"
                 : "bottom-6"
+            }`}
+          />
+          <View
+            style={tw`absolute bg-white ${
+              isFocused ? "bottom-8 rounded-full p-4 shadow-sm" : "bottom-6"
             }`}
           >
             <IonIcon

@@ -20,15 +20,13 @@ const Report = ({ navigation }) => {
     [refreshing, setRefreshing] = useState(false),
     [refresh, setRefresh] = useState(),
     [list, setList] = useState([]),
-    [collapsed, setCollapsed] = useState({}),
-    [data, setData] = useState({});
+    [collapsed, setCollapsed] = useState({});
 
   const groupList = async () => {
-    setData({});
     let data = [];
     try {
       setRefreshing(true);
-      const res = await groupListAPI();
+      const res = await groupListAPI({ hidden: false });
       if (res?.status === 200) data = res?.data?.data;
     } catch (error) {
       console.log("error", error);
@@ -77,8 +75,7 @@ const Report = ({ navigation }) => {
         />
         {(list || []).map(
           (group, i) =>
-            group?.members?.length > 2 &&
-            data[group._id] !== "empty" && (
+            group?.members?.length > 2 && (
               <Collapse
                 title={
                   <Text
@@ -97,20 +94,14 @@ const Report = ({ navigation }) => {
                 Key={i + 2}
                 key={i + 2}
                 child={
-                  <TotalTeam
-                    date={date}
-                    refresh={refresh}
-                    group={group}
-                    grpData={[data, setData]}
-                  />
+                  <TotalTeam date={date} refresh={refresh} group={group} />
                 }
               />
             )
         )}
         {(list || []).map(
           (group, i) =>
-            group?.members?.length === 2 &&
-            data[group._id] !== "empty" && (
+            group?.members?.length === 2 && (
               <Collapse
                 title={
                   group?.memberss?.[0]?.name ? (
@@ -135,12 +126,7 @@ const Report = ({ navigation }) => {
                 Key={i + 2}
                 key={i + 2}
                 child={
-                  <TotalTeam
-                    date={date}
-                    refresh={refresh}
-                    group={group}
-                    grpData={[data, setData]}
-                  />
+                  <TotalTeam date={date} refresh={refresh} group={group} />
                 }
               />
             )

@@ -14,7 +14,7 @@ const TopBar = ({ date, setDate, cls = "" }) => (
       onPress={() => setDate(moment(date).subtract(1, "month"))}
     />
     <Text style={tw`text-xl text-white font-semibold`}>
-      {moment(date).format("MMMM YYYY")}
+      {moment(date).format("MMM YYYY")}
     </Text>
     {moment(date).startOf("month").toString() !==
     moment().startOf("month").toString() ? (

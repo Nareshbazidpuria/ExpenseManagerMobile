@@ -3,7 +3,7 @@ import {
   Dimensions,
   Keyboard,
   Modal,
-  Pressable,
+  // Pressable,
   Text,
   TextInput,
   ToastAndroid,
@@ -30,7 +30,7 @@ const AddExpense = ({ visible, setVisible, setRefresh, edit, setEdit }) => {
     [loading, setLoading] = useState(false),
     [payload, setPayload] = useState(defaultPayload),
     [content, setContent] = useState(),
-    [me, setMe] = useState({}),
+    // [me, setMe] = useState({}),
     [error, setError] = useState({ amount: "", purpose: "", additional: "" }),
     [addOptions, setAddOptions] = useState(["Write your own ..."]);
 
@@ -103,7 +103,7 @@ const AddExpense = ({ visible, setVisible, setRefresh, edit, setEdit }) => {
   useEffect(() => {
     AsyncStorage.getItem("user")
       .then((data) => {
-        setMe(JSON.parse(data || "{}"));
+        // setMe(JSON.parse(data || "{}"));
         setAddOptions([
           ...(addOptions || []),
           ...(JSON.parse(data || "{}")?.options || []),

@@ -3,6 +3,7 @@ import {
   Easing,
   Pressable,
   ToastAndroid,
+  View,
 } from "react-native";
 import tw from "twrnc";
 import IonIcon from "@expo/vector-icons/Ionicons";
@@ -57,31 +58,35 @@ const SwipeComp = ({ data, swiped, setSwiped, me, setDeleted, setEdit }) => {
       onRef={(ref) => setSwipeable(ref)}
       onSwipeRelease={() => setSwiped(data?._id)}
       rightButtons={[
-        <Pressable
-          style={tw`bg-red-600 m-1.5 w-15 rounded-full h-15 flex items-center justify-center`}
-          onPress={deleteExpense}
-        >
-          {loading ? (
-            <ActivityIndicator size={25} color="white" />
-          ) : (
-            <IonIcon name="trash" color="white" size={25} />
-          )}
-        </Pressable>,
+        <View style={tw`flex justify-center h-full`}>
+          <Pressable
+            style={tw`bg-red-600 m-1.5 w-15 rounded-full h-15 flex items-center justify-center`}
+            onPress={deleteExpense}
+          >
+            {loading ? (
+              <ActivityIndicator size={25} color="white" />
+            ) : (
+              <IonIcon name="trash" color="white" size={25} />
+            )}
+          </Pressable>
+        </View>,
       ]}
       leftButtons={[
-        <Pressable
-          style={tw`bg-green-600 m-1.5 w-15 rounded-full h-15 flex items-center justify-center right-0 absolute`}
-          onPress={() => {
-            setEdit(data);
-            if (swipeable) swipeable.recenter();
-          }}
-        >
-          {loading ? (
-            <ActivityIndicator size={25} color="white" />
-          ) : (
-            <IonIcon name="pencil" color="white" size={25} />
-          )}
-        </Pressable>,
+        <View style={tw`flex items-center justify-center h-full`}>
+          <Pressable
+            style={tw`bg-green-600 m-1.5 w-15 rounded-full h-15 flex items-center justify-center right-0 absolute`}
+            onPress={() => {
+              setEdit(data);
+              if (swipeable) swipeable.recenter();
+            }}
+          >
+            {loading ? (
+              <ActivityIndicator size={25} color="white" />
+            ) : (
+              <IonIcon name="pencil" color="white" size={25} />
+            )}
+          </Pressable>
+        </View>,
       ]}
       swipeReleaseAnimationConfig={{
         toValue: { x: 0, y: 0 },

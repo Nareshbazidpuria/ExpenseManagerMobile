@@ -29,18 +29,36 @@ const TotalOwn = ({ date, refresh }) => {
   }, [isFocused, date, refresh]);
 
   return (
-    <View style={tw`py-3 px-2 border border-[${primary}]`}>
+    <View style={tw`border border-[${primary}]`}>
       {data?.length ? (
         <>
-          <View style={tw`flex flex-row flex-wrap`}>
-            {data.map(({ _id, amount }) => (
-              <View style={tw`flex flex-row gap-2 w-1/2 items-center`}>
-                <Text style={tw`text-base w-24`}>{_id}:</Text>
-                <Text style={tw`font-semibold text-base`}>₹{amount}</Text>
+          <View
+            style={tw`flex flex-row flex-wrap gap-x-2 gap-y-1 p-1 justify-between`}
+          >
+            {data.map(({ _id, amount }, i) => (
+              <View
+                key={"total-own-" + i}
+                style={tw`flex flex-row items-center bg-[${primary}] rounded-full p-1`}
+              >
+                <Text
+                  style={tw`font-semibold text-[${primary}] bg-white rounded-full p-1`}
+                >
+                  ₹{amount}
+                </Text>
+                <Text style={tw`text-white font-semibold mx-1`}>{_id}</Text>
               </View>
             ))}
           </View>
-          <Text style={tw`font-semibold text-xs mt-2`}>Total: ₹{total}</Text>
+          <View
+            style={tw`flex flex-row items-center bg-white border border-[${primary}] rounded-full p-1 m-1`}
+          >
+            <Text
+              style={tw`font-semibold bg-[${primary}] text-white rounded-full p-1`}
+            >
+              ₹{total}
+            </Text>
+            <Text style={tw`font-semibold mx-1`}>Total</Text>
+          </View>
         </>
       ) : (
         <Text>No Records</Text>

@@ -2,6 +2,7 @@ import { Image, Pressable, Text, View } from "react-native";
 import tw from "twrnc";
 import { primary } from "../utils/common";
 import n from "../assets/n.gif";
+import Partner from "../assets/Partner.jpg";
 import Popup from "./Popup";
 import IonIcon from "@expo/vector-icons/Ionicons";
 import { useState } from "react";
@@ -22,6 +23,12 @@ const Avatar = ({ value, w = 10 }) => {
           style={tw`rounded-full overflow-hidden border border-[${primary}]`}
         >
           <Image source={n} style={tw`h-[${w}] w-[${w}] rounded-full `} />
+        </View>
+      ) : ["Tanvi Negi"].includes(originalValue) ? (
+        <View
+          style={tw`rounded-full overflow-hidden border border-[${primary}]`}
+        >
+          <Image source={Partner} style={tw`h-[${w}] w-[${w}] rounded-full `} />
         </View>
       ) : (
         <View

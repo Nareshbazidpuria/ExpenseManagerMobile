@@ -1,5 +1,13 @@
 import moment from "moment";
-import { ActivityIndicator, Image, Pressable, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Dimensions,
+  Image,
+  LayoutAnimation,
+  Pressable,
+  Text,
+  View,
+} from "react-native";
 import tw from "twrnc";
 import Avatar from "./Avatar";
 import IonIcon from "@expo/vector-icons/Ionicons";
@@ -7,24 +15,35 @@ import verified from "../assets/verified.png";
 import pending from "../assets/pending.png";
 import { primary } from "../utils/common";
 import { useState } from "react";
+import Comments from "./Comments";
 
 const PurchageItem = ({ data, me, loading, verifyExpense }) => {
-  const [details, setDetails] = useState();
+  const [details, setDetails] = useState(),
+    [comments, setComments] = useState();
 
   return (
-    <View style={tw`py-3 px-2 shadow bg-white m-1 mb-0 rounded`}>
+    <Pressable
+      style={tw`py-3 px-2 shadow bg-white m-1 mb-0 rounded overflow-hidden`}
+      onPress={() => {
+        LayoutAnimation.configureNext({
+          ...LayoutAnimation.Presets.easeInEaseOut,
+          duration: 150,
+        });
+        setComments(!comments);
+      }}
+    >
       <View style={tw`flex flex-row items-center justify-between`}>
         <View style={tw`flex flex-row items-center gap-2`}>
           <Avatar value={data?.user?.name} />
           <View>
-            <View style={tw`flex flex-row items-center gap-1`}>
+            <View
+              style={{
+                ...tw`flex flex-row items-center gap-1`,
+                width: Dimensions.get("window").width * 0.55,
+              }}
+            >
+              {data?.edited && <IonIcon color="gray" name="pencil" />}
               <Text style={tw`font-semibold`}>{data?.purpose}</Text>
-              {data?.edited && (
-                <>
-                  <IonIcon color="gray" name="pencil" style={tw`ml-2`} />
-                  <Text style={tw`font-light text-xs`}>Edited</Text>
-                </>
-              )}
             </View>
             <Text style={tw`text-xs`}>
               {moment(data?.createdAt)?.format("hh:mm A DD/MM/YY")}
@@ -40,8 +59,20 @@ const PurchageItem = ({ data, me, loading, verifyExpense }) => {
           ) : me._id === data.user._id ||
             data.verifiedBy?.includes?.(me?._id) ? (
             <Pressable
-              onPressIn={setDetails.bind({}, true)}
-              onPressOut={setDetails.bind({}, false)}
+              onPressIn={() => {
+                LayoutAnimation.configureNext({
+                  ...LayoutAnimation.Presets.easeInEaseOut,
+                  duration: 150,
+                });
+                setDetails(true);
+              }}
+              onPressOut={() => {
+                LayoutAnimation.configureNext({
+                  ...LayoutAnimation.Presets.easeInEaseOut,
+                  duration: 150,
+                });
+                setDetails(false);
+              }}
             >
               <Image source={pending} style={tw`h-5 w-5`} />
             </Pressable>
@@ -83,7 +114,8 @@ const PurchageItem = ({ data, me, loading, verifyExpense }) => {
           </View>
         </View>
       )}
-    </View>
+      {comments && <Comments data={data} />}
+    </Pressable>
   );
 };
 
