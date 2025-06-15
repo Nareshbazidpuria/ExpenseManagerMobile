@@ -2,7 +2,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { navigateRef } from "../../App";
 
-export const baseURL = "http://192.168.42.93:4040";
+// export const baseURL = "http://192.168.201.171:4040";
+export const baseURL = "http://35.154.168.37:4040";
 // export const baseURL = "https://expensemanager-047k.onrender.com";
 
 export const Axios = axios.create({ baseURL });

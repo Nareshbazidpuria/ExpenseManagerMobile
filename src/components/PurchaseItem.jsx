@@ -15,22 +15,23 @@ import verified from "../assets/verified.png";
 import pending from "../assets/pending.png";
 import { primary } from "../utils/common";
 import { useState } from "react";
-import Comments from "./Comments";
+// import Comments from "./Comments";
 
 const PurchageItem = ({ data, me, loading, verifyExpense }) => {
-  const [details, setDetails] = useState(),
-    [comments, setComments] = useState();
+  const [details, setDetails] = useState();
+  // ,
+  // [comments, setComments] = useState();
 
   return (
     <Pressable
       style={tw`py-3 px-2 shadow bg-white m-1 mb-0 rounded overflow-hidden`}
-      onPress={() => {
-        LayoutAnimation.configureNext({
-          ...LayoutAnimation.Presets.easeInEaseOut,
-          duration: 150,
-        });
-        setComments(!comments);
-      }}
+      // onPress={() => {
+      //   LayoutAnimation.configureNext({
+      //     ...LayoutAnimation.Presets.easeInEaseOut,
+      //     duration: 150,
+      //   });
+      //   setComments(!comments);
+      // }}
     >
       <View style={tw`flex flex-row items-center justify-between`}>
         <View style={tw`flex flex-row items-center gap-2`}>
@@ -114,7 +115,7 @@ const PurchageItem = ({ data, me, loading, verifyExpense }) => {
           </View>
         </View>
       )}
-      {comments && <Comments data={data} />}
+      {/* {comments && <Comments data={data} />} */}
     </Pressable>
   );
 };

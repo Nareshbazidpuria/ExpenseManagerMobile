@@ -29,7 +29,7 @@ const TotalOwn = ({ date, refresh }) => {
   }, [isFocused, date, refresh]);
 
   return (
-    <View style={tw`border border-[${primary}]`}>
+    <View style={tw`py-3 px-2 border border-[${primary}]`}>
       {data?.length ? (
         <>
           <View
