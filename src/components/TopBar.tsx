@@ -1,15 +1,27 @@
 import * as React from 'react';
-import { BackHandler, Text, View } from 'react-native';
+import { BackHandler, NativeModules, Platform, Text, View } from 'react-native';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import { background, primary } from '../utils/global';
+import { useNavigation } from '@react-navigation/native';
+
+const { IosBackHandler } = NativeModules;
 
 const TopBar: React.FC<{ name: string; search?: boolean }> = ({
   name,
   search,
 }) => {
+  const navigation = useNavigation();
+  const handleBack = () => {
+    if (navigation.canGoBack()) navigation.goBack();
+    else
+      Platform.OS === 'ios'
+        ? IosBackHandler?.exitApp?.()
+        : BackHandler.exitApp();
+  };
+
   return (
     <View
-      className="flex-row justify-between items-center pl-0 pr-4 py-3"
+      className="flex-row justify-between items-center pl-2 pr-4 py-3"
       style={{ backgroundColor: primary }}
     >
       <View className="flex-row items-center">
@@ -18,6 +30,7 @@ const TopBar: React.FC<{ name: string; search?: boolean }> = ({
           size={24}
           color={background}
           // onPress={() => BackHandler.goBack?.()}
+          onPress={handleBack}
         />
         <Text className="text-xl font-bold ml-2" style={{ color: background }}>
           {name}
