@@ -18,9 +18,11 @@ export const primary = '#00807b',
   Reports = 'Reports',
   Profile = 'Profile',
   QR = 'QR',
+  Expenses = 'Expenses',
   CreateGroup = 'CreateGroup',
   Notifications = 'Notifications',
   screens = {
+    Tabs: 'Tabs',
     Home,
     Insights,
     Reports,
@@ -28,4 +30,13 @@ export const primary = '#00807b',
     QR,
     CreateGroup,
     Notifications,
+    Expenses,
   };
+
+export const emailRegex =
+  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+export const expenseTypes = {
+  own: 'own',
+  team: 'team',
+};

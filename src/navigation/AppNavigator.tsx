@@ -18,6 +18,8 @@ import { RootState } from '../redux/store';
 import { useSelector } from 'react-redux';
 import QRScreen from '../screens/QRScreen';
 import CreateGroupScreen from '../screens/CreateGroupScreen';
+import ExpensesScreen from '../screens/ExpensesScreen';
+import ReportScreen from '../screens/ReportScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -28,8 +30,8 @@ const Tabs = () => {
     <>
       <Tab.Navigator screenOptions={{ headerShown: false }} tabBar={tabs}>
         <Tab.Screen name={screens.Home} component={HomeScreen} />
-        <Tab.Screen name={screens.Reports} component={StatsScreen} />
-        <Tab.Screen name={screens.Insights} component={MatchScreen} />
+        <Tab.Screen name={screens.Reports} component={ReportScreen} />
+        <Tab.Screen name={screens.Insights} component={ReportScreen} />
         <Tab.Screen name={screens.Profile} component={ProfileScreen} />
       </Tab.Navigator>
     </>
@@ -64,6 +66,7 @@ const AppNavigator: React.FC = () => {
               name={screens.CreateGroup}
               component={CreateGroupScreen}
             />
+            <Stack.Screen name={screens.Expenses} component={ExpensesScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </SafeAreaView>

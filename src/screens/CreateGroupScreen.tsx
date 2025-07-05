@@ -7,13 +7,12 @@ import {
   View,
 } from 'react-native';
 import { useEffect, useState } from 'react';
-
-import { primary } from '../utils/global';
+import { primary, screens } from '../utils/global';
 import Bicon from '../components/Bicon';
 import Member from '../components/Member';
 import { createGroupAPI, getMemberAPI } from '../api/group';
 import Avatar from '../components/Avatar';
-import Info from '../components/Info';
+// import Info from '../components/Info';
 import TopBar from '../components/TopBar';
 
 const CreateGroupScreen = ({ navigation, route }) => {
@@ -47,7 +46,7 @@ const CreateGroupScreen = ({ navigation, route }) => {
       });
       if ([200, 201].includes(res.status)) {
         setPayload({});
-        navigation.navigate('Home');
+        navigation.navigate(screens.Tabs);
         message(res.data?.message);
       }
     } catch (error) {
@@ -82,10 +81,10 @@ const CreateGroupScreen = ({ navigation, route }) => {
         setError({ secretCode: 'Invalid secret code' });
         return;
       }
-    } catch (error) {
-      if (error?.data?.message) setError({ secretCode: error.data.message });
+    } catch (err) {
+      if (err?.data?.message) setError({ secretCode: err.data.message });
       else {
-        console.log(error);
+        console.log(err);
         setError({ secretCode: 'Invalid secret code' });
       }
     }
