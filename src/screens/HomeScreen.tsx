@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { background, backgroundLight, primary } from '../utils/global';
+import { backgroundLight, primary } from '../utils/global';
 import { RootStackParamList } from '../utils/types';
 import TopBar from '../components/TopBar';
 import Group from '../components/Group';

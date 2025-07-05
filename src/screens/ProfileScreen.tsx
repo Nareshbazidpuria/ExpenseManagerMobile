@@ -6,7 +6,6 @@ import { useIsFocused } from '@react-navigation/native';
 import { editProfileAPI, profileAPI } from '../api/auth';
 import { AsyncStorage } from 'react-native';
 import IonIcon from 'react-native-vector-icons/Ionicons';
-import EditProfile from '../components/EditProfile';
 import { ProgressBar } from 'rn-inkpad';
 import Avatar from '../components/Avatar';
 import ProfileOpt from '../components/ProfileOpt';
@@ -15,7 +14,7 @@ import Options from '../components/Options';
 import ChangePwd from '../components/ChangePwd';
 import ConfirmLogout from '../components/ConfirmLogout';
 import Popup from '../components/Popup';
-import { background, primary } from '../utils/global';
+import { primary, screens } from '../utils/global';
 import TopBar from '../components/TopBar';
 
 type NavigationProp = StackNavigationProp<RootStackParamList, 'Reports'>;
@@ -123,7 +122,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
             name="qr-code"
             size={24}
             style={{ color: primary }}
-            onPress={() => navigation?.navigate('QR')}
+            onPress={() => navigation?.navigate(screens.QR)}
           />
           <IonIcon
             name="pencil"
@@ -170,7 +169,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
       <ProfileOpt
         label="Notifications"
         icon="notifications"
-        onPress={() => navigation?.navigate('Notifications')}
+        onPress={() => navigation?.navigate(screens.Notifications)}
         extra={
           !!profile?.unreadAlertsCount && (
             <Text

@@ -12,12 +12,12 @@ import { primary, screens } from '../utils/global';
 import MatchScreen from '../screens/MatchScreen';
 import StatsScreen from '../screens/StatsScreen';
 import { createStackNavigator } from '@react-navigation/stack';
-import MatchDetailsScreen from '../screens/MatchDetailsScreen';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'react-native';
 import { RootState } from '../redux/store';
 import { useSelector } from 'react-redux';
 import QRScreen from '../screens/QRScreen';
+import CreateGroupScreen from '../screens/CreateGroupScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -60,6 +60,10 @@ const AppNavigator: React.FC = () => {
           <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Tabs" component={Tabs} />
             <Stack.Screen name={screens.QR} component={QRScreen} />
+            <Stack.Screen
+              name={screens.CreateGroup}
+              component={CreateGroupScreen}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </SafeAreaView>

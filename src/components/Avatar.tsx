@@ -50,9 +50,7 @@ const Avatar: React.FC<{ value: string; w?: number }> = ({ value, w = 50 }) => {
             className="font-bold text-white text-center"
             style={{ fontSize: w / 2.5 }}
           >
-            {originalValue === 'New Group'
-              ? originalValue
-              : value?.substring(0, 2)}
+            {value?.substring(0, 2)}
           </Text>
         </View>
       )}

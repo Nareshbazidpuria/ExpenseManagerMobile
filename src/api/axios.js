@@ -28,8 +28,6 @@ Axios.interceptors.response.use(
 Axios.interceptors.request.use(
   async config => {
     try {
-      config.headers.token =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjVjMzk1NmMxMmE0NTQ2ZTZkZGNjZDAiLCJpYXQiOjE3NDk5Nzg5MDJ9.lFpJ_r0uvbPp4swpH5eMUgeVoM2MFSW_U7WQy0p5wrM';
       // config.headers.token = (await AsyncStorage.getItem('token'))?.replace?.(
       //   /"/g,
       //   '',
