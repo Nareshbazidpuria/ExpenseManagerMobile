@@ -6,10 +6,12 @@ import {
   View,
 } from 'react-native';
 import IonIcon from 'react-native-vector-icons/Ionicons';
-import Swipeable from 'react-native-swipeable';
+// import Swipeable from 'react-native-swipeable';
 import { useEffect, useState } from 'react';
 import PurchageItem from './PurchaseItem';
 import { deleteExpenseAPI, verifyExpenseAPI } from '../api/apis';
+import { Swipeable } from 'react-native-gesture-handler';
+import SwipeList from './SwipeTest';
 
 const SwipeComp = ({ data, swiped, setSwiped, me, setDeleted, setEdit }) => {
   const message = msg => ToastAndroid.show(msg, ToastAndroid.LONG);
@@ -104,12 +106,27 @@ const SwipeComp = ({ data, swiped, setSwiped, me, setDeleted, setEdit }) => {
   //     me={me}
   //   />
   // );
+  // return (
+  //   <Swipeable
+  //     renderLeftActions={() => <ActivityIndicator size={25} color="white" />}
+  //     renderRightActions={() => <ActivityIndicator size={25} color="white" />}
+  //   >
+  //     <PurchageItem
+  //       data={data}
+  //       loading={loading}
+  //       verifyExpense={verifyExpense}
+  //       me={me}
+  //     />
+  //   </Swipeable>
+  // );
+
   return (
-    <PurchageItem
+    <SwipeList
       data={data}
       loading={loading}
-      verifyExpense={verifyExpense}
-      me={me}
+      deleteExpense={deleteExpense}
+      setEdit={setEdit}
+      PurchageItem={PurchageItem}
     />
   );
 };

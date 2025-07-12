@@ -12,7 +12,7 @@ const Tab = createMaterialTopTabNavigator();
 type NavigationProp = StackNavigationProp<RootStackParamList, 'QR'>;
 type Props = { navigation: NavigationProp };
 
-const QRScreen: React.FC<Props> = () => {
+const QRScreen: React.FC<Props> = ({}) => {
   return (
     <>
       <TopBar name="QR Code" />

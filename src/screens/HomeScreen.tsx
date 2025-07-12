@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   Dimensions,
   Platform,
   Pressable,
@@ -18,6 +19,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { groupListAPI } from '../api/apis';
 import { editProfileAPI } from '../api/auth';
 import { alertListAPI } from '../api/notification';
+import { RefreshControl } from 'react-native-gesture-handler';
 
 type NavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 type Props = { navigation: NavigationProp };
@@ -32,19 +34,20 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [list, setList] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [visible, setVisible] = useState();
+  const [loading, setLoading] = useState<boolean>(false);
 
   const groupList = async () => {
     let data = [];
     try {
       setSelected([]);
-      setRefreshing(true);
+      setLoading(true);
       const res = await groupListAPI({ hidden: false });
       if (res?.status === 200) data = res?.data?.data;
     } catch (error) {
       // console.log(error?.data || error);
     } finally {
       setList(data);
-      setRefreshing(false);
+      setLoading(false);
     }
   };
 
@@ -100,8 +103,26 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
       <ScrollView
         className="flex-1"
         style={{ backgroundColor: backgroundLight }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => {
+              setRefreshing(true);
+              groupList();
+              setRefreshing(false);
+            }}
+            colors={[primary]}
+          />
+        }
       >
-        {list?.length ? (
+        {loading ? (
+          <View
+            className={`fle items-center justify-center bg-[#f2f2f2]`}
+            style={{ height: Dimensions.get('window').height - 100 }}
+          >
+            <ActivityIndicator size="large" color={primary} />
+          </View>
+        ) : list?.length ? (
           <>
             {list.map((data, i) => (
               <Group
@@ -112,18 +133,17 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
                 setSelected={setSelected}
               />
             ))}
+            <View className="h-24" />
           </>
         ) : (
           <View
-            className={`flex h-[${
-              Dimensions.get('window').height / 4.5
-            }] items-center justify-center bg-[#f2f2f2]`}
+            className={`flex items-center justify-center bg-[#f2f2f2]`}
+            style={{ height: Dimensions.get('window').height - 100 }}
           >
             <IonIcon name="folder-open-outline" size={70} />
             <Text className={`text-lg font-semibold`}>No Records</Text>
           </View>
         )}
-        <View className="h-24" />
       </ScrollView>
       {selected.length ? (
         <View

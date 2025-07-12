@@ -1,6 +1,5 @@
 import {
   Dimensions,
-  Platform,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -16,6 +15,9 @@ import SwipeComp from '../components/SwipeComp';
 import { primary, expenseTypes } from '../utils/global';
 import AddExpense from '../components/AddExpense';
 import DateSelector from '../components/DateSelector';
+import Bicon from '../components/Bicon';
+import { Dropdown } from 'react-native-element-dropdown';
+import DateRangePicker from '../components/DateRangePicker';
 
 const ExpensesScreen = ({ route, navigation }) => {
   const { data } = route.params || {};
@@ -29,6 +31,32 @@ const ExpensesScreen = ({ route, navigation }) => {
   const [me, setMe] = useState();
   const [deleted, setDeleted] = useState();
   const [edit, setEdit] = useState();
+  const [dateRange, setDateRange] = useState({ start: null, end: null });
+
+  const [value, setValue] = useState('week');
+  const [showPicker, setShowPicker] = useState(false);
+
+  // This is crucial for tracking the selected range!
+  const [customRange, setCustomRange] = useState({
+    startDate: null,
+    endDate: null,
+  });
+
+  const handleChange = item => {
+    if (item.value === 'custom') setShowPicker(true);
+    else {
+      setValue(item.value);
+      setDateRange({ start: null, end: null });
+    }
+  };
+
+  const [badges, setBadges] = useState({
+    date: { label: 'Last Week', active: true },
+    me: { label: 'My' },
+    other: { label: "Other's" },
+    verified: { label: 'Verified' },
+    notVerified: { label: 'Not Verified' },
+  });
 
   const expenseList = async params => {
     let resp = [];
@@ -42,6 +70,15 @@ const ExpensesScreen = ({ route, navigation }) => {
     } finally {
       setList(resp);
       setRefreshing(false);
+    }
+  };
+
+  const onBadgePress = badge => {
+    if (badge === 'date') {
+    } else {
+      const col = { ...badges };
+      col[badge] = { ...col[badge], active: !col[badge].active };
+      setBadges(col);
     }
   };
 
@@ -62,6 +99,9 @@ const ExpensesScreen = ({ route, navigation }) => {
   // useEffect(() => {
   //   checkLoggedIn();
   // }, [isFocused]);
+  useEffect(() => {
+    if (dateRange.start && dateRange.end && !showPicker) setValue('custom');
+  }, [dateRange, showPicker]);
 
   return (
     <View>
@@ -94,6 +134,78 @@ const ExpensesScreen = ({ route, navigation }) => {
           cls={to === expenseTypes.own ? 'w-full' : 'w-1/2'}
         />
       </View>
+      {showPicker && (
+        <DateRangePicker
+          range={dateRange}
+          setRange={setDateRange}
+          setShow={setShowPicker}
+        />
+      )}
+
+      {list?.length && (
+        <ScrollView
+          className="w-full py-2 px-1 flex flex-row sticky top-0"
+          horizontal
+          showsHorizontalScrollIndicator={false}
+        >
+          {Object.entries(badges).map(([key, badge]) =>
+            key === 'date' ? (
+              <>
+                <Dropdown
+                  data={[
+                    { label: 'Last Week', value: 'week' },
+                    { label: 'Last Month', value: 'month' },
+                    { label: 'Last 6 Months', value: '6months' },
+                    {
+                      label: 'Custom',
+                      value: 'custom',
+                    },
+                  ]}
+                  maxHeight={300}
+                  // eslint-disable-next-line react-native/no-inline-styles
+                  selectedTextStyle={{ fontSize: 14, color: 'white' }}
+                  // eslint-disable-next-line react-native/no-inline-styles
+                  style={{
+                    backgroundColor: primary,
+                    paddingHorizontal: 14,
+                    borderRadius: 99,
+                    marginHorizontal: 4,
+                  }}
+                  // eslint-disable-next-line react-native/no-inline-styles
+                  containerStyle={{
+                    width: 130,
+                    borderRadius: 10,
+                    overflow: 'hidden',
+                  }}
+                  iconColor="white"
+                  labelField="label"
+                  valueField="value"
+                  value={value}
+                  renderItem={item => <Text className="p-3">{item.label}</Text>}
+                  onChange={handleChange}
+                />
+                {value === 'custom' && dateRange?.start && dateRange?.end && (
+                  <Bicon
+                    key="custom"
+                    title={`${dateRange?.start} - ${dateRange?.end}`}
+                    cls="mx-1 rounded-full px-4"
+                    onPress={setShowPicker.bind({}, true)}
+                  />
+                )}
+              </>
+            ) : (
+              <Bicon
+                key={key}
+                title={badge.label}
+                cls="mx-1 rounded-full px-4"
+                bg={badge.active ? primary : 'white'}
+                borderColor="gray"
+                onPress={onBadgePress.bind({}, key)}
+              />
+            ),
+          )}
+        </ScrollView>
+      )}
       <ScrollView
         style={{ height: Dimensions.get('window').height - 120 }}
         refreshControl={
@@ -116,7 +228,7 @@ const ExpensesScreen = ({ route, navigation }) => {
                 setEdit={setEdit}
               />
             ))}
-            <View className={`h-32`} />
+            <View className={`h-40`} />
           </>
         ) : (
           <View
@@ -129,7 +241,7 @@ const ExpensesScreen = ({ route, navigation }) => {
         )}
       </ScrollView>
       <Pressable
-        className="absolute bottom-10 right-3 p-3 rounded-full shadow"
+        className="absolute bottom-24 right-3 p-3 rounded-full shadow"
         // eslint-disable-next-line react-native/no-inline-styles
         style={{
           backgroundColor: primary,

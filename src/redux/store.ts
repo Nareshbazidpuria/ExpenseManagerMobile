@@ -1,9 +1,11 @@
-import {configureStore} from '@reduxjs/toolkit';
-import {statusBarColor} from './common';
+import { configureStore } from '@reduxjs/toolkit';
+import { statusBarColor } from './common';
+import { authUser } from './auth';
 
 export const store = configureStore({
   reducer: {
     statusBarColor,
+    authUser,
   },
 });
 

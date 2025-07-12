@@ -10,6 +10,8 @@ const Bicon = ({
   cls,
   txtCls,
   disabled,
+  borderColor,
+  txtStyle = {},
 }) => (
   <TouchableOpacity
     className={`flex flex-row items-center gap-1 p-2 rounded w-22 justify-center border ${
@@ -19,14 +21,23 @@ const Bicon = ({
     // eslint-disable-next-line react-native/no-inline-styles
     style={{
       backgroundColor: bg,
-      borderColor: bg !== primary ? bg : 'transparent',
+      borderColor: borderColor || (bg !== primary ? bg : 'transparent'),
     }}
     disabled={disabled}
   >
-    <Text className={`${bg === primary ? 'text-white' : ''} ${txtCls}`}>
+    <Text
+      className={`${bg === primary ? 'text-white' : ''} ${txtCls}`}
+      style={txtStyle}
+    >
       {title}
     </Text>
-    <IonIcon name={name} size={15} color={bg === primary ? '#fff' : 'black'} />
+    {name && (
+      <IonIcon
+        name={name}
+        size={15}
+        color={bg === primary ? '#fff' : 'black'}
+      />
+    )}
   </TouchableOpacity>
 );
 
