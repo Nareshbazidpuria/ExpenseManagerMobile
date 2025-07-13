@@ -19,40 +19,40 @@ const SwipeComp = ({ data, swiped, setSwiped, me, setDeleted, setEdit }) => {
   const [loading, setLoading] = useState(false);
 
   const deleteExpense = async () => {
-    try {
-      setLoading(true);
-      const res = await deleteExpenseAPI(data?._id);
-      if (res?.status === 200) {
-        message(res?.data?.message);
-        setDeleted(data?._id);
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-      if (swipeable) swipeable.recenter();
-    }
+    // try {
+    //   setLoading(true);
+    //   const res = await deleteExpenseAPI(data?._id);
+    //   if (res?.status === 200) {
+    //     message(res?.data?.message);
+    //     setDeleted(data?._id);
+    //   }
+    // } catch (error) {
+    //   console.log(error);
+    // } finally {
+    //   setLoading(false);
+    //   if (swipeable) swipeable.recenter();
+    // }
   };
 
   const verifyExpense = async () => {
-    try {
-      setLoading(true);
-      const res = await verifyExpenseAPI(data?._id);
-      if (res?.status === 200) {
-        message(res?.data?.message);
-        setDeleted(Date.now());
-      }
-    } catch (error) {
-      if (error?.data?.message) message(error.data.message);
-      else console.log(error);
-    } finally {
-      setLoading(false);
-    }
+    // try {
+    //   setLoading(true);
+    //   const res = await verifyExpenseAPI(data?._id);
+    //   if (res?.status === 200) {
+    //     message(res?.data?.message);
+    //     setDeleted(Date.now());
+    //   }
+    // } catch (error) {
+    //   if (error?.data?.message) message(error.data.message);
+    //   else console.log(error);
+    // } finally {
+    //   setLoading(false);
+    // }
   };
 
-  useEffect(() => {
-    if (swipeable && swiped !== data?._id) swipeable.recenter();
-  }, [swiped]);
+  // useEffect(() => {
+  //   if (swipeable && swiped !== data?._id) swipeable.recenter();
+  // }, [swiped]);
 
   // return me?._id === data?.user?._id ? (
   //   <Swipeable
@@ -125,8 +125,7 @@ const SwipeComp = ({ data, swiped, setSwiped, me, setDeleted, setEdit }) => {
       data={data}
       loading={loading}
       deleteExpense={deleteExpense}
-      setEdit={setEdit}
-      PurchageItem={PurchageItem}
+      // setEdit={setEdit}
     />
   );
 };

@@ -18,6 +18,7 @@ import DateSelector from '../components/DateSelector';
 import Bicon from '../components/Bicon';
 import { Dropdown } from 'react-native-element-dropdown';
 import DateRangePicker from '../components/DateRangePicker';
+import TopBar from '../components/TopBar';
 
 const ExpensesScreen = ({ route, navigation }) => {
   const { data } = route.params || {};
@@ -105,11 +106,26 @@ const ExpensesScreen = ({ route, navigation }) => {
 
   return (
     <View>
-      <View className={`flex flex-row`}>
+      <TopBar
+        name={
+          data?.memberss?.[0]?.name ? (
+            data.memberss[0].name
+          ) : (
+            <View className="flex flex-row items-center gap-2">
+              <Text className={`text-lg font-semibold text-white`}>{to}</Text>
+              <Text className={`text-sm text-gray-200`}>
+                {data?.members?.length} members
+              </Text>
+            </View>
+          )
+        }
+      />
+      {/* <View
+        className={`flex flex-row justify-between items-center py-2 px-2`}
+        style={{ backgroundColor: primary }}
+      >
         {to !== expenseTypes.own && (
           <Pressable
-            className={`p-2 w-1/2`}
-            style={{ backgroundColor: primary }}
             onPress={() =>
               !data?.memberss?.[0]?.name &&
               navigation.navigate('GroupDetails', { id: data?._id })
@@ -121,19 +137,19 @@ const ExpensesScreen = ({ route, navigation }) => {
             >
               {data?.memberss?.[0]?.name || to}
             </Text>
-            {!data?.memberss?.[0]?.name && (
-              <Text className={`text-xs text-white`}>
-                {data?.members?.length} members
-              </Text>
-            )}
           </Pressable>
+        )}
+        {!data?.memberss?.[0]?.name && (
+          <Text className={`text-xs text-white`}>
+            {data?.members?.length} members
+          </Text>
         )}
         <DateSelector
           date={date}
           setDate={setDate}
           cls={to === expenseTypes.own ? 'w-full' : 'w-1/2'}
         />
-      </View>
+      </View> */}
       {showPicker && (
         <DateRangePicker
           range={dateRange}
@@ -142,106 +158,85 @@ const ExpensesScreen = ({ route, navigation }) => {
         />
       )}
 
-      {list?.length && (
-        <ScrollView
-          className="w-full py-2 px-1 flex flex-row sticky top-0"
-          horizontal
-          showsHorizontalScrollIndicator={false}
-        >
-          {Object.entries(badges).map(([key, badge]) =>
-            key === 'date' ? (
-              <>
-                <Dropdown
-                  data={[
-                    { label: 'Last Week', value: 'week' },
-                    { label: 'Last Month', value: 'month' },
-                    { label: 'Last 6 Months', value: '6months' },
-                    {
-                      label: 'Custom',
-                      value: 'custom',
-                    },
-                  ]}
-                  maxHeight={300}
-                  // eslint-disable-next-line react-native/no-inline-styles
-                  selectedTextStyle={{ fontSize: 14, color: 'white' }}
-                  // eslint-disable-next-line react-native/no-inline-styles
-                  style={{
-                    backgroundColor: primary,
-                    paddingHorizontal: 14,
-                    borderRadius: 99,
-                    marginHorizontal: 4,
-                  }}
-                  // eslint-disable-next-line react-native/no-inline-styles
-                  containerStyle={{
-                    width: 130,
-                    borderRadius: 10,
-                    overflow: 'hidden',
-                  }}
-                  iconColor="white"
-                  labelField="label"
-                  valueField="value"
-                  value={value}
-                  renderItem={item => <Text className="p-3">{item.label}</Text>}
-                  onChange={handleChange}
-                />
-                {value === 'custom' && dateRange?.start && dateRange?.end && (
-                  <Bicon
-                    key="custom"
-                    title={`${dateRange?.start} - ${dateRange?.end}`}
-                    cls="mx-1 rounded-full px-4"
-                    onPress={setShowPicker.bind({}, true)}
-                  />
-                )}
-              </>
-            ) : (
-              <Bicon
-                key={key}
-                title={badge.label}
-                cls="mx-1 rounded-full px-4"
-                bg={badge.active ? primary : 'white'}
-                borderColor="gray"
-                onPress={onBadgePress.bind({}, key)}
-              />
-            ),
-          )}
-        </ScrollView>
-      )}
-      <ScrollView
-        style={{ height: Dimensions.get('window').height - 120 }}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={() => expenseList({ date, to })}
-          />
-        }
-      >
-        {list?.length ? (
-          <>
-            {list.map((data, i) => (
-              <SwipeComp
-                data={data}
-                key={'swiipee-' + i}
-                swiped={swiped}
-                setSwiped={setSwiped}
-                me={me}
-                setDeleted={setDeleted}
-                setEdit={setEdit}
-              />
-            ))}
-            <View className={`h-40`} />
-          </>
-        ) : (
-          <View
-            className={`flex items-center justify-center bg-[#f2f2f2]`}
-            style={{ height: Dimensions.get('window').height - 200 }}
+      {list?.length ? (
+        <>
+          <ScrollView
+            className="w-full py-2 px-1 flex flex-row"
+            horizontal
+            showsHorizontalScrollIndicator={false}
           >
-            <IonIcon name="folder-open-outline" size={70} />
-            <Text className={`text-lg font-semibold`}>No Records</Text>
-          </View>
-        )}
-      </ScrollView>
+            {Object.entries(badges).map(([key, badge]) =>
+              key === 'date' ? (
+                <>
+                  <Dropdown
+                    data={[
+                      { label: 'Last Week', value: 'week' },
+                      { label: 'Last Month', value: 'month' },
+                      { label: 'Last 6 Months', value: '6months' },
+                      {
+                        label: 'Custom',
+                        value: 'custom',
+                      },
+                    ]}
+                    maxHeight={300}
+                    // eslint-disable-next-line react-native/no-inline-styles
+                    selectedTextStyle={{ fontSize: 14, color: 'white' }}
+                    // eslint-disable-next-line react-native/no-inline-styles
+                    style={{
+                      backgroundColor: primary,
+                      paddingHorizontal: 14,
+                      borderRadius: 99,
+                      marginHorizontal: 4,
+                    }}
+                    // eslint-disable-next-line react-native/no-inline-styles
+                    containerStyle={{
+                      width: 130,
+                      borderRadius: 10,
+                      overflow: 'hidden',
+                    }}
+                    iconColor="white"
+                    labelField="label"
+                    valueField="value"
+                    value={value}
+                    renderItem={item => (
+                      <Text className="p-3">{item.label}</Text>
+                    )}
+                    onChange={handleChange}
+                  />
+                  {value === 'custom' && dateRange?.start && dateRange?.end && (
+                    <Bicon
+                      key="custom"
+                      title={`${dateRange?.start} - ${dateRange?.end}`}
+                      cls="mx-1 rounded-full px-4"
+                      onPress={setShowPicker.bind({}, true)}
+                    />
+                  )}
+                </>
+              ) : (
+                <Bicon
+                  key={key}
+                  title={badge.label}
+                  cls="mx-1 rounded-full px-4"
+                  bg={badge.active ? primary : 'white'}
+                  borderColor="gray"
+                  onPress={onBadgePress.bind({}, key)}
+                />
+              ),
+            )}
+          </ScrollView>
+          <SwipeComp data={list} me={me} />
+        </>
+      ) : (
+        <View
+          className={`flex items-center justify-center bg-[#f2f2f2] h-[95.8%]`}
+        >
+          <IonIcon name="folder-open-outline" size={70} />
+          <Text className={`text-lg font-semibold`}>No Records</Text>
+        </View>
+      )}
+
       <Pressable
-        className="absolute bottom-24 right-3 p-3 rounded-full shadow"
+        className="absolute bottom-12 right-3 p-3 rounded-full shadow"
         // eslint-disable-next-line react-native/no-inline-styles
         style={{
           backgroundColor: primary,

@@ -6,10 +6,10 @@ import { useNavigation } from '@react-navigation/native';
 
 const { IosBackHandler } = NativeModules;
 
-const TopBar: React.FC<{ name: string; search?: boolean }> = ({
-  name,
-  search,
-}) => {
+const TopBar: React.FC<{
+  name: string | React.ReactNode;
+  search?: boolean;
+}> = ({ name, search }) => {
   const navigation = useNavigation();
   const handleBack = () => {
     if (navigation.canGoBack()) navigation.goBack();
