@@ -40,6 +40,8 @@ export const primary = '#00807b',
 export const emailRegex =
   /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
+export const isValidObjectId = /^(?=[a-f\d]{24}$)(\d+[a-f]|[a-f]+\d)/i;
+
 export const expenseTypes = {
   own: 'own',
   team: 'team',

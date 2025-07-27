@@ -8,7 +8,7 @@ import Avatar from './Avatar';
 const MyQR: React.FC = () => {
   const { authUser } = useSelector(state => state);
 
-  return (
+  return authUser ? (
     <View className="flex-1 items-center justify-center">
       <View
         className="p-5 pb-10 flex justify-center items-center mb-28"
@@ -19,18 +19,18 @@ const MyQR: React.FC = () => {
             className="w-24 h-24 rounded-full border-4 border-white flex justify-center items-center"
             style={{ borderColor: backgroundLight }}
           >
-            <Avatar value={authUser?.name} w={80} />
+            <Avatar value={authUser.name} w={80} />
           </View>
         </View>
         <Text className="text-2xl font-bold text-center mb-5 mt-10">
-          {authUser?.name}
+          {authUser.name}
         </Text>
         <Text className="text-center text-gray-600 mb-5">
           Scan this QR code to connect with me on the app!
         </Text>
         <View className="bg-white rounded-lg shadow-lg p-5 w-full">
           <QRCode
-            value={`expense-manager-secret-code-${authUser?.secretCode}`}
+            value={`expense-manager-id-${authUser._id}`}
             size={Dimensions.get('window').width - 200}
             logo={require('../assets/favicon.png')}
             logoSize={60}
@@ -42,7 +42,7 @@ const MyQR: React.FC = () => {
         Share this QR code with others to connect easily!
       </Text>
     </View>
-  );
+  ) : null;
 };
 
 export default MyQR;

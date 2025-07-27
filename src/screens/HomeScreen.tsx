@@ -33,13 +33,13 @@ const HomeScreen: React.FC = ({ navigation }) => {
   const message = (msg: string) => ToastAndroid.show(msg, ToastAndroid.LONG);
   const isFocused = useIsFocused();
   const [refreshing, setRefreshing] = useState(false);
-  const [me, setMe] = useState();
   const [list, setList] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [visible, setVisible] = useState();
   const [loading, setLoading] = useState<boolean>(false);
 
   const groupList = async () => {
+    setLoading(true);
+
     let data = [
       {
         _id: authUser._id,
@@ -53,7 +53,6 @@ const HomeScreen: React.FC = ({ navigation }) => {
     ];
     try {
       setSelected([]);
-      setLoading(true);
       const res = await groupListAPI({ hidden: false });
       if (res?.status === 200) data = [...data, ...res?.data?.data];
     } catch (error) {
@@ -102,13 +101,14 @@ const HomeScreen: React.FC = ({ navigation }) => {
 
   useEffect(() => {
     checkLoggedIn();
-    setSelected([]);
   }, [isFocused, refreshing]);
 
   useEffect(() => {
-    groupList();
-    getUnreadNotificationsCount();
-  }, [isFocused, visible]);
+    if (authUser) {
+      groupList();
+      getUnreadNotificationsCount();
+    }
+  }, [authUser]);
 
   return (
     <>

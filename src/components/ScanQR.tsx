@@ -1,5 +1,14 @@
-import React, { useEffect } from 'react';
-import { Alert, Linking, Platform, Text, View, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  Alert,
+  Linking,
+  Platform,
+  Text,
+  View,
+  StyleSheet,
+  BackHandler,
+  NativeModules,
+} from 'react-native';
 import {
   Camera,
   Code,
@@ -8,11 +17,29 @@ import {
   useCodeScanner,
 } from 'react-native-vision-camera';
 import Bicon from './Bicon';
-import { screens } from '../utils/global';
+import { isValidObjectId, screens } from '../utils/global';
+import { useIsFocused } from '@react-navigation/native';
+import { addFriendAPI } from '../api/group';
+import { showToast } from '../utils/Toast';
+
+const { IosBackHandler } = NativeModules;
 
 const ScanQR: React.FC = ({ navigation }) => {
   const device = useCameraDevice('back');
   const { hasPermission, requestPermission } = useCameraPermission();
+  const [isActive, setIsActive] = useState<boolean>(true);
+  const isFocused = useIsFocused();
+  const [scannedId, setScannedId] = useState<string>('');
+  const [visible, setVisible] = useState<boolean>(false);
+
+  const handleBack = () => {
+    setVisible(false);
+    if (navigation.canGoBack()) navigation.goBack();
+    else
+      Platform.OS === 'ios'
+        ? IosBackHandler?.exitApp?.()
+        : BackHandler.exitApp();
+  };
 
   const openAppSettings = () => {
     if (Platform.OS === 'ios') Linking.openURL('app-settings:');
@@ -22,15 +49,74 @@ const ScanQR: React.FC = ({ navigation }) => {
   const codeScanner = useCodeScanner({
     codeTypes: ['qr', 'ean-13'],
     onCodeScanned: (codes: Code[]) => {
-      navigation?.navigate(screens.CreateGroup, {
-        code: codes[0].value?.replace('expense-manager-secret-code-', ''), // Use the first scanned code
-      });
+      setIsActive(false);
+      const id = codes[0]?.value?.replace('expense-manager-id-', '') || '';
+      if (!isValidObjectId.test(id)) setVisible(true);
+      else setScannedId(id);
     },
   });
 
   useEffect(() => {
     if (!hasPermission) requestPermission();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasPermission]);
+
+  useEffect(() => {
+    if (isFocused) setIsActive(true);
+    else {
+      setIsActive(false);
+      setScannedId('');
+    }
+  }, [isFocused]);
+
+  const addFriend = async () => {
+    try {
+      const res = await addFriendAPI(scannedId);
+      if (res?.status === 200) {
+        navigation.navigate(screens.Tabs);
+        showToast('success', res?.data?.message || 'Friend added successfully');
+      } else res?.data?.message && showToast('error', res?.data?.message);
+    } catch (error) {
+      console.log(error);
+      if (error?.data?.message)
+        Alert.alert('Oops! Try again', error.data.message, [
+          { text: 'Back', style: 'cancel', onPress: handleBack },
+          {
+            text: 'Scan Again',
+            onPress: () => {
+              setIsActive(true);
+              setVisible(false);
+            },
+          },
+        ]);
+    } finally {
+      setScannedId('');
+    }
+  };
+
+  useEffect(() => {
+    if (scannedId) addFriend();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scannedId]);
+
+  useEffect(() => {
+    visible &&
+      Alert.alert(
+        'Invalid QR Code',
+        'The scanned QR code is not valid. Please try again.',
+        [
+          { text: 'Back', style: 'cancel', onPress: handleBack },
+          {
+            text: 'Scan Again',
+            onPress: () => {
+              setIsActive(true);
+              setVisible(false);
+            },
+          },
+        ],
+      );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible]);
 
   return !hasPermission || !device ? (
     <View className="flex-1 items-center justify-center p-4">
@@ -64,7 +150,7 @@ const ScanQR: React.FC = ({ navigation }) => {
         style={StyleSheet.absoluteFill}
         codeScanner={codeScanner}
         device={device}
-        isActive={true}
+        isActive={isActive}
       />
 
       {/* Scanner box overlay */}
