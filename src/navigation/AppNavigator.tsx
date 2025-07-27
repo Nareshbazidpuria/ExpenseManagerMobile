@@ -20,6 +20,8 @@ import QRScreen from '../screens/QRScreen';
 import CreateGroupScreen from '../screens/CreateGroupScreen';
 import ExpensesScreen from '../screens/ExpensesScreen';
 import ReportScreen from '../screens/ReportScreen';
+import LoginSignup from '../screens/LoginSignup';
+import ForgotPwd from '../screens/ForgotPwd';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -67,6 +69,8 @@ const AppNavigator: React.FC = () => {
               component={CreateGroupScreen}
             />
             <Stack.Screen name={screens.Expenses} component={ExpensesScreen} />
+            <Stack.Screen name={screens.Login} component={LoginSignup} />
+            <Stack.Screen name={screens.ForgotPwd} component={ForgotPwd} />
           </Stack.Navigator>
         </NavigationContainer>
       </SafeAreaView>

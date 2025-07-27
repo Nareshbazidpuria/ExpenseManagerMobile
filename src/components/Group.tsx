@@ -9,7 +9,8 @@ const Group: React.FC<{
   selected: any;
   setSelected: any;
 }> = ({ data, navigation, selected, setSelected }) => {
-  const name = data?.memberss?.length ? data.memberss[0].name : '';
+  const name =
+    data?.own || (data?.memberss?.length ? data.memberss[0].name : '');
   return (
     <Pressable
       className={`flex flex-row gap-2 items-center py-2 px-3 ${
@@ -24,7 +25,10 @@ const Group: React.FC<{
       }
       onLongPress={setSelected.bind({}, [...selected, data._id])}
     >
-      <Avatar value={name || data?.admin || ''} w={40} />
+      <Avatar
+        value={data?.own?.replace(' (You)', '') || name || data?.admin || ''}
+        w={40}
+      />
       <View className={`flex flex-row justify-between w-[82%] items-center`}>
         <View className={`w-[70%]`}>
           <Text className={`font-semibold text-lg`}>{name || data?.name}</Text>

@@ -21,6 +21,8 @@ export const primary = '#00807b',
   Expenses = 'Expenses',
   CreateGroup = 'CreateGroup',
   Notifications = 'Notifications',
+  Login = 'Login',
+  ForgotPwd = 'ForgotPwd',
   screens = {
     Tabs: 'Tabs',
     Home,
@@ -31,6 +33,8 @@ export const primary = '#00807b',
     CreateGroup,
     Notifications,
     Expenses,
+    Login,
+    ForgotPwd,
   };
 
 export const emailRegex =

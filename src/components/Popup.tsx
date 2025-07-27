@@ -5,11 +5,13 @@ const Popup: React.FC<{
   content: React.ReactNode;
   cls?: string;
   visible?: boolean;
-}> = ({ content, cls = '', visible = true }) => {
+  height?: number;
+  width?: number;
+}> = ({ content, cls = '', visible = true, height, width }) => {
   return (
     <Modal animationType="slide" transparent={true} visible={visible}>
       <View
-        className={`bg-[#00000055] flex items-center pt-[200] `}
+        className={`bg-[#00000055] flex items-center pb-16 justify-center`}
         style={{
           width: Dimensions.get('screen').width,
           height: Dimensions.get('screen').height,
@@ -17,8 +19,8 @@ const Popup: React.FC<{
       >
         <View
           style={{
-            width: Dimensions.get('screen').width - 40,
-            height: Dimensions.get('screen').width,
+            width: width || Dimensions.get('screen').width - 40,
+            height: height || Dimensions.get('screen').width,
           }}
           className={`bg-white rounded shadow ${cls}`}
         >

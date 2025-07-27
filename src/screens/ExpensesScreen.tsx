@@ -1,7 +1,5 @@
 import {
-  Dimensions,
   Pressable,
-  RefreshControl,
   ScrollView,
   Text,
   View,
@@ -12,15 +10,19 @@ import { expenseListAPI } from '../api/apis';
 import { useIsFocused } from '@react-navigation/native';
 import SwipeComp from '../components/SwipeComp';
 // import { AsyncStorage } from 'react-native';
-import { primary, expenseTypes } from '../utils/global';
+import { primary, expenseTypes, screens } from '../utils/global';
 import AddExpense from '../components/AddExpense';
-import DateSelector from '../components/DateSelector';
 import Bicon from '../components/Bicon';
 import { Dropdown } from 'react-native-element-dropdown';
 import DateRangePicker from '../components/DateRangePicker';
 import TopBar from '../components/TopBar';
+import { useDispatch, useSelector } from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { setAuthUser } from '../redux/auth';
 
 const ExpensesScreen = ({ route, navigation }) => {
+  const dispatch = useDispatch();
+  const { authUser } = useSelector(state => state);
   const { data } = route.params || {};
   const [to] = useState(data?.name || expenseTypes.own);
   const isFocused = useIsFocused();
@@ -91,15 +93,18 @@ const ExpensesScreen = ({ route, navigation }) => {
     if (deleted) expenseList({ date, to });
   }, [deleted]);
 
-  // const checkLoggedIn = async () => {
-  //   const loggedIn = await AsyncStorage.getItem('user');
-  //   if (!loggedIn) navigation?.navigate('Login');
-  //   else setMe(JSON.parse(loggedIn));
-  // };
+  const checkLoggedIn = async () => {
+    if (!authUser) {
+      const loggedIn = await AsyncStorage.getItem('user');
+      if (!loggedIn) navigation?.navigate(screens.Login);
+      else dispatch(setAuthUser(JSON.parse(loggedIn)));
+    }
+  };
 
-  // useEffect(() => {
-  //   checkLoggedIn();
-  // }, [isFocused]);
+  useEffect(() => {
+    checkLoggedIn();
+  }, [isFocused]);
+
   useEffect(() => {
     if (dateRange.start && dateRange.end && !showPicker) setValue('custom');
   }, [dateRange, showPicker]);
@@ -108,8 +113,8 @@ const ExpensesScreen = ({ route, navigation }) => {
     <View>
       <TopBar
         name={
-          data?.memberss?.[0]?.name ? (
-            data.memberss[0].name
+          data?.memberss?.[0]?.name || data?.own ? (
+            data.memberss?.[0]?.name || data.own
           ) : (
             <View className="flex flex-row items-center gap-2">
               <Text className={`text-lg font-semibold text-white`}>{to}</Text>

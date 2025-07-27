@@ -10,7 +10,7 @@ import {
   View,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { backgroundLight, primary } from '../utils/global';
+import { backgroundLight, primary, screens } from '../utils/global';
 import { RootStackParamList } from '../utils/types';
 import TopBar from '../components/TopBar';
 import Group from '../components/Group';
@@ -20,11 +20,14 @@ import { groupListAPI } from '../api/apis';
 import { editProfileAPI } from '../api/auth';
 import { alertListAPI } from '../api/notification';
 import { RefreshControl } from 'react-native-gesture-handler';
+import { useDispatch, useSelector } from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { setAuthUser } from '../redux/auth';
+import { navigationRef } from '../navigation/AppNavigator';
 
-type NavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
-type Props = { navigation: NavigationProp };
-
-const HomeScreen: React.FC<Props> = ({ navigation }) => {
+const HomeScreen: React.FC = ({ navigation }) => {
+  const dispatch = useDispatch();
+  const { authUser } = useSelector(state => state);
   const [selected, setSelected] = useState<string[]>([]);
 
   const message = (msg: string) => ToastAndroid.show(msg, ToastAndroid.LONG);
@@ -37,12 +40,22 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const groupList = async () => {
-    let data = [];
+    let data = [
+      {
+        _id: authUser._id,
+        name: `${authUser?.name} (You)`,
+        own: `${authUser?.name} (You)`,
+        members: [],
+        memberss: [],
+        expenses: [],
+        unverifiedCount: 0,
+      },
+    ];
     try {
       setSelected([]);
       setLoading(true);
       const res = await groupListAPI({ hidden: false });
-      if (res?.status === 200) data = res?.data?.data;
+      if (res?.status === 200) data = [...data, ...res?.data?.data];
     } catch (error) {
       // console.log(error?.data || error);
     } finally {
@@ -80,10 +93,11 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const checkLoggedIn = async () => {
-    // const loggedIn = await AsyncStorage.getItem('user');
-    // if (!loggedIn) {
-    //   // navigation?.navigate('Login');
-    // } else setMe(JSON.parse(loggedIn));
+    if (!authUser) {
+      const loggedIn = await AsyncStorage.getItem('user');
+      if (!loggedIn) navigationRef?.navigate(screens.Login);
+      else dispatch(setAuthUser(JSON.parse(loggedIn)));
+    }
   };
 
   useEffect(() => {
@@ -98,7 +112,43 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <>
-      <TopBar name="Groups" search />
+      <TopBar
+        name="Expenses"
+        extra={
+          <View className="flex-row items-center gap-5">
+            <Pressable
+              className="relative flex items-center justify-center"
+              onPress={() => navigation.navigate(screens.QR, { tab: 'Scan' })}
+            >
+              <IonIcon
+                className="absolute"
+                name="scan"
+                size={25}
+                color="#fff"
+              />
+              <IonIcon
+                name="qr-code"
+                size={15}
+                color="#fff"
+                className="absolute"
+              />
+            </Pressable>
+            <Pressable
+              // onPress={() => navigation.navigate(screens.Notifications)}
+              className="flex-row items-center gap-1"
+            >
+              <IonIcon name="notifications" size={24} color="#fff" />
+              {unreadCount > 0 && (
+                <View className="absolute -right-1 -top-1 bg-red-500 rounded-full px-1  py-0.5">
+                  <Text className="text-white text-xs">
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </Text>
+                </View>
+              )}
+            </Pressable>
+          </View>
+        }
+      />
 
       <ScrollView
         className="flex-1"

@@ -9,8 +9,7 @@ import {
   Share,
 } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
-import { editProfileAPI, profileAPI } from '../api/auth';
-import { AsyncStorage } from 'react-native';
+import { editProfileAPI, logoutAPI, profileAPI } from '../api/auth';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import { ProgressBar } from 'rn-inkpad';
 import Avatar from '../components/Avatar';
@@ -22,8 +21,9 @@ import ConfirmLogout from '../components/ConfirmLogout';
 import Popup from '../components/Popup';
 import { primary, screens } from '../utils/global';
 import TopBar from '../components/TopBar';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setAuthUser } from '../redux/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type Props = { navigation: any };
 
@@ -33,7 +33,8 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
     [profile, setProfile] = useState({}),
     [content, setContent] = useState(),
     [loading, setLoading] = useState<boolean>(false),
-    dispatch = useDispatch();
+    dispatch = useDispatch(),
+    { authUser } = useSelector(state => state);
 
   const getProfile = async () => {
     try {
@@ -84,35 +85,31 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
 
   const logout = async () => {
     try {
+      console.log('Logging out...');
       const res = await logoutAPI();
       if (res?.status === 200) {
         await AsyncStorage.clear();
         setContent(null);
-        checkLoggedIn();
+        dispatch(setAuthUser(null));
       }
     } catch (error) {
       console.log(error?.data || error);
     }
   };
 
-  const share = async (name, secretCode) => {
+  const share = async message => {
     try {
-      await Share.share({
-        message: secretCode,
-      });
+      await Share.share({ message });
     } catch (error) {}
   };
 
-  const checkLoggedIn = async () => {
-    // const loggedIn = await AsyncStorage.getItem('user');
-    // if (!loggedIn) navigation?.navigate('Login');
-    // else getProfile();
+  useEffect(() => {
     getProfile();
-  };
+  }, [isFocused]);
 
   useEffect(() => {
-    checkLoggedIn();
-  }, [isFocused]);
+    !authUser && navigation?.navigate(screens.Login);
+  }, [authUser]);
 
   return (
     <View>
@@ -157,7 +154,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
             label="Secret Code"
             value={profile.secretCode}
             icon="lock-closed"
-            onPress={() => share(profile.name, profile.secretCode)}
+            onPress={() => share(profile.secretCode)}
           />
           <ProfileOpt
             label="Monthly Expense Limit"
@@ -250,7 +247,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
           />
         </>
       )}
-      {content && <Popup content={content} />}
+      {content && <Popup content={content} height={130} width={330} />}
     </View>
   );
 };

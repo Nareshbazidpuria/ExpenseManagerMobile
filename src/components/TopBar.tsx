@@ -9,7 +9,8 @@ const { IosBackHandler } = NativeModules;
 const TopBar: React.FC<{
   name: string | React.ReactNode;
   search?: boolean;
-}> = ({ name, search }) => {
+  extra?: React.ReactNode;
+}> = ({ name, search, extra }) => {
   const navigation = useNavigation();
   const handleBack = () => {
     if (navigation.canGoBack()) navigation.goBack();
@@ -37,6 +38,7 @@ const TopBar: React.FC<{
         </Text>
       </View>
       {search && <IonIcon name="search" size={24} color={background} />}
+      {extra}
     </View>
   );
 };
