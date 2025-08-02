@@ -47,4 +47,6 @@ export const isValidObjectId = /^(?=[a-f\d]{24}$)(\d+[a-f]|[a-f]+\d)/i;
 export const expenseTypes = {
   own: 'own',
   team: 'team',
+  friend: 'friend',
+  group: 'group',
 };

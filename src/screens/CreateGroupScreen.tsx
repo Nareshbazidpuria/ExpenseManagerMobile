@@ -1,5 +1,6 @@
 import {
   ActivityIndicator,
+  Dimensions,
   Pressable,
   ScrollView,
   Text,
@@ -154,14 +155,15 @@ const CreateGroupScreen = ({ navigation, route }) => {
               />
               <Text className={`text-xs text-red-400`}>{error.name}</Text>
               <Text>Members</Text>
-              <ScrollView className={`min-h-12 mt-2 rounded-lg max-h-[400]`}>
-                <View className="flex flex-row flex-wrap items-center justify-between gap-6 p-2">
-                  <Member key={'_id'} name={'You'} close />
+              <ScrollView className={`min-h-12 mt-2 rounded-lg max-h-[320]`}>
+                <View className="flex flex-row flex-wrap items-center gap-2">
+                  <Member key={'_id'} name={'You'} />
                   {payload.members?.map(({ name, _id }) => (
                     <Member key={_id} name={name} close={() => remove(_id)} />
                   ))}
                   <Pressable
                     className="flex justify-center items-center gap-1"
+                    style={{ width: Dimensions.get('screen').width / 4 - 16 }}
                     onPress={() => setVisible(true)}
                   >
                     <View
