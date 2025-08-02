@@ -1,9 +1,4 @@
-import {
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import { useEffect, useState } from 'react';
 import { expenseListAPI } from '../api/apis';
@@ -246,16 +241,17 @@ const ExpensesScreen = ({ route, navigation }) => {
         style={{
           backgroundColor: primary,
         }}
-        onPress={() => setVisible(data || to)}
+        // onPress={() => setVisible(data || to)}
+        onPress={() => navigation.navigate(screens.AddExpense, { data, edit })}
       >
         <IonIcon color="white" name="add" size={28} />
       </Pressable>
-      <AddExpense
+      {/* <AddExpense
         visible={visible}
         setVisible={setVisible}
         edit={edit}
         setEdit={setEdit}
-      />
+      /> */}
     </View>
   );
 };

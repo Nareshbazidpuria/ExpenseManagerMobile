@@ -1,11 +1,14 @@
 import { Axios } from './axios';
 
 const group = '/api/group/',
-  member = '/api/user';
+  member = '/api/user',
+  friends = '/api/user/friends';
 
 export const createGroupAPI = payload => Axios.post(group, payload);
 export const groupListAPI = params => Axios.get(group, { params });
 export const groupDetailsAPI = id => Axios.get(group + id);
 export const editGroupAPI = (id, payload) => Axios.put(group + id, payload);
 export const getMemberAPI = params => Axios.get(member, { params });
+
 export const addFriendAPI = id => Axios.post(`${member}/${id}`);
+export const friendListAPI = params => Axios.get(friends, { params });

@@ -9,8 +9,6 @@ import TabBar from '../components/TabBar';
 // import TopBar from '../components/TopBar';
 import { NavigationContainer } from '@react-navigation/native';
 import { primary, screens } from '../utils/global';
-import MatchScreen from '../screens/MatchScreen';
-import StatsScreen from '../screens/StatsScreen';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'react-native';
@@ -22,6 +20,7 @@ import ExpensesScreen from '../screens/ExpensesScreen';
 import ReportScreen from '../screens/ReportScreen';
 import LoginSignup from '../screens/LoginSignup';
 import ForgotPwd from '../screens/ForgotPwd';
+import AddExpenseScreen from '../screens/AddExpenseScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -69,6 +68,10 @@ const AppNavigator: React.FC = () => {
               component={CreateGroupScreen}
             />
             <Stack.Screen name={screens.Expenses} component={ExpensesScreen} />
+            <Stack.Screen
+              name={screens.AddExpense}
+              component={AddExpenseScreen}
+            />
             <Stack.Screen name={screens.Login} component={LoginSignup} />
             <Stack.Screen name={screens.ForgotPwd} component={ForgotPwd} />
           </Stack.Navigator>

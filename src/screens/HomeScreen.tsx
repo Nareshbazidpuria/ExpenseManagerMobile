@@ -41,15 +41,15 @@ const HomeScreen: React.FC = ({ navigation }) => {
     setLoading(true);
 
     let data = [
-      {
-        _id: authUser._id,
-        name: `${authUser?.name} (You)`,
-        own: `${authUser?.name} (You)`,
-        members: [],
-        memberss: [],
-        expenses: [],
-        unverifiedCount: 0,
-      },
+      // {
+      //   _id: authUser._id,
+      //   name: `${authUser?.name} (You)`,
+      //   own: `${authUser?.name} (You)`,
+      //   members: [],
+      //   memberss: [],
+      //   expenses: [],
+      //   unverifiedCount: 0,
+      // },
     ];
     try {
       setSelected([]);

@@ -1,26 +1,35 @@
 import {
   ActivityIndicator,
+  Pressable,
   ScrollView,
   Text,
   TextInput,
   ToastAndroid,
   View,
 } from 'react-native';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { primary, screens } from '../utils/global';
 import Bicon from '../components/Bicon';
 import Member from '../components/Member';
-import { createGroupAPI, getMemberAPI } from '../api/group';
+import { createGroupAPI, friendListAPI, getMemberAPI } from '../api/group';
 import Avatar from '../components/Avatar';
 // import Info from '../components/Info';
 import TopBar from '../components/TopBar';
+import IonIcon from 'react-native-vector-icons/Ionicons';
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 
 const CreateGroupScreen = ({ navigation, route }) => {
   const message = msg => ToastAndroid.show(msg, ToastAndroid.LONG);
 
-  const [loading, setLoading] = useState();
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState({});
   const [payload, setPayload] = useState({});
+  const [freinds, setFreinds] = useState([]);
+  const [visible, setVisible] = useState<boolean>(false);
+
+  const bottomSheetRef = useRef<BottomSheet>(null);
+
+  // callbacks
 
   const validatePayload = () => {
     const errors = {},
@@ -54,6 +63,20 @@ const CreateGroupScreen = ({ navigation, route }) => {
       else console.log(error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const friendList = async (params = {}) => {
+    let data = [];
+    try {
+      // setLoading(true);
+      const res = await friendListAPI(params);
+      if (res?.status === 200) data = res?.data?.data;
+    } catch (error) {
+      console.log(error);
+    } finally {
+      // setLoading(false);
+      setFreinds(data);
     }
   };
 
@@ -106,8 +129,12 @@ const CreateGroupScreen = ({ navigation, route }) => {
     }
   }, [route?.params?.code]);
 
+  useEffect(() => {
+    friendList();
+  }, []);
+
   return (
-    <View>
+    <View className="flex-1">
       <TopBar name="Create a New Group" />
       <View className={`p-4`}>
         {loading ? (
@@ -126,22 +153,26 @@ const CreateGroupScreen = ({ navigation, route }) => {
                 onChangeText={name => setPayload({ ...payload, name })}
               />
               <Text className={`text-xs text-red-400`}>{error.name}</Text>
-              <Text>Member's Secret Code</Text>
-              <TextInput
-                className={`border-b border-gray-400 `}
-                value={payload.secretCode}
-                onChangeText={onSecretCode}
-                autoCapitalize="characters"
-              />
-              <Text className={`text-xs text-red-400`}>{error.secretCode}</Text>
               <Text>Members</Text>
-              <ScrollView
-                className={`border border-gray-400 min-h-12 mt-2 rounded-lg max-h-64`}
-              >
-                <Member key={'_id'} name={'You'} />
-                {payload.members?.map(({ name, _id }) => (
-                  <Member key={_id} name={name} close={() => remove(_id)} />
-                ))}
+              <ScrollView className={`min-h-12 mt-2 rounded-lg max-h-[400]`}>
+                <View className="flex flex-row flex-wrap items-center justify-between gap-6 p-2">
+                  <Member key={'_id'} name={'You'} close />
+                  {payload.members?.map(({ name, _id }) => (
+                    <Member key={_id} name={name} close={() => remove(_id)} />
+                  ))}
+                  <Pressable
+                    className="flex justify-center items-center gap-1"
+                    onPress={() => setVisible(true)}
+                  >
+                    <View
+                      className="flex justify-center items-center h-12 w-12 rounded-full"
+                      style={{ backgroundColor: primary }}
+                    >
+                      <IonIcon name="add" size={28} color="#ffffff" />
+                    </View>
+                    <Text>Add more</Text>
+                  </Pressable>
+                </View>
               </ScrollView>
               <Bicon
                 title="Create"
@@ -153,6 +184,50 @@ const CreateGroupScreen = ({ navigation, route }) => {
           </>
         )}
       </View>
+      {visible && (
+        <BottomSheet ref={bottomSheetRef}>
+          <BottomSheetView className="py-2 px-5 max-h-[600]">
+            <ScrollView className="max-h-[500]">
+              {freinds?.map(({ name, _id }) => (
+                <Pressable
+                  key={_id}
+                  className={`p-2 flex flex-row items-center justify-between`}
+                  onPress={() =>
+                    setPayload(prev => ({
+                      ...prev,
+                      members: payload.members
+                        ?.map(member => member._id)
+                        .includes(_id)
+                        ? [...(prev?.members || [])].filter(
+                            member => member._id !== _id,
+                          )
+                        : [...(prev?.members || []), { name, _id }],
+                    }))
+                  }
+                >
+                  <View className="flex flex-row items-center gap-3">
+                    <Avatar value={name} />
+                    <Text className="font-bold text-lg">{name}</Text>
+                  </View>
+                  {payload.members?.map(member => member._id).includes(_id) && (
+                    <IonIcon
+                      name="checkmark-circle"
+                      size={28}
+                      style={{ color: primary }}
+                    />
+                  )}
+                </Pressable>
+              ))}
+            </ScrollView>
+            <Bicon
+              title="Done"
+              cls="my-10"
+              txtCls="font-bold text-base"
+              onPress={() => setVisible(false)}
+            />
+          </BottomSheetView>
+        </BottomSheet>
+      )}
       {/* <Info /> */}
     </View>
   );

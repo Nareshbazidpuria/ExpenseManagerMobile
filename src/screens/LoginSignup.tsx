@@ -55,6 +55,7 @@ const LoginSignup = ({ navigation }) => {
   const login = async () => {
     try {
       setLoading(true);
+      route?.params?.clear && (route.params.clear = false);
       if (validatePayload()) return;
       const res = signUp ? await signupAPI(payload) : await loginAPI(payload);
       if ([200, 201].includes(res.status)) {
@@ -90,6 +91,7 @@ const LoginSignup = ({ navigation }) => {
 
   useEffect(() => {
     checkAuth();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFocused, authUser]);
 
   useEffect(() => {
@@ -99,6 +101,7 @@ const LoginSignup = ({ navigation }) => {
       setPayload(data);
     }
     setError({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signUp]);
 
   useEffect(() => {
