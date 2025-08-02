@@ -29,6 +29,7 @@ import Avatar from '../components/Avatar';
 import SplitMember from '../components/SplitMember';
 import { CheckBox } from 'rn-inkpad';
 import SplitFriend from '../components/SplitFriend';
+import Slider from '@react-native-community/slider';
 
 const AddExpenseScreen = (
   {
@@ -63,7 +64,6 @@ const AddExpenseScreen = (
         ? [data?._id]
         : [],
     ),
-    [isCustom, setIsCustom] = useState<boolean>(false),
     [friendSplitValue, setFriendSplitValue] = useState<number>(100),
     { authUser } = useSelector(state => state);
 
@@ -168,7 +168,9 @@ const AddExpenseScreen = (
   //     .catch(e => console.log(e));
   // }, [isFocused]);
 
-  console.log(authUser);
+  useEffect(() => {
+    if (selected.length !== 2) setFriendSplitValue(100);
+  }, [selected.length]);
 
   return (
     <>
@@ -382,30 +384,8 @@ const AddExpenseScreen = (
         )}
         {type === expenseTypes.friend && (
           <View className="mt-2">
-            <View className="flex flex-row items-center justify-between">
-              <Text>Split Expense</Text>
-              <View className="flex flex-row items-center gap-2">
-                <CheckBox
-                  checked={isCustom}
-                  onChange={setIsCustom}
-                  title="Customize"
-                  iconColor={primary}
-                />
-                <TextInput
-                  value={friendSplitValue.toString()}
-                  onChangeText={amount => {
-                    (Number(amount) || 0) <= 100 &&
-                      (Number(amount) || 0) > 0 &&
-                      setFriendSplitValue(Number(amount) || 0);
-                  }}
-                  inputMode="numeric"
-                  keyboardType="numeric"
-                  readOnly={!isCustom}
-                  className="border p-0.5 border-gray-300 text-black"
-                />
-              </View>
-            </View>
-            <ScrollView className="p-2 border border-gray-400 mt-3 rounded-lg max-h-[300]">
+            <Text>Split Expense</Text>
+            <View className="p-2 border border-gray-400 mt-3 rounded-lg">
               <SplitFriend
                 og={`${authUser.name?.trim().split(' ')[0]} (You)`}
                 value={authUser.name}
@@ -418,12 +398,26 @@ const AddExpenseScreen = (
               <SplitFriend
                 value={data.name}
                 selected={selected}
-                setSelected={setSelected}
                 id={data._id}
                 amount={payload.amount}
                 percentage={friendSplitValue}
+                msg="Cannot unselect friend"
               />
-            </ScrollView>
+              {selected.length === 2 && (
+                <Slider
+                  // eslint-disable-next-line react-native/no-inline-styles
+                  style={{ width: '100%', height: 10, paddingVertical: 18 }}
+                  minimumValue={5}
+                  maximumValue={100}
+                  step={1}
+                  value={friendSplitValue}
+                  onValueChange={setFriendSplitValue}
+                  minimumTrackTintColor={primary}
+                  maximumTrackTintColor="#ccc"
+                  thumbTintColor={primary}
+                />
+              )}
+            </View>
           </View>
         )}
         <Bicon

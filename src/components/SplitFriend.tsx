@@ -3,6 +3,7 @@ import Avatar from './Avatar';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import { primary } from '../utils/global';
 import React from 'react';
+import { showToast } from '../utils/Toast';
 
 interface SplitFriendProps {
   og?: string;
@@ -12,6 +13,7 @@ interface SplitFriendProps {
   amount?: number;
   setSelected?: React.Dispatch<React.SetStateAction<string[]>>;
   percentage?: number;
+  msg?: string;
 }
 
 const SplitFriend: React.FC<SplitFriendProps> = ({
@@ -22,11 +24,13 @@ const SplitFriend: React.FC<SplitFriendProps> = ({
   amount = 0,
   setSelected = () => {},
   percentage = 50,
+  msg = '',
 }) => {
   const onPress = () => {
     selected.includes(id)
       ? setSelected([...selected].filter(e => e !== id))
       : setSelected(prev => [...prev, id]);
+    if (msg) showToast('info', msg);
   };
 
   return (
