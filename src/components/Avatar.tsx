@@ -6,7 +6,10 @@ import React, { useState } from 'react';
 import { primary } from '../utils/global';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 
-const Avatar: React.FC<{ value: string; w?: number }> = ({ value, w = 50 }) => {
+const Avatar: React.FC<{ value?: string; w?: number }> = ({
+  value = '',
+  w = 50,
+}) => {
   const originalValue = value?.trim?.();
   value = value
     .split(' ')
@@ -16,7 +19,10 @@ const Avatar: React.FC<{ value: string; w?: number }> = ({ value, w = 50 }) => {
   const [visible, setVisible] = useState<boolean>(false);
 
   const renderAvatar = (value: string, w: number) => (
-    <Pressable onPress={() => setVisible(true)}>
+    <Pressable
+      onPress={() => setVisible(true)}
+      className=" flex items-center justify-center"
+    >
       {['Nᴀʀᴇsʜ Bᴀᴢɪᴅᴘᴜʀɪᴀ', 'Naresh Bazidpuria', 'Tanvi Negi'].includes(
         originalValue,
       ) ? (
@@ -71,12 +77,12 @@ const Avatar: React.FC<{ value: string; w?: number }> = ({ value, w = 50 }) => {
                 onPress={() => setVisible(false)}
               />
               <View className="flex justify-between h-full items-center">
-                <Text className="mx-auto m-3">
+                <Text className="flex items-center p-5 h-[90%]">
                   {renderAvatar(value, Dimensions.get('screen').width - 80)}
                 </Text>
-                <Text className="bg-[#00000020] p-2 text-center text-lg w-full">
-                  {originalValue}
-                </Text>
+                <View className="w-full h-[10%] bg-[#00000020] flex justify-center">
+                  <Text className="text-center text-lg">{originalValue}</Text>
+                </View>
               </View>
             </>
           }

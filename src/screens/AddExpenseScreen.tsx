@@ -25,6 +25,10 @@ import Bicon from '../components/Bicon';
 // import { AsyncStorage } from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import IonIcon from 'react-native-vector-icons/Ionicons';
+import Avatar from '../components/Avatar';
+import SplitMember from '../components/SplitMember';
+import { CheckBox } from 'rn-inkpad';
+import SplitFriend from '../components/SplitFriend';
 
 const AddExpenseScreen = (
   {
@@ -37,7 +41,7 @@ const AddExpenseScreen = (
 ) => {
   const route = useRoute();
   const data = route?.params?.data || {};
-  const type = data.type || 'group';
+  const type = data.type || 'friend';
   const //  to = typeof visible === 'object' ? visible?._id : visible,
     other = useRef(null),
     dropdownRef = useRef(null),
@@ -52,6 +56,15 @@ const AddExpenseScreen = (
     [error, setError] = useState({ amount: '', purpose: '', additional: '' }),
     [addOptions, setAddOptions] = useState(['Write your own ...']),
     [additional, setAdditional] = useState<string>(''),
+    [selected, setSelected] = useState<string[]>(
+      type === expenseTypes.group
+        ? data?.members?.map((id: string) => id)
+        : type === expenseTypes.friend
+        ? [data?._id]
+        : [],
+    ),
+    [isCustom, setIsCustom] = useState<boolean>(false),
+    [friendSplitValue, setFriendSplitValue] = useState<number>(100),
     { authUser } = useSelector(state => state);
 
   // const valid = payload => {
@@ -341,18 +354,81 @@ const AddExpenseScreen = (
         )}
 
         {type === expenseTypes.group && (
-          <View className="flex flex-row items-center gap-2 mt-2">
+          <View className="mt-2">
             <Text>
               Expense will be divided among {data?.members?.length} members
             </Text>
-            {/* <IonIcon name="pencil" size={16} color={primary} /> */}
+            <ScrollView className="p-2 border border-gray-400 mt-3 rounded-lg max-h-[300]">
+              <SplitMember
+                og={`${authUser.name?.trim().split(' ')[0]} (You)`}
+                value={authUser.name}
+                selected={selected}
+                setSelected={setSelected}
+                id={authUser._id}
+                amount={payload.amount}
+              />
+              {data.memberss.map((member, index: number) => (
+                <SplitMember
+                  key={index}
+                  value={member?.name}
+                  selected={selected}
+                  setSelected={setSelected}
+                  id={member?._id}
+                  amount={payload.amount}
+                />
+              ))}
+            </ScrollView>
           </View>
         )}
-        {/* <Text className="mt-2">Split Expense</Text> */}
-
+        {type === expenseTypes.friend && (
+          <View className="mt-2">
+            <View className="flex flex-row items-center justify-between">
+              <Text>Split Expense</Text>
+              <View className="flex flex-row items-center gap-2">
+                <CheckBox
+                  checked={isCustom}
+                  onChange={setIsCustom}
+                  title="Customize"
+                  iconColor={primary}
+                />
+                <TextInput
+                  value={friendSplitValue.toString()}
+                  onChangeText={amount => {
+                    (Number(amount) || 0) <= 100 &&
+                      (Number(amount) || 0) > 0 &&
+                      setFriendSplitValue(Number(amount) || 0);
+                  }}
+                  inputMode="numeric"
+                  keyboardType="numeric"
+                  readOnly={!isCustom}
+                  className="border p-0.5 border-gray-300 text-black"
+                />
+              </View>
+            </View>
+            <ScrollView className="p-2 border border-gray-400 mt-3 rounded-lg max-h-[300]">
+              <SplitFriend
+                og={`${authUser.name?.trim().split(' ')[0]} (You)`}
+                value={authUser.name}
+                selected={selected}
+                setSelected={setSelected}
+                id={authUser._id}
+                amount={payload.amount}
+                percentage={100 - friendSplitValue}
+              />
+              <SplitFriend
+                value={data.name}
+                selected={selected}
+                setSelected={setSelected}
+                id={data._id}
+                amount={payload.amount}
+                percentage={friendSplitValue}
+              />
+            </ScrollView>
+          </View>
+        )}
         <Bicon
           title="Add Expense"
-          cls="w-full mt-5"
+          cls="w-full mt-5 mb-10"
           txtCls="font-bold text-base"
           onPress={() => {
             if (!payload.amount || !payload.purpose) {
