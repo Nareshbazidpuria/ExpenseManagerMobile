@@ -18,7 +18,8 @@ import { setAuthUser } from '../redux/auth';
 const ExpensesScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const { authUser } = useSelector(state => state);
-  const { data } = route.params || {};
+  const { data = {} } = route.params || {};
+  const { name, type, members } = data;
   const [to] = useState(data?.name || expenseTypes.own);
   const isFocused = useIsFocused();
   const [visible, setVisible] = useState(false);
@@ -48,18 +49,24 @@ const ExpensesScreen = ({ route, navigation }) => {
     }
   };
 
-  const [badges, setBadges] = useState({
-    date: { label: 'Last Week', active: true },
-    me: { label: 'My' },
-    other: { label: "Other's" },
-    verified: { label: 'Verified' },
-    notVerified: { label: 'Not Verified' },
-  });
+  const [badges, setBadges] = useState(
+    type === expenseTypes.own
+      ? { date: { label: 'Last Week', active: true } }
+      : {
+          date: { label: 'Last Week', active: true },
+          me: { label: 'My' },
+          other: { label: "Other's" },
+          verified: { label: 'Verified' },
+          notVerified: { label: 'Not Verified' },
+        },
+  );
 
   const expenseList = async params => {
     let resp = [];
     try {
-      if (params?.to && params?.to === data?.name) params.to = data._id;
+      // if (params?.to && params?.to === data?.name)
+      params.to = data._id;
+      if (!params?.date) params.date = new Date().toISOString();
       setRefreshing(true);
       const res = await expenseListAPI(params);
       if (res?.status === 200) resp = res?.data?.data;
@@ -93,7 +100,7 @@ const ExpensesScreen = ({ route, navigation }) => {
       const loggedIn = await AsyncStorage.getItem('user');
       if (!loggedIn) navigation?.navigate(screens.Login);
       else dispatch(setAuthUser(JSON.parse(loggedIn)));
-    }
+    } else expenseList({});
   };
 
   useEffect(() => {
@@ -108,15 +115,15 @@ const ExpensesScreen = ({ route, navigation }) => {
     <View>
       <TopBar
         name={
-          data?.memberss?.[0]?.name || data?.own ? (
-            data.memberss?.[0]?.name || data.own
-          ) : (
+          type === expenseTypes.group ? (
             <View className="flex flex-row items-center gap-2">
-              <Text className={`text-lg font-semibold text-white`}>{to}</Text>
+              <Text className={`text-lg font-semibold text-white`}>{name}</Text>
               <Text className={`text-sm text-gray-200`}>
-                {data?.members?.length} members
+                {members?.length} members
               </Text>
             </View>
+          ) : (
+            name
           )
         }
       />
@@ -187,6 +194,7 @@ const ExpensesScreen = ({ route, navigation }) => {
                       paddingHorizontal: 14,
                       borderRadius: 99,
                       marginHorizontal: 4,
+                      paddingVertical: 6,
                     }}
                     // eslint-disable-next-line react-native/no-inline-styles
                     containerStyle={{

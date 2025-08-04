@@ -26,7 +26,8 @@ const Info = ({}) => {
         </View>
         <Pressable onPress={() => setVisible(false)}>
           <Text
-            className={`text-[${primary}] font-bold text-center p-2 border-t border-[${primary}] text-base`}
+            className={`font-bold text-center p-2 border-t text-base`}
+            style={{ color: primary, borderColor: primary }}
           >
             OK
           </Text>

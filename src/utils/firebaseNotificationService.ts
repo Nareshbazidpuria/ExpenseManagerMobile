@@ -23,12 +23,8 @@ export const requestUserPermission = async () => {
   }
 };
 
-export const getFcmToken = async () => {
-  const token = await messaging().getToken();
-  if (token) {
-    console.log('📲 FCM Token:', token);
-    // TODO: Send token to your server if needed
-  } else {
-    console.log('Failed to get FCM token');
-  }
-};
+export const getFcmToken = () =>
+  messaging()
+    .getToken()
+    .then(token => token)
+    .catch(error => console.log('Error getting FCM token:', error));

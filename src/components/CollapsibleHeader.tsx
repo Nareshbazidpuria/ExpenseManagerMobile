@@ -18,7 +18,8 @@ const CollapsibleHeader = ({ col, setCol, Key, title }) => {
         <Text className={`text-white text-base font-semibold`}>{title}</Text>
         <View className={`flex flex-row gap-2 items-center`}>
           <IonIcon
-            className={`text-base text-white`}
+            className={`text-base`}
+            color={'white'}
             name={`chevron-${
               col?.[Key] || !col?.hasOwnProperty?.(Key) ? 'forward' : 'down'
             }-outline`}

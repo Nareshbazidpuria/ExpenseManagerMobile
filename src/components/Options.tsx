@@ -40,7 +40,8 @@ const Options = ({ setContent, options = [], update }) => {
           className={`border-b border-gray-400 h-10 p-0 w-[85%]`}
         />
         <Pressable
-          className={`bg-[${primary}] p-1 rounded-full`}
+          className={`p-1 rounded-full`}
+          style={{ backgroundColor: primary }}
           onPress={() => {
             if (typing) {
               setOpts([...opts, typing.trim()]);

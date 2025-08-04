@@ -28,7 +28,7 @@ const TotalTeam = ({ date, refresh, group }) => {
   }, [isFocused, date, refresh]);
 
   return (
-    <View className={`py-3 px-2 border border-[${primary}]`}>
+    <View className={`py-3 px-2 border`} style={{ borderColor: primary }}>
       {loading ? (
         <ActivityIndicator color={primary} />
       ) : data?.total ? (

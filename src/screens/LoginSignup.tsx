@@ -17,6 +17,7 @@ import { showToast } from '../utils/Toast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAuthUser } from '../redux/auth';
+import { getFcmToken } from '../utils/firebaseNotificationService';
 
 const LoginSignup = ({ navigation }) => {
   const route = useRoute();
@@ -57,7 +58,9 @@ const LoginSignup = ({ navigation }) => {
       setLoading(true);
       route?.params?.clear && (route.params.clear = false);
       if (validatePayload()) return;
-      const res = signUp ? await signupAPI(payload) : await loginAPI(payload);
+      const res = signUp
+        ? await signupAPI(payload)
+        : await loginAPI({ ...payload, fcmToken: await getFcmToken() });
       if ([200, 201].includes(res.status)) {
         if (signUp) {
           setSignUp(false);

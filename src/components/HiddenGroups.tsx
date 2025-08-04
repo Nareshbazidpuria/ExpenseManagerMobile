@@ -64,7 +64,7 @@ const HiddenGroups = ({ setContent, hiddenGroups, unhide }) => {
                     name={
                       selected.includes(_id) ? 'ellipse' : 'ellipse-outline'
                     }
-                    className={`text-[${primary}]`}
+                    color={primary}
                     size={20}
                   />
                 </Pressable>

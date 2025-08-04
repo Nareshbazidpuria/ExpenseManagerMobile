@@ -3,7 +3,6 @@ import {
   Dimensions,
   Image,
   Keyboard,
-  Modal,
   ScrollView,
   // Pressable,
   Text,
@@ -30,16 +29,17 @@ import SplitMember from '../components/SplitMember';
 import { CheckBox } from 'rn-inkpad';
 import SplitFriend from '../components/SplitFriend';
 import Slider from '@react-native-community/slider';
+import { showToast } from '../utils/Toast';
+import { uploadImages } from '../utils/common';
 
-const AddExpenseScreen = (
-  {
-    // visible,
-    // setVisible,
-    // setRefresh,
-    // edit,
-    // setEdit,
-  },
-) => {
+const AddExpenseScreen = ({
+  navigation,
+  // visible,
+  // setVisible,
+  // setRefresh,
+  // edit,
+  // setEdit,
+}) => {
   const route = useRoute();
   const data = route?.params?.data || {};
   const type = data.type || 'friend';
@@ -47,14 +47,14 @@ const AddExpenseScreen = (
     other = useRef(null),
     dropdownRef = useRef(null),
     isFocused = useIsFocused(),
-    defaultPayload = { amount: 0, purpose: '', additional: '', image: [] },
+    defaultPayload = { amount: 0, purpose: '', additional: '', images: [] },
     message = (msg: string) => ToastAndroid.show(msg, ToastAndroid.LONG),
     [keyB, setKeyB] = useState(false),
     [loading, setLoading] = useState(false),
     [payload, setPayload] = useState(defaultPayload),
     [content, setContent] = useState(),
     // [me, setMe] = useState({}),
-    [error, setError] = useState({ amount: '', purpose: '', additional: '' }),
+    [error, setError] = useState({ amount: '', purpose: '' }),
     [addOptions, setAddOptions] = useState(['Write your own ...']),
     [additional, setAdditional] = useState<string>(''),
     [selected, setSelected] = useState<string[]>(
@@ -67,46 +67,58 @@ const AddExpenseScreen = (
     [friendSplitValue, setFriendSplitValue] = useState<number>(100),
     { authUser } = useSelector(state => state);
 
-  // const valid = payload => {
-  //   const err = {};
-  //   if (!payload.amount) err.amount = 'Please enter amount';
-  //   if (!payload.purpose) err.purpose = 'Please enter purpose';
-  //   if (payload.purpose === 'Write your own ...' && !payload.additional)
-  //     err.additional = 'Please enter other purpose';
-  //   setError(err);
-  //   return !Object.values(err).some(e => e);
-  // };
+  const valid = payload => {
+    const err = { amount: '', purpose: '' };
+    if (!payload.amount) err.amount = 'Please enter amount';
+    if (!payload.purpose) err.purpose = 'Please enter purpose';
+    setError(err);
+    return !Object.values(err).some(e => e);
+  };
 
-  // const addExpense = async () => {
-  //   try {
-  //     setLoading(true);
-  //     if (!valid(payload)) return;
-  //     const res = edit
-  //       ? await editExpenseAPI(edit?._id, { ...payload, to })
-  //       : await addExpenseAPI({ ...payload, to });
-  //     if (res?.status === 201) {
-  //       message(res?.data?.message);
-  //       setVisible(false);
-  //       setPayload(defaultPayload);
-  //       if (setEdit) setEdit();
-  //       if (setRefresh) setRefresh(new Date());
-  //       if (res.data?.data?.message)
-  //         setContent(
-  //           <LimitCrossed
-  //             message={res.data.data.message}
-  //             setContent={setContent}
-  //           />,
-  //         );
-  //     }
-  //   } catch (error) {
-  //     if (error?.data?.message) message(error.data.message);
-  //     else console.log(error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+  const addExpense = async () => {
+    try {
+      setLoading(true);
+      if (!valid(payload)) return;
+      const apiPayload = { ...payload, to: data._id };
+      if (payload.images.length) {
+        const uploadRes = await uploadImages(payload.images);
+        if (uploadRes?.status === 200)
+          apiPayload.images = uploadRes?.data?.data;
+        else
+          return showToast(
+            'error',
+            uploadRes?.data?.message || 'Failed to upload images',
+          );
+      }
+      // const res = edit
+      //   ? await editExpenseAPI(edit?._id, payload )
+      //   : await addExpenseAPI({ ...payload, to:data._id });
+      const res = await addExpenseAPI(apiPayload);
+      if (res?.status === 201) {
+        showToast(
+          'success',
+          res?.data?.message || 'Expense added successfully',
+        );
+        navigation.goBack();
 
-  console.log(data);
+        // if (setEdit) setEdit();
+        // if (setRefresh) setRefresh(new Date());
+        // if (res.data?.data?.message)
+        //   setContent(
+        //     <LimitCrossed
+        //       message={res.data.data.message}
+        //       setContent={setContent}
+        //     />,
+        //   );
+      }
+      // eslint-disable-next-line no-catch-shadow
+    } catch (error) {
+      if (error?.data?.message) showToast('error', error.data.message);
+      else console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const options = {
     mediaType: 'photo',
@@ -116,15 +128,12 @@ const AddExpenseScreen = (
   const pickImage = async () => {
     const result = await launchImageLibrary(options);
     if (result.didCancel) {
-      console.log('User cancelled image picker');
     } else if (result.errorCode) {
-      console.log('ImagePicker Error: ', result.errorMessage);
     } else {
       const asset = result.assets?.[0];
-      console.log('Image URI:', asset?.uri);
       setPayload({
         ...payload,
-        images: [...(payload.images || []), asset?.uri || ''].filter(Boolean),
+        images: [...(payload.images || []), asset].filter(Boolean),
       });
     }
   };
@@ -266,10 +275,14 @@ const AddExpenseScreen = (
             return <Text className="px-3 py-1">{item.label}</Text>;
           }}
           onChange={option => {
+            setError({ ...error, purpose: '' });
             setAdditional('');
             setPayload({ ...payload, purpose: option.value });
           }}
         />
+        {error.purpose && (
+          <Text className="text-red-600 text-xs">{error.purpose}</Text>
+        )}
         <Text className="mt-2">
           Amount<Text className="text-red-600">*</Text>
         </Text>
@@ -278,17 +291,23 @@ const AddExpenseScreen = (
           onChangeText={amount => {
             setPayload({
               ...payload,
-              amount: isNaN(parseInt(amount || 0)) ? 0 : parseInt(amount || 0),
+              amount: isNaN(parseInt(amount || '0'))
+                ? 0
+                : parseInt(amount || '0'),
             });
+            setError({ ...error, amount: '' });
           }}
           inputMode="numeric"
           keyboardType="numeric"
           placeholder="Enter amount"
-          className="border-b border-gray-300 p-2 mb-4 text-black"
+          className="border-b border-gray-300 p-2 text-black"
         />
+        {error.amount && (
+          <Text className="text-red-600 text-xs">{error.amount}</Text>
+        )}
         {/* Selected Images  */}
         {payload.images?.length && (
-          <View className="flex flex-row flex-wrap gap-2 mb-4">
+          <View className="flex flex-row flex-wrap gap-2 my-4">
             {payload.images.map((image, index) => (
               <View
                 key={index}
@@ -309,7 +328,7 @@ const AddExpenseScreen = (
                   className="absolute top-0 right-0 z-10 bg-white rounded-full p-1"
                 />
                 <Image
-                  source={{ uri: image }}
+                  source={{ uri: image.uri }}
                   className="object-cover"
                   style={{
                     width: Dimensions.get('screen').width / 4 - 15,
@@ -321,7 +340,7 @@ const AddExpenseScreen = (
           </View>
         )}
         {(payload.images?.length || 0) < 4 && (
-          <View className="flex flex-row items-center gap-2 justify-end">
+          <View className="flex flex-row items-center gap-2 justify-end mt-4">
             <IonIcon
               name="camera"
               size={24}
@@ -329,18 +348,14 @@ const AddExpenseScreen = (
               onPress={() =>
                 launchCamera(options, res => {
                   if (res.didCancel) {
-                    console.log('User cancelled camera');
                   } else if (res.errorCode) {
-                    console.log('Camera Error: ', res.errorMessage);
                   } else {
                     const asset = res.assets?.[0];
-                    console.log('Camera URI:', asset?.uri);
                     setPayload({
                       ...payload,
-                      images: [
-                        ...(payload.images || []),
-                        asset?.uri || '',
-                      ].filter(Boolean),
+                      images: [...(payload.images || []), asset].filter(
+                        Boolean,
+                      ),
                     });
                   }
                 })
@@ -424,18 +439,7 @@ const AddExpenseScreen = (
           title="Add Expense"
           cls="w-full mt-5 mb-10"
           txtCls="font-bold text-base"
-          onPress={() => {
-            if (!payload.amount || !payload.purpose) {
-              setError({
-                amount: !payload.amount ? 'Please enter amount' : '',
-                purpose: !payload.purpose ? 'Please enter purpose' : '',
-                additional: '',
-              });
-              return;
-            }
-            // addExpense();
-            console.log('Expense added:', payload);
-          }}
+          onPress={addExpense}
         />
       </ScrollView>
     </>

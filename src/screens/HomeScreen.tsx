@@ -10,13 +10,18 @@ import {
   View,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { backgroundLight, primary, screens } from '../utils/global';
+import {
+  backgroundLight,
+  expenseTypes,
+  primary,
+  screens,
+} from '../utils/global';
 import { RootStackParamList } from '../utils/types';
 import TopBar from '../components/TopBar';
 import Group from '../components/Group';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import { useIsFocused } from '@react-navigation/native';
-import { groupListAPI } from '../api/apis';
+import { groupListAPI, groupListHomeAPI } from '../api/apis';
 import { editProfileAPI } from '../api/auth';
 import { alertListAPI } from '../api/notification';
 import { RefreshControl } from 'react-native-gesture-handler';
@@ -41,19 +46,18 @@ const HomeScreen: React.FC = ({ navigation }) => {
     setLoading(true);
 
     let data = [
-      // {
-      //   _id: authUser._id,
-      //   name: `${authUser?.name} (You)`,
-      //   own: `${authUser?.name} (You)`,
-      //   members: [],
-      //   memberss: [],
-      //   expenses: [],
-      //   unverifiedCount: 0,
-      // },
+      {
+        _id: expenseTypes.own,
+        name: `${authUser?.name} (You)`,
+        own: `${authUser?.name} (You)`,
+        unverifiedCount: 0,
+        type: expenseTypes.own,
+      },
     ];
     try {
       setSelected([]);
-      const res = await groupListAPI({ hidden: false });
+      // const res = await groupListAPI({ hidden: false });
+      const res = await groupListHomeAPI();
       if (res?.status === 200) data = [...data, ...res?.data?.data];
     } catch (error) {
       // console.log(error?.data || error);

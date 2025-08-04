@@ -9,7 +9,7 @@ const Individual = ({ data, me, setRefresh }) => {
   const [edit, setEdit] = useState();
 
   return (
-    <View className={`py-3 px-2 border border-[${primary}]`}>
+    <View className={`py-3 px-2 border`} style={{ borderColor: primary }}>
       {data ? (
         <>
           <View className={`flex flex-row flex-wrap`}>

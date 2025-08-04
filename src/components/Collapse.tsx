@@ -1,5 +1,5 @@
-import CollapsibleHeader from "./CollapsibleHeader";
-import Collapsible from "react-native-collapsible";
+import CollapsibleHeader from './CollapsibleHeader';
+import Collapsible from 'react-native-collapsible';
 
 const Collapse = ({ col, setCol, Key, child, title }) => (
   <>

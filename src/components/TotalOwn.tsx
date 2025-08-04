@@ -28,7 +28,7 @@ const TotalOwn = ({ date, refresh }) => {
   }, [isFocused, date, refresh]);
 
   return (
-    <View className={`py-3 px-2 border border-[${primary}]`}>
+    <View className={`py-3 px-2 border`} style={{ borderColor: primary }}>
       {data?.length ? (
         <>
           <View
@@ -37,22 +37,31 @@ const TotalOwn = ({ date, refresh }) => {
             {data.map(({ _id, amount }, i) => (
               <View
                 key={'total-own-' + i}
-                className={`flex flex-row items-center bg-[${primary}] rounded-full p-1`}
+                className={`flex flex-row items-center rounded-full p-1`}
+                style={{ backgroundColor: primary }}
               >
                 <Text
-                  className={`font-semibold text-[${primary}] bg-white rounded-full p-1`}
+                  className={`font-semibold bg-white rounded-full p-1`}
+                  style={{ color: primary }}
                 >
                   ₹{amount}
                 </Text>
-                <Text className={`text-white font-semibold mx-1`}>{_id}</Text>
+                <Text
+                  numberOfLines={1}
+                  className={`text-white font-semibold mx-1 max-w-[85%]`}
+                >
+                  {_id}
+                </Text>
               </View>
             ))}
           </View>
           <View
-            className={`flex flex-row items-center bg-white border border-[${primary}] rounded-full p-1 m-1`}
+            className={`flex flex-row items-center bg-white border rounded-full p-1 m-1`}
+            style={{ borderColor: primary }}
           >
             <Text
-              className={`font-semibold bg-[${primary}] text-white rounded-full p-1`}
+              className={`font-semibold text-white rounded-full p-1`}
+              style={{ backgroundColor: primary }}
             >
               ₹{total}
             </Text>
