@@ -1,133 +1,151 @@
-import {
-  ActivityIndicator,
-  Easing,
-  Pressable,
-  ToastAndroid,
-  View,
-} from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Pressable, ActivityIndicator } from 'react-native';
+import { SwipeListView } from 'react-native-swipe-list-view';
 import IonIcon from 'react-native-vector-icons/Ionicons';
-// import Swipeable from 'react-native-swipeable';
-import { useEffect, useState } from 'react';
 import PurchageItem from './PurchaseItem';
+import { useNavigation } from '@react-navigation/native';
+import { expenseTypes, screens } from '../utils/global';
 import { deleteExpenseAPI, verifyExpenseAPI } from '../api/apis';
-import { Swipeable } from 'react-native-gesture-handler';
-import SwipeList from './SwipeTest';
+import { showToast } from '../utils/Toast';
+import { useSelector } from 'react-redux';
+import { RootState } from '../redux/store';
 
-const SwipeComp = ({ data, swiped, setSwiped, me, setDeleted, setEdit }) => {
-  const message = msg => ToastAndroid.show(msg, ToastAndroid.LONG);
-  const [swipeable, setSwipeable] = useState(null);
-  const [loading, setLoading] = useState(false);
+const SwipeList = ({ data, group, refreshControl }) => {
+  const listRef = useRef(null);
+  const [list, setList] = useState(data);
+  const [loading, setLoading] = useState<{
+    delete: boolean;
+    verify: Record<string, any>;
+  }>({ delete: false, verify: {} });
+  const authUser = useSelector((state: RootState) => state.authUser);
 
-  const deleteExpense = async () => {
-    // try {
-    //   setLoading(true);
-    //   const res = await deleteExpenseAPI(data?._id);
-    //   if (res?.status === 200) {
-    //     message(res?.data?.message);
-    //     setDeleted(data?._id);
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // } finally {
-    //   setLoading(false);
-    //   if (swipeable) swipeable.recenter();
-    // }
+  const reCenter = () =>
+    listRef.current && listRef.current.safeCloseOpenRow?.();
+
+  const deleteExpense = async id => {
+    try {
+      setLoading(prev => ({ ...prev, delete: true }));
+      const res = await deleteExpenseAPI(id);
+      if (res?.status === 200) {
+        showToast('success', res?.data?.message || 'Deleted successfully');
+        setList(list.filter(i => i._id !== id));
+      }
+    } catch (error) {
+      if (error?.data?.message) showToast('error', error.data.message);
+      else console.log(error);
+    } finally {
+      setLoading(prev => ({ ...prev, delete: false }));
+      reCenter();
+    }
   };
 
-  const verifyExpense = async () => {
-    // try {
-    //   setLoading(true);
-    //   const res = await verifyExpenseAPI(data?._id);
-    //   if (res?.status === 200) {
-    //     message(res?.data?.message);
-    //     setDeleted(Date.now());
-    //   }
-    // } catch (error) {
-    //   if (error?.data?.message) message(error.data.message);
-    //   else console.log(error);
-    // } finally {
-    //   setLoading(false);
-    // }
+  const verifyExpense = async id => {
+    try {
+      setLoading(prev => ({ ...prev, verify: { ...prev.verify, [id]: true } }));
+      const res = await verifyExpenseAPI(id);
+      if (res?.status === 200) {
+        // message(res?.data?.message);
+        showToast('success', res?.data?.message || 'Verified successfully');
+        if (list[0].expenseType === expenseTypes.friend)
+          setList(
+            list.map(i =>
+              i._id === id
+                ? {
+                    ...i,
+                    verifiedBy: [...i.verifiedBy, authUser?._id],
+                    verified: true,
+                  }
+                : i,
+            ),
+          );
+        else
+          setList(
+            list.map(i =>
+              i._id === id
+                ? {
+                    ...i,
+                    verifiedBy: [...i.verifiedBy, authUser?._id],
+                    verified:
+                      i.verifiedBy?.length + 1 === group?.members?.length,
+                  }
+                : i,
+            ),
+          );
+      }
+    } catch (error) {
+      if (error?.data?.message) message(error.data.message);
+      else console.log(error);
+    } finally {
+      setLoading(prev => ({
+        ...prev,
+        verify: { ...prev.verify, [id]: false },
+      }));
+    }
   };
 
-  // useEffect(() => {
-  //   if (swipeable && swiped !== data?._id) swipeable.recenter();
-  // }, [swiped]);
+  const navigation = useNavigation();
+  const renderHiddenItem = ({ item }) =>
+    item._id !== 'space' &&
+    item.user?._id === authUser?._id && (
+      <View className="flex-row justify-between items-center px-3 h-full bg-gray-100">
+        {/* Left Edit Button */}
+        <Pressable
+          className="bg-green-600 w-15 h-15 rounded-full items-center justify-center p-4"
+          onPress={() => {
+            reCenter();
+            navigation.navigate(screens.AddExpense, {
+              id: item._id,
+              data: group,
+            });
+          }}
+        >
+          <IonIcon name="pencil" size={20} color="white" />
+        </Pressable>
 
-  // return me?._id === data?.user?._id ? (
-  //   <Swipeable
-  //     onRef={ref => setSwipeable(ref)}
-  //     onSwipeRelease={() => setSwiped(data?._id)}
-  //     rightButtons={[
-  //       <View className={`flex justify-center h-full`}>
-  //         <Pressable
-  //           className={`bg-red-600 m-1.5 w-15 rounded-full h-15 flex items-center justify-center`}
-  //           onPress={deleteExpense}
-  //         >
-  //           {loading ? (
-  //             <ActivityIndicator size={25} color="white" />
-  //           ) : (
-  //             <IonIcon name="trash" color="white" size={25} />
-  //           )}
-  //         </Pressable>
-  //       </View>,
-  //     ]}
-  //     leftButtons={[
-  //       <View className={`flex items-center justify-center h-full`}>
-  //         <Pressable
-  //           className={`bg-green-600 m-1.5 w-15 rounded-full h-15 flex items-center justify-center right-0 absolute`}
-  //           onPress={() => {
-  //             setEdit(data);
-  //             if (swipeable) swipeable.recenter();
-  //           }}
-  //         >
-  //           {loading ? (
-  //             <ActivityIndicator size={25} color="white" />
-  //           ) : (
-  //             <IonIcon name="pencil" color="white" size={25} />
-  //           )}
-  //         </Pressable>
-  //       </View>,
-  //     ]}
-  //     swipeReleaseAnimationConfig={{
-  //       toValue: { x: 0, y: 0 },
-  //       duration: 250,
-  //       easing: Easing.elastic(0.5),
-  //       useNativeDriver: true,
-  //     }}
-  //   >
-  //     <PurchageItem data={data} me={me} />
-  //   </Swipeable>
-  // ) : (
-  //   <PurchageItem
-  //     data={data}
-  //     loading={loading}
-  //     verifyExpense={verifyExpense}
-  //     me={me}
-  //   />
-  // );
-  // return (
-  //   <Swipeable
-  //     renderLeftActions={() => <ActivityIndicator size={25} color="white" />}
-  //     renderRightActions={() => <ActivityIndicator size={25} color="white" />}
-  //   >
-  //     <PurchageItem
-  //       data={data}
-  //       loading={loading}
-  //       verifyExpense={verifyExpense}
-  //       me={me}
-  //     />
-  //   </Swipeable>
-  // );
+        {/* Right Delete Button */}
+        <Pressable
+          className="bg-red-600 w-15 h-15 rounded-full items-center justify-center p-4"
+          onPress={async () => deleteExpense(item._id)}
+        >
+          {loading.delete ? (
+            <ActivityIndicator size={20} color="white" />
+          ) : (
+            <IonIcon name="trash" size={20} color="white" />
+          )}
+        </Pressable>
+      </View>
+    );
+
+  useEffect(() => {
+    setList(data);
+  }, [data]);
 
   return (
-    <SwipeList
-      data={data}
-      loading={loading}
-      deleteExpense={deleteExpense}
-      // setEdit={setEdit}
+    <SwipeListView
+      ref={listRef}
+      data={[...list, { _id: 'space' }]}
+      className="h-[90%]"
+      keyExtractor={item => item._id}
+      renderItem={({ item }) =>
+        item._id === 'space' ? (
+          <View className="h-28" />
+        ) : (
+          <PurchageItem
+            data={item}
+            loading={loading.verify[item._id]}
+            key={item._id}
+            verifyExpense={verifyExpense}
+          />
+        )
+      }
+      renderHiddenItem={renderHiddenItem}
+      leftOpenValue={75}
+      rightOpenValue={-75}
+      disableRightSwipe={false}
+      disableLeftSwipe={false}
+      refreshControl={refreshControl}
     />
   );
 };
 
-export default SwipeComp;
+export default SwipeList;

@@ -29,10 +29,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setAuthUser } from '../redux/auth';
 import { navigationRef } from '../navigation/AppNavigator';
+import { RootState } from '../redux/store';
 
 const HomeScreen: React.FC = ({ navigation }) => {
   const dispatch = useDispatch();
-  const { authUser } = useSelector(state => state);
+  const authUser = useSelector((state: RootState) => state.authUser);
   const [selected, setSelected] = useState<string[]>([]);
 
   const message = (msg: string) => ToastAndroid.show(msg, ToastAndroid.LONG);
@@ -138,7 +139,7 @@ const HomeScreen: React.FC = ({ navigation }) => {
               />
             </Pressable>
             <Pressable
-              // onPress={() => navigation.navigate(screens.Notifications)}
+              onPress={() => navigation.navigate(screens.Notifications)}
               className="flex-row items-center gap-1"
             >
               <IonIcon name="notifications" size={24} color="#fff" />

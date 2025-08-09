@@ -74,3 +74,11 @@ export const uploadImages = async (images: any = []) => {
     return error;
   }
 };
+
+export const safeParse = (data: string, defaultReturn = null) => {
+  try {
+    return JSON.parse(data);
+  } catch (error) {
+    return defaultReturn;
+  }
+};

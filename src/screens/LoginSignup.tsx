@@ -1,6 +1,7 @@
 import {
   ActivityIndicator,
   Dimensions,
+  Platform,
   Text,
   TextInput,
   View,
@@ -18,12 +19,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAuthUser } from '../redux/auth';
 import { getFcmToken } from '../utils/firebaseNotificationService';
+import { RootState } from '../redux/store';
 
 const LoginSignup = ({ navigation }) => {
   const route = useRoute();
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
-  const { authUser } = useSelector(state => state);
+  const authUser = useSelector((state: RootState) => state.authUser);
 
   const [signUp, setSignUp] = useState();
   const [showPassword, setShowPassword] = useState();
@@ -60,7 +62,10 @@ const LoginSignup = ({ navigation }) => {
       if (validatePayload()) return;
       const res = signUp
         ? await signupAPI(payload)
-        : await loginAPI({ ...payload, fcmToken: await getFcmToken() });
+        : await loginAPI({
+            ...payload,
+            fcmToken: Platform.OS === 'android' ? await getFcmToken() : '',
+          });
       if ([200, 201].includes(res.status)) {
         if (signUp) {
           setSignUp(false);

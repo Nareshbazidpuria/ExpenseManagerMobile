@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import {
@@ -11,9 +11,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import { primary, screens } from '../utils/global';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { StatusBar } from 'react-native';
+import { Platform, StatusBar } from 'react-native';
 import { RootState } from '../redux/store';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import QRScreen from '../screens/QRScreen';
 import CreateGroupScreen from '../screens/CreateGroupScreen';
 import ExpensesScreen from '../screens/ExpensesScreen';
@@ -21,6 +21,10 @@ import ReportScreen from '../screens/ReportScreen';
 import LoginSignup from '../screens/LoginSignup';
 import ForgotPwd from '../screens/ForgotPwd';
 import AddExpenseScreen from '../screens/AddExpenseScreen';
+import NotificationScreen from '../screens/NotificationScreen';
+import { requestUserPermission } from '../utils/firebaseNotificationService';
+import messaging from '@react-native-firebase/messaging';
+import { setLastPush } from '../redux/push';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -43,9 +47,39 @@ export let navigationRef: any = null;
 
 const AppNavigator: React.FC = () => {
   navigationRef = useRef(null);
-  const { statusBarColor } = useSelector((state: RootState) => state);
+  const dispatch = useDispatch();
 
-  console.log(statusBarColor);
+  const statusBarColor = useSelector(
+    (state: RootState) => state.statusBarColor,
+  );
+
+  const onFgPush = (push: any) => dispatch(setLastPush(push?.data));
+
+  const onBgPush = (data: any) => {
+    console.log(data);
+  };
+
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      // For cold start (when app is launched from quit state)
+      const unsubscribe = messaging().onNotificationOpenedApp(onBgPush);
+      messaging().getInitialNotification().then(onBgPush);
+      return unsubscribe;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      // For foreground notifications
+      const unsubscribe = messaging().onMessage(onFgPush);
+      return unsubscribe;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    Platform.OS === 'android' && requestUserPermission();
+  }, []);
 
   return (
     <SafeAreaProvider>
@@ -74,6 +108,10 @@ const AppNavigator: React.FC = () => {
             />
             <Stack.Screen name={screens.Login} component={LoginSignup} />
             <Stack.Screen name={screens.ForgotPwd} component={ForgotPwd} />
+            <Stack.Screen
+              name={screens.Notifications}
+              component={NotificationScreen}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </SafeAreaView>

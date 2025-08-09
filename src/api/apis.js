@@ -10,6 +10,7 @@ const uploadImages = '/api/generic/upload-images';
 
 export const expenseListAPI = params => Axios.get(expense, { params });
 export const addExpenseAPI = payload => Axios.post(expense, payload);
+export const getExpenseAPI = id => Axios.get(expense + id);
 export const deleteExpenseAPI = id => Axios.delete(expense + id);
 export const verifyExpenseAPI = id => Axios.patch(expense + id);
 export const editExpenseAPI = (id, payload) => Axios.put(expense + id, payload);

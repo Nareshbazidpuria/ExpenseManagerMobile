@@ -47,7 +47,7 @@ const Comments = ({ data }) => {
         <Text className="text-gray-500">Added on:&nbsp;</Text>
         <Text>{moment(data?.createdAt)?.format('hh:mm A DD/MM/YY')}</Text>
       </Text>
-      {data?.images?.length && (
+      {!!data?.images?.length && (
         <View className="flex flex-row items-center gap-2 mt-2">
           {data?.images?.map((image, index) => (
             // <Image
@@ -76,7 +76,7 @@ const Comments = ({ data }) => {
           ))}
         </View>
       )}
-      {sliderImages?.length && (
+      {!!sliderImages?.length && (
         <Modal visible={!!sliderImages?.length} transparent={true}>
           <Pressable
             onPress={() => setSliderImages([])}

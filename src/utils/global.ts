@@ -50,3 +50,7 @@ export const expenseTypes = {
   friend: 'friend',
   group: 'group',
 };
+
+export const pushTypes = {
+  expenseDetails: 'expenseDetails',
+};

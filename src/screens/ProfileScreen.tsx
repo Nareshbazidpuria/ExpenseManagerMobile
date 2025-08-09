@@ -24,6 +24,7 @@ import TopBar from '../components/TopBar';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAuthUser } from '../redux/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { RootState } from '../redux/store';
 
 type Props = { navigation: any };
 
@@ -34,7 +35,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
     [content, setContent] = useState(),
     [loading, setLoading] = useState<boolean>(false),
     dispatch = useDispatch(),
-    { authUser } = useSelector(state => state);
+    authUser = useSelector((state: RootState) => state.authUser);
 
   const getProfile = async () => {
     try {
@@ -85,7 +86,6 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
 
   const logout = async () => {
     try {
-      console.log('Logging out...');
       const res = await logoutAPI();
       if (res?.status === 200) {
         await AsyncStorage.clear();

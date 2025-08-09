@@ -20,10 +20,13 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
 } from 'react-native-reanimated';
+import { useSelector } from 'react-redux';
+import { RootState } from '../redux/store';
 
-const PurchageItem = ({ data, me, loading, verifyExpense }) => {
+const PurchageItem = ({ data, loading, verifyExpense }) => {
   const [commentsVisible, setCommentsVisible] = useState(false);
   const [details, setDetails] = useState(false);
+  const authUser = useSelector((state: RootState) => state.authUser);
 
   const opacity = useSharedValue(0);
   const translateY = useSharedValue(-10);
@@ -76,8 +79,8 @@ const PurchageItem = ({ data, me, loading, verifyExpense }) => {
               <ActivityIndicator size={20} color={primary} />
             ) : data.verified ? (
               <Image source={verified} className="h-5 w-5" />
-            ) : me?._id === data.user._id ||
-              data.verifiedBy?.includes?.(me?._id) ? (
+            ) : authUser?._id === data.user._id ||
+              data.verifiedBy?.includes?.(authUser?._id) ? (
               <Pressable
                 onPressIn={() => setDetails(true)}
                 onPressOut={() => setDetails(false)}
@@ -88,9 +91,10 @@ const PurchageItem = ({ data, me, loading, verifyExpense }) => {
               <Text
                 className="font-bold"
                 style={{ color: primary }}
-                onPress={verifyExpense}
+                onPress={() => verifyExpense(data?._id)}
               >
                 Verify
+                {/* todo update, loading in add */}
               </Text>
             ))}
         </View>

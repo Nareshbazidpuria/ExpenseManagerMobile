@@ -4,9 +4,10 @@ import QRCode from 'react-native-qrcode-svg';
 import { backgroundLight } from '../utils/global';
 import { useSelector } from 'react-redux';
 import Avatar from './Avatar';
+import { RootState } from '../redux/store';
 
 const MyQR: React.FC = () => {
-  const { authUser } = useSelector(state => state);
+  const authUser = useSelector((state: RootState) => state.authUser);
 
   return authUser ? (
     <View className="flex-1 items-center justify-center">

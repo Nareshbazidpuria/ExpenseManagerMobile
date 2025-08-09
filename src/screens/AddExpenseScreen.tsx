@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
 // import SelectDropdown from 'react-native-select-dropdown';
-import { addExpenseAPI, editExpenseAPI } from '../api/apis';
+import { addExpenseAPI, editExpenseAPI, getExpenseAPI } from '../api/apis';
 import { expenseTypes, primary } from '../utils/global';
 import Popup from './Popup';
 import LimitCrossed from './LimitCrossed';
@@ -31,6 +31,8 @@ import SplitFriend from '../components/SplitFriend';
 import Slider from '@react-native-community/slider';
 import { showToast } from '../utils/Toast';
 import { uploadImages } from '../utils/common';
+import { baseURL } from '../api/axios';
+import { RootState } from '../redux/store';
 
 const AddExpenseScreen = ({
   navigation,
@@ -40,16 +42,16 @@ const AddExpenseScreen = ({
   // edit,
   // setEdit,
 }) => {
-  const route = useRoute();
-  const data = route?.params?.data || {};
-  const type = data.type || 'friend';
-  const //  to = typeof visible === 'object' ? visible?._id : visible,
+  const route = useRoute(),
+    //  to = typeof visible === 'object' ? visible?._id : visible,
+    id = route?.params?.id,
     other = useRef(null),
     dropdownRef = useRef(null),
     isFocused = useIsFocused(),
     defaultPayload = { amount: 0, purpose: '', additional: '', images: [] },
     message = (msg: string) => ToastAndroid.show(msg, ToastAndroid.LONG),
     [keyB, setKeyB] = useState(false),
+    [data, setData] = useState(route?.params?.data || {}),
     [loading, setLoading] = useState(false),
     [payload, setPayload] = useState(defaultPayload),
     [content, setContent] = useState(),
@@ -58,14 +60,14 @@ const AddExpenseScreen = ({
     [addOptions, setAddOptions] = useState(['Write your own ...']),
     [additional, setAdditional] = useState<string>(''),
     [selected, setSelected] = useState<string[]>(
-      type === expenseTypes.group
-        ? data?.members?.map((id: string) => id)
-        : type === expenseTypes.friend
+      data.type === expenseTypes.group
+        ? data?.members?.map((i: string) => i)
+        : data.type === expenseTypes.friend
         ? [data?._id]
         : [],
     ),
     [friendSplitValue, setFriendSplitValue] = useState<number>(100),
-    { authUser } = useSelector(state => state);
+    authUser = useSelector((state: RootState) => state.authUser);
 
   const valid = payload => {
     const err = { amount: '', purpose: '' };
@@ -75,26 +77,75 @@ const AddExpenseScreen = ({
     return !Object.values(err).some(e => e);
   };
 
+  const getExpense = async () => {
+    try {
+      setLoading(true); // todo: manage separate loading state
+      const res = await getExpenseAPI(id);
+      if (res?.status === 200) {
+        // console.log(res?.data?.data);
+        const apiPayload = res?.data?.data || {};
+        if (apiPayload?.images?.length)
+          apiPayload.images = apiPayload?.images?.map((i: string) => ({
+            uri: `${baseURL}${i}`,
+            edit: true,
+          }));
+        // setSelected(apiPayload?.members?.map((i: string) => i));
+        if (apiPayload.splitedAmount)
+          setFriendSplitValue(apiPayload.splitedAmount);
+        if (apiPayload.splitedIn) setSelected(apiPayload.splitedIn);
+        setPayload(apiPayload);
+      }
+      // eslint-disable-next-line no-catch-shadow
+    } catch (error) {
+      if (error?.data?.message) showToast('error', error.data.message);
+      else console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const addExpense = async () => {
     try {
+      //splitedIn
       setLoading(true);
       if (!valid(payload)) return;
-      const apiPayload = { ...payload, to: data._id };
+      const apiPayload = {
+        ...payload,
+        to: data._id,
+        expenseType: data.type,
+        splitedIn: selected,
+      };
+      // todo manual split
+      if (data.type === expenseTypes.friend)
+        apiPayload.splitedAmount = friendSplitValue;
       if (payload.images.length) {
-        const uploadRes = await uploadImages(payload.images);
-        if (uploadRes?.status === 200)
-          apiPayload.images = uploadRes?.data?.data;
-        else
-          return showToast(
-            'error',
-            uploadRes?.data?.message || 'Failed to upload images',
+        const alreadyUploaded = payload.images.filter((i: any) => i?.edit),
+          notUploaded = payload.images.filter((i: any) => !i?.edit);
+
+        if (notUploaded.length) {
+          const uploadRes = await uploadImages(notUploaded);
+          if (uploadRes?.status === 200)
+            apiPayload.images = [
+              ...alreadyUploaded.map((i: any) => i.uri.replace(baseURL, '')),
+              ...uploadRes?.data?.data,
+            ];
+          else
+            return showToast(
+              'error',
+              uploadRes?.data?.message || 'Failed to upload images',
+            );
+        } else
+          apiPayload.images = alreadyUploaded.map((i: any) =>
+            i.uri.replace(baseURL, ''),
           );
       }
       // const res = edit
       //   ? await editExpenseAPI(edit?._id, payload )
       //   : await addExpenseAPI({ ...payload, to:data._id });
-      const res = await addExpenseAPI(apiPayload);
-      if (res?.status === 201) {
+      const res = id
+        ? await editExpenseAPI(id, apiPayload)
+        : await addExpenseAPI(apiPayload);
+      if ([201, 200].includes(res?.status)) {
         showToast(
           'success',
           res?.data?.message || 'Expense added successfully',
@@ -154,15 +205,17 @@ const AddExpenseScreen = ({
 
   // useEffect(() => {
   //   if (edit) {
-  //     setVisible(edit?.to);
   //     setPayload({
   //       amount: edit?.amount,
-  //       purpose: addOptions?.includes(edit?.purpose)
-  //         ? edit?.purpose
-  //         : addOptions[0],
-  //       additional: edit?.purpose,
+  //       purpose: edit?.purpose,
+  //       additional: edit?.purpose || '',
+  //       images: (edit?.images || []).map((i: string) => ({
+  //         uri: baseURL + i,
+  //         edit: true,
+  //       })),
   //     });
   //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [edit]);
 
   // useEffect(() => {
@@ -178,17 +231,23 @@ const AddExpenseScreen = ({
   // }, [isFocused]);
 
   useEffect(() => {
-    if (selected.length !== 2) setFriendSplitValue(100);
+    if (selected.length !== 2) setFriendSplitValue(payload.amount || 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selected.length]);
+
+  useEffect(() => {
+    if (id) getExpense();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   return (
     <>
-      <TopBar name="Add Expense" />
+      <TopBar name={id ? 'Edit Expense' : 'Add Expense'} />
       <ScrollView className="flex-1 bg-white p-4">
         <Text className="text-center text-lg font-semibold mb-4">
           {data.name}
           <Text className="text-gray-500">
-            {type === expenseTypes.group &&
+            {data.type === expenseTypes.group &&
               ` (${data.members?.length} members)`}
           </Text>
         </Text>
@@ -288,14 +347,16 @@ const AddExpenseScreen = ({
         </Text>
         <TextInput
           value={payload.amount?.toString()}
-          onChangeText={amount => {
-            setPayload({
-              ...payload,
-              amount: isNaN(parseInt(amount || '0'))
-                ? 0
-                : parseInt(amount || '0'),
-            });
-            setError({ ...error, amount: '' });
+          onChangeText={text => {
+            const amount = isNaN(parseInt(text || '0', 10))
+              ? 0
+              : parseInt(text || '0', 10);
+            // const prevPercentage =
+            //   (friendSplitValue * 100) / (payload.amount || 1);
+            setPayload({ ...payload, amount });
+            amount && setError({ ...error, amount: '' });
+            // setFriendSplitValue(Math.floor((amount * prevPercentage) / 100));
+            setFriendSplitValue(amount);
           }}
           inputMode="numeric"
           keyboardType="numeric"
@@ -306,9 +367,9 @@ const AddExpenseScreen = ({
           <Text className="text-red-600 text-xs">{error.amount}</Text>
         )}
         {/* Selected Images  */}
-        {payload.images?.length && (
+        {!!payload.images?.length && (
           <View className="flex flex-row flex-wrap gap-2 my-4">
-            {payload.images.map((image, index) => (
+            {payload.images.map((image: any, index) => (
               <View
                 key={index}
                 className="border border-gray-300 rounded-lg overflow-hidden"
@@ -370,7 +431,7 @@ const AddExpenseScreen = ({
           </View>
         )}
 
-        {type === expenseTypes.group && (
+        {data.type === expenseTypes.group && (
           <View className="mt-2">
             <Text>
               Expense will be divided among {data?.members?.length} members
@@ -397,7 +458,7 @@ const AddExpenseScreen = ({
             </ScrollView>
           </View>
         )}
-        {type === expenseTypes.friend && (
+        {data.type === expenseTypes.friend && (
           <View className="mt-2">
             <Text>Split Expense</Text>
             <View className="p-2 border border-gray-400 mt-3 rounded-lg">
@@ -408,22 +469,24 @@ const AddExpenseScreen = ({
                 setSelected={setSelected}
                 id={authUser._id}
                 amount={payload.amount}
-                percentage={100 - friendSplitValue}
+                percentage={
+                  100 - (friendSplitValue * 100) / (payload.amount || 1)
+                }
               />
               <SplitFriend
                 value={data.name}
                 selected={selected}
                 id={data._id}
                 amount={payload.amount}
-                percentage={friendSplitValue}
+                percentage={(friendSplitValue * 100) / (payload.amount || 1)}
                 msg="Cannot unselect friend"
               />
               {selected.length === 2 && (
                 <Slider
                   // eslint-disable-next-line react-native/no-inline-styles
                   style={{ width: '100%', height: 10, paddingVertical: 18 }}
-                  minimumValue={5}
-                  maximumValue={100}
+                  minimumValue={0}
+                  maximumValue={payload.amount || 0}
                   step={1}
                   value={friendSplitValue}
                   onValueChange={setFriendSplitValue}
@@ -436,7 +499,7 @@ const AddExpenseScreen = ({
           </View>
         )}
         <Bicon
-          title="Add Expense"
+          title={id ? 'Update' : 'Add Expense'}
           cls="w-full mt-5 mb-10"
           txtCls="font-bold text-base"
           onPress={addExpense}
