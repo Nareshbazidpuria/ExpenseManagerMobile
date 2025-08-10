@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
-  ToastAndroid,
   Alert,
   Dimensions,
   ActivityIndicator,
@@ -25,12 +24,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setAuthUser } from '../redux/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RootState } from '../redux/store';
+import { message } from '../utils/common';
 
 type Props = { navigation: any };
 
 const ProfileScreen: React.FC<Props> = ({ navigation }) => {
-  const message = (msg: string) => ToastAndroid.show(msg, ToastAndroid.LONG),
-    isFocused = useIsFocused(),
+  const isFocused = useIsFocused(),
     [profile, setProfile] = useState({}),
     [content, setContent] = useState(),
     [loading, setLoading] = useState<boolean>(false),
@@ -61,7 +60,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
         setContent(null);
       }
     } catch (error) {
-      if (error?.data?.message) message(error.data.message);
+      if (error?.data?.message) message(error.data.message, 'error');
       // else console.log(error);
     }
   };
@@ -79,7 +78,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
         setContent(null);
       }
     } catch (error) {
-      if (error?.data?.message) message(error.data.message);
+      if (error?.data?.message) message(error.data.message, 'error');
       else console.log(error);
     }
   };
@@ -97,18 +96,20 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
     }
   };
 
-  const share = async message => {
+  const share = async text => {
     try {
-      await Share.share({ message });
+      await Share.share({ message: text });
     } catch (error) {}
   };
 
   useEffect(() => {
     getProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFocused]);
 
   useEffect(() => {
     !authUser && navigation?.navigate(screens.Login);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authUser]);
 
   return (

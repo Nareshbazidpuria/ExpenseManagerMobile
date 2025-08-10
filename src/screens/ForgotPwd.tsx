@@ -11,7 +11,7 @@ import Bicon from '../components/Bicon';
 import { Keyboard } from 'react-native';
 import { forgotPwdAPI, resetPwdAPI } from '../api/auth';
 import { CheckBox } from 'rn-inkpad';
-import { showToast } from '../utils/Toast';
+import { message } from '../utils/common';
 // import OTPTextInput from "react-native-otp-textinput";
 
 const ForgotPwd = ({ route, navigation }) => {
@@ -53,7 +53,7 @@ const ForgotPwd = ({ route, navigation }) => {
           setOtpSent(true);
           setPayload({ token: res.data?.data });
         } else navigation.navigate('Login');
-        showToast('success', res.data?.message);
+        message(res.data?.message);
       }
     } catch (error) {
       if (error?.data?.message)

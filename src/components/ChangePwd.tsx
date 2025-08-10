@@ -1,22 +1,16 @@
-import {
-  ActivityIndicator,
-  Text,
-  TextInput,
-  ToastAndroid,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Text, TextInput, View } from 'react-native';
 import Bicon from './Bicon';
 import { useState } from 'react';
 // import CheckBox from 'react-native-check-box';
 import { changePwdAPI } from '../api/auth';
 import { primary } from '../utils/global';
+import { message } from '../utils/common';
 
 const ChangePwd = ({ cancel }) => {
-  const message = msg => ToastAndroid.show(msg, ToastAndroid.LONG);
   const [loading, setLoading] = useState();
   const [error, setError] = useState({});
   const [payload, setPayload] = useState({});
-  const [showPassword, setShowPassword] = useState();
+  const [showPassword, setShowPassword] = useState(); //todo checkbox
 
   const valid = () => {
     const err = {};

@@ -1,6 +1,8 @@
 import moment from 'moment';
 import { DateData } from 'react-native-calendars';
 import { uploadImageApi, uploadImagesApi } from '../api/apis';
+import { Platform, ToastAndroid } from 'react-native';
+import { showToast } from './Toast';
 
 export const stringToDateData = (dateString: string): DateData => {
   const date = moment(dateString, 'YYYY-MM-DD');
@@ -81,4 +83,9 @@ export const safeParse = (data: string, defaultReturn = null) => {
   } catch (error) {
     return defaultReturn;
   }
+};
+
+export const message = (text: string, type?: 'success' | 'error' | 'info') => {
+  if (Platform.OS === 'ios' || type) showToast(type, text);
+  else ToastAndroid.show(text, ToastAndroid.SHORT);
 };

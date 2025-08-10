@@ -12,16 +12,12 @@ import { useEffect, useState } from 'react';
 import { expenseListAPI } from '../api/apis';
 import { useIsFocused } from '@react-navigation/native';
 import SwipeComp from '../components/SwipeComp';
-// import { AsyncStorage } from 'react-native';
 import { primary, expenseTypes, screens, pushTypes } from '../utils/global';
-// import AddExpense from '../components/AddExpense';
 import Bicon from '../components/Bicon';
 import { Dropdown } from 'react-native-element-dropdown';
 import DateRangePicker from '../components/DateRangePicker';
 import TopBar from '../components/TopBar';
 import { useDispatch, useSelector } from 'react-redux';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { setAuthUser } from '../redux/auth';
 import { safeParse } from '../utils/common';
 import { RootState } from '../redux/store';
 import { setLastPush } from '../redux/push';
@@ -29,20 +25,12 @@ import moment from 'moment';
 
 const ExpensesScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
-  const authUser = useSelector((state: RootState) => state.authUser);
   const lastPush: any = useSelector((state: RootState) => state.lastPush);
   const { data = {} } = route.params || {};
   const { name, type, members } = data;
-  const [to] = useState(data?.name || expenseTypes.own);
   const isFocused = useIsFocused();
-  const [visible, setVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [date, setDate] = useState();
   const [list, setList] = useState<any>([]);
-  const [swiped, setSwiped] = useState();
-  // const [me, setMe] = useState();
-  const [deleted, setDeleted] = useState();
-  const [edit, setEdit] = useState();
   const [dateRange, setDateRange] = useState({ start: null, end: null });
   const [loading, setLoading] = useState<boolean>(false);
   const [value, setValue] = useState('week');
@@ -140,15 +128,6 @@ const ExpensesScreen = ({ route, navigation }) => {
     }
   };
 
-  const checkLoggedIn = async () => {
-    if (!authUser) {
-      const loggedIn = await AsyncStorage.getItem('user');
-      if (!loggedIn) navigation?.navigate(screens.Login);
-      else dispatch(setAuthUser(JSON.parse(loggedIn)));
-    }
-    // else expenseList({});
-  };
-
   const onLastPush = () => {
     if (lastPush.type === pushTypes.expenseDetails) {
       const pushData = safeParse(lastPush.data);
@@ -167,11 +146,6 @@ const ExpensesScreen = ({ route, navigation }) => {
       }
     }
   };
-
-  useEffect(() => {
-    checkLoggedIn();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isFocused]);
 
   useEffect(() => {
     if (dateRange.start && dateRange.end && !showPicker) {
@@ -193,20 +167,22 @@ const ExpensesScreen = ({ route, navigation }) => {
   }, [lastPush]);
 
   useEffect(() => {
-    const filter: Record<string, any> = {};
-    filter.tags = Object.entries(badges)
-      .filter(([key, value]) => {
-        if (key === 'date') {
-          filter.startDate = value.start;
-          filter.endDate = value.end;
-        }
-        return key !== 'date' && value.active;
-      })
-      .map(([key]) => key);
+    if (isFocused) {
+      const filter: Record<string, any> = {};
+      filter.tags = Object.entries(badges)
+        .filter(([key, value]) => {
+          if (key === 'date') {
+            filter.startDate = value.start;
+            filter.endDate = value.end;
+          }
+          return key !== 'date' && value.active;
+        })
+        .map(([key]) => key);
 
-    expenseList(filter);
+      expenseList(filter);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [badges]);
+  }, [badges, refreshing, isFocused]);
 
   return (
     <View className="flex-1">
@@ -312,10 +288,7 @@ const ExpensesScreen = ({ route, navigation }) => {
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
-              onRefresh={() => {
-                setRefreshing(true);
-                expenseList();
-              }}
+              onRefresh={() => setRefreshing(true)}
             />
           }
         />

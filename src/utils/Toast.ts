@@ -3,7 +3,7 @@ import Toast from 'react-native-toast-message';
 type ToastType = 'success' | 'error' | 'info';
 
 export const showToast = (
-  type: ToastType,
+  type: ToastType = 'success',
   text1: string,
   text2?: string,
   position: 'top' | 'bottom' = 'top',

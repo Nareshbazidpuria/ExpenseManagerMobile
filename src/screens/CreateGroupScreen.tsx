@@ -5,7 +5,6 @@ import {
   ScrollView,
   Text,
   TextInput,
-  ToastAndroid,
   View,
 } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
@@ -18,10 +17,9 @@ import Avatar from '../components/Avatar';
 import TopBar from '../components/TopBar';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import { message } from '../utils/common';
 
 const CreateGroupScreen = ({ navigation, route }) => {
-  const message = msg => ToastAndroid.show(msg, ToastAndroid.LONG);
-
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState({});
   const [payload, setPayload] = useState({});
@@ -60,7 +58,7 @@ const CreateGroupScreen = ({ navigation, route }) => {
         message(res.data?.message);
       }
     } catch (error) {
-      if (error?.data?.message) message(error.data.message);
+      if (error?.data?.message) message(error.data.message, 'error');
       else console.log(error);
     } finally {
       setLoading(false);
@@ -187,50 +185,57 @@ const CreateGroupScreen = ({ navigation, route }) => {
         )}
       </View>
       {visible && (
-        <BottomSheet ref={bottomSheetRef}>
-          <BottomSheetView className="py-2 px-5 max-h-[600]">
-            <ScrollView className="max-h-[500]">
-              {freinds?.map(({ name, _id }) => (
-                <Pressable
-                  key={_id}
-                  className={`p-2 flex flex-row items-center justify-between`}
-                  onPress={() =>
-                    setPayload(prev => ({
-                      ...prev,
-                      members: payload.members
-                        ?.map(member => member._id)
-                        .includes(_id)
-                        ? [...(prev?.members || [])].filter(
-                            member => member._id !== _id,
-                          )
-                        : [...(prev?.members || []), { name, _id }],
-                    }))
-                  }
-                >
-                  <View className="flex flex-row items-center gap-3">
-                    <Avatar value={name} />
-                    <Text className="font-bold text-lg">{name}</Text>
-                  </View>
-                  {payload.members?.map(member => member._id).includes(_id) && (
-                    <IonIcon
-                      name="checkmark-circle"
-                      size={28}
-                      style={{ color: primary }}
-                    />
-                  )}
-                </Pressable>
-              ))}
-            </ScrollView>
-            <Bicon
-              title="Done"
-              cls="my-10"
-              txtCls="font-bold text-base"
-              onPress={() => setVisible(false)}
-            />
-          </BottomSheetView>
-        </BottomSheet>
+        <>
+          <Pressable
+            className="absolute top-0 left-0 right-0 bottom-0 bg-[#000000] opacity-50"
+            onPress={() => setVisible(false)}
+          />
+          <BottomSheet ref={bottomSheetRef}>
+            <BottomSheetView className="py-2 px-5 max-h-[600]">
+              <ScrollView className="max-h-[500]">
+                {freinds?.map(({ name, _id }) => (
+                  <Pressable
+                    key={_id}
+                    className={`p-2 flex flex-row items-center justify-between`}
+                    onPress={() =>
+                      setPayload(prev => ({
+                        ...prev,
+                        members: payload.members
+                          ?.map(member => member._id)
+                          .includes(_id)
+                          ? [...(prev?.members || [])].filter(
+                              member => member._id !== _id,
+                            )
+                          : [...(prev?.members || []), { name, _id }],
+                      }))
+                    }
+                  >
+                    <View className="flex flex-row items-center gap-3">
+                      <Avatar value={name} />
+                      <Text className="font-bold text-lg">{name}</Text>
+                    </View>
+                    {payload.members
+                      ?.map(member => member._id)
+                      .includes(_id) && (
+                      <IonIcon
+                        name="checkmark-circle"
+                        size={28}
+                        style={{ color: primary }}
+                      />
+                    )}
+                  </Pressable>
+                ))}
+              </ScrollView>
+              <Bicon
+                title="Done"
+                cls="my-10"
+                txtCls="font-bold text-base"
+                onPress={() => setVisible(false)}
+              />
+            </BottomSheetView>
+          </BottomSheet>
+        </>
       )}
-      {/* <Info /> */}
     </View>
   );
 };

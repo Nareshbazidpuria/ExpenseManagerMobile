@@ -6,9 +6,9 @@ import PurchageItem from './PurchaseItem';
 import { useNavigation } from '@react-navigation/native';
 import { expenseTypes, screens } from '../utils/global';
 import { deleteExpenseAPI, verifyExpenseAPI } from '../api/apis';
-import { showToast } from '../utils/Toast';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
+import { message } from '../utils/common';
 
 const SwipeList = ({ data, group, refreshControl }) => {
   const listRef = useRef(null);
@@ -27,11 +27,11 @@ const SwipeList = ({ data, group, refreshControl }) => {
       setLoading(prev => ({ ...prev, delete: true }));
       const res = await deleteExpenseAPI(id);
       if (res?.status === 200) {
-        showToast('success', res?.data?.message || 'Deleted successfully');
+        message(res?.data?.message || 'Deleted successfully');
         setList(list.filter(i => i._id !== id));
       }
     } catch (error) {
-      if (error?.data?.message) showToast('error', error.data.message);
+      if (error?.data?.message) message(error.data.message, 'error');
       else console.log(error);
     } finally {
       setLoading(prev => ({ ...prev, delete: false }));
@@ -45,7 +45,7 @@ const SwipeList = ({ data, group, refreshControl }) => {
       const res = await verifyExpenseAPI(id);
       if (res?.status === 200) {
         // message(res?.data?.message);
-        showToast('success', res?.data?.message || 'Verified successfully');
+        message(res?.data?.message || 'Verified successfully');
         if (list[0].expenseType === expenseTypes.friend)
           setList(
             list.map(i =>

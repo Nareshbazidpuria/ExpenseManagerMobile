@@ -1,17 +1,11 @@
-import {
-  ActivityIndicator,
-  Text,
-  TextInput,
-  ToastAndroid,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Text, TextInput, View } from 'react-native';
 import Bicon from './Bicon';
 import { useState } from 'react';
 import { editProfileAPI } from '../api/auth';
 import { primary } from '../utils/global';
+import { message } from '../utils/common';
 
 const EditProfile = ({ profile, cancel }) => {
-  const message = msg => ToastAndroid.show(msg, ToastAndroid.LONG);
   const [loading, setLoading] = useState();
   const [error, setError] = useState({});
   const [payload, setPayload] = useState({
@@ -38,7 +32,7 @@ const EditProfile = ({ profile, cancel }) => {
         cancel?.();
       }
     } catch (error) {
-      if (error?.data?.message) message(error.data.message);
+      if (error?.data?.message) message(error.data.message, 'error');
       else console.log(error);
     } finally {
       setLoading(false);

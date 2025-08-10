@@ -4,8 +4,7 @@ import { Calendar, DateData } from 'react-native-calendars';
 import moment from 'moment';
 import { primary } from '../utils/global';
 import Bicon from './Bicon';
-import { showToast } from '../utils/Toast';
-import { getMarkedDates } from '../utils/common';
+import { getMarkedDates, message } from '../utils/common';
 
 type Props = {
   range: {
@@ -32,7 +31,7 @@ const DateRangePicker: React.FC<Props> = ({ setShow, range, setRange }) => {
     const selected = day.dateString;
 
     if (moment(selected).isAfter(moment().endOf('day')))
-      return showToast('error', 'Cannot select future date');
+      return message('Cannot select future date', 'error');
 
     if (!range.start || (range.start && range.end)) {
       setRange({ start: selected, end: null });

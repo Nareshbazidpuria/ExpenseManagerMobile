@@ -6,7 +6,6 @@ import {
   BottomTabBarProps,
 } from '@react-navigation/bottom-tabs';
 import TabBar from '../components/TabBar';
-// import TopBar from '../components/TopBar';
 import { NavigationContainer } from '@react-navigation/native';
 import { primary, screens } from '../utils/global';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -25,6 +24,9 @@ import NotificationScreen from '../screens/NotificationScreen';
 import { requestUserPermission } from '../utils/firebaseNotificationService';
 import messaging from '@react-native-firebase/messaging';
 import { setLastPush } from '../redux/push';
+import InsightsScreen from '../screens/InsightsScreen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { setAuthUser } from '../redux/auth';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -36,7 +38,7 @@ const Tabs = () => {
       <Tab.Navigator screenOptions={{ headerShown: false }} tabBar={tabs}>
         <Tab.Screen name={screens.Home} component={HomeScreen} />
         <Tab.Screen name={screens.Reports} component={ReportScreen} />
-        <Tab.Screen name={screens.Insights} component={ReportScreen} />
+        <Tab.Screen name={screens.Insights} component={InsightsScreen} />
         <Tab.Screen name={screens.Profile} component={ProfileScreen} />
       </Tab.Navigator>
     </>
@@ -48,10 +50,18 @@ export let navigationRef: any = null;
 const AppNavigator: React.FC = () => {
   navigationRef = useRef(null);
   const dispatch = useDispatch();
-
+  const authUser = useSelector((state: RootState) => state.authUser);
   const statusBarColor = useSelector(
     (state: RootState) => state.statusBarColor,
   );
+
+  const checkLoggedIn = async () => {
+    if (!authUser) {
+      const loggedIn = await AsyncStorage.getItem('user');
+      if (!loggedIn) navigationRef?.current?.navigate(screens.Login);
+      else dispatch(setAuthUser(JSON.parse(loggedIn)));
+    }
+  };
 
   const onFgPush = (push: any) => dispatch(setLastPush(push?.data));
 
@@ -81,6 +91,11 @@ const AppNavigator: React.FC = () => {
     Platform.OS === 'android' && requestUserPermission();
   }, []);
 
+  useEffect(() => {
+    checkLoggedIn();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <SafeAreaProvider>
       <SafeAreaView
@@ -95,7 +110,7 @@ const AppNavigator: React.FC = () => {
         />
         <NavigationContainer ref={navigationRef}>
           <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="Tabs" component={Tabs} />
+            <Stack.Screen name={screens.Tabs} component={Tabs} />
             <Stack.Screen name={screens.QR} component={QRScreen} />
             <Stack.Screen
               name={screens.CreateGroup}

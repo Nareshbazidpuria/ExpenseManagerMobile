@@ -3,16 +3,9 @@ import { Platform, Pressable, View } from 'react-native';
 import { Text } from '@react-navigation/elements';
 import { useTheme } from '@react-navigation/native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import {
-  active,
-  backgroundLight,
-  background,
-  primary,
-  screens,
-} from '../utils/global';
+import { active, background, primary, screens } from '../utils/global';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
-// import LinearGradient from 'react-native-linear-gradient';
 
 const TabBar = ({ descriptors, navigation, state }: BottomTabBarProps) => {
   const { colors } = useTheme();
@@ -63,7 +56,6 @@ const TabBar = ({ descriptors, navigation, state }: BottomTabBarProps) => {
 
             return (
               <Pressable
-                // href={buildHref(route.name, route.params)}
                 accessibilityState={isFocused ? { selected: true } : {}}
                 accessibilityLabel={options.tabBarAccessibilityLabel}
                 testID={options.tabBarButtonTestID}

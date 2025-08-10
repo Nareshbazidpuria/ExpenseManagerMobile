@@ -20,7 +20,7 @@ import Bicon from './Bicon';
 import { isValidObjectId, screens } from '../utils/global';
 import { useIsFocused } from '@react-navigation/native';
 import { addFriendAPI } from '../api/group';
-import { showToast } from '../utils/Toast';
+import { message } from '../utils/common';
 
 const { IosBackHandler } = NativeModules;
 
@@ -74,8 +74,8 @@ const ScanQR: React.FC = ({ navigation }) => {
       const res = await addFriendAPI(scannedId);
       if (res?.status === 200) {
         navigation.navigate(screens.Tabs);
-        showToast('success', res?.data?.message || 'Friend added successfully');
-      } else res?.data?.message && showToast('error', res?.data?.message);
+        message(res?.data?.message || 'Friend added successfully');
+      } else res?.data?.message && message(res?.data?.message, 'error');
     } catch (error) {
       console.log(error);
       if (error?.data?.message)

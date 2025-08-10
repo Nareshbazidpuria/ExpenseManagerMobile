@@ -3,10 +3,8 @@ import {
   Dimensions,
   Keyboard,
   Modal,
-  // Pressable,
   Text,
   TextInput,
-  ToastAndroid,
   View,
 } from 'react-native';
 import Bicon from './Bicon';
@@ -17,6 +15,7 @@ import { expenseTypes, primary } from '../utils/global';
 import Popup from './Popup';
 import LimitCrossed from './LimitCrossed';
 import { useIsFocused } from '@react-navigation/native';
+import { message } from '../utils/common';
 // import { AsyncStorage } from 'react-native';
 
 const AddExpense = ({ visible, setVisible, setRefresh, edit, setEdit }) => {
@@ -24,7 +23,6 @@ const AddExpense = ({ visible, setVisible, setRefresh, edit, setEdit }) => {
     other = useRef(),
     isFocused = useIsFocused(),
     defaultPayload = { amount: 0, purpose: '', additional: '' },
-    message = (msg: string) => ToastAndroid.show(msg, ToastAndroid.LONG),
     [keyB, setKeyB] = useState(false),
     [loading, setLoading] = useState(false),
     [payload, setPayload] = useState(defaultPayload),
@@ -65,7 +63,7 @@ const AddExpense = ({ visible, setVisible, setRefresh, edit, setEdit }) => {
           );
       }
     } catch (error) {
-      if (error?.data?.message) message(error.data.message);
+      if (error?.data?.message) message(error.data.message, 'error');
       else console.log(error);
     } finally {
       setLoading(false);

@@ -3,11 +3,11 @@ import {
   Dimensions,
   Image,
   Keyboard,
+  Pressable,
   ScrollView,
   // Pressable,
   Text,
   TextInput,
-  ToastAndroid,
   View,
 } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
@@ -29,10 +29,10 @@ import SplitMember from '../components/SplitMember';
 import { CheckBox } from 'rn-inkpad';
 import SplitFriend from '../components/SplitFriend';
 import Slider from '@react-native-community/slider';
-import { showToast } from '../utils/Toast';
-import { uploadImages } from '../utils/common';
+import { message, uploadImages } from '../utils/common';
 import { baseURL } from '../api/axios';
 import { RootState } from '../redux/store';
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 
 const AddExpenseScreen = ({
   navigation,
@@ -46,11 +46,12 @@ const AddExpenseScreen = ({
     //  to = typeof visible === 'object' ? visible?._id : visible,
     id = route?.params?.id,
     other = useRef(null),
+    bottomSheetRef = useRef<BottomSheet>(null),
     dropdownRef = useRef(null),
     isFocused = useIsFocused(),
     defaultPayload = { amount: 0, purpose: '', additional: '', images: [] },
-    message = (msg: string) => ToastAndroid.show(msg, ToastAndroid.LONG),
     [keyB, setKeyB] = useState(false),
+    [manual, setManual] = useState<boolean>(false),
     [data, setData] = useState(route?.params?.data || {}),
     [loading, setLoading] = useState(false),
     [payload, setPayload] = useState(defaultPayload),
@@ -59,6 +60,7 @@ const AddExpenseScreen = ({
     [error, setError] = useState({ amount: '', purpose: '' }),
     [addOptions, setAddOptions] = useState(['Write your own ...']),
     [additional, setAdditional] = useState<string>(''),
+    [keyboardVisible, setKeyboardVisible] = useState<number>(0),
     [selected, setSelected] = useState<string[]>(
       data.type === expenseTypes.group
         ? data?.members?.map((i: string) => i)
@@ -97,7 +99,7 @@ const AddExpenseScreen = ({
       }
       // eslint-disable-next-line no-catch-shadow
     } catch (error) {
-      if (error?.data?.message) showToast('error', error.data.message);
+      if (error?.data?.message) message(error.data.message, 'error');
       else console.log(error);
     } finally {
       setLoading(false);
@@ -130,9 +132,9 @@ const AddExpenseScreen = ({
               ...uploadRes?.data?.data,
             ];
           else
-            return showToast(
-              'error',
+            return message(
               uploadRes?.data?.message || 'Failed to upload images',
+              'error',
             );
         } else
           apiPayload.images = alreadyUploaded.map((i: any) =>
@@ -146,10 +148,7 @@ const AddExpenseScreen = ({
         ? await editExpenseAPI(id, apiPayload)
         : await addExpenseAPI(apiPayload);
       if ([201, 200].includes(res?.status)) {
-        showToast(
-          'success',
-          res?.data?.message || 'Expense added successfully',
-        );
+        message(res?.data?.message || 'Expense added successfully');
         navigation.goBack();
 
         // if (setEdit) setEdit();
@@ -164,7 +163,7 @@ const AddExpenseScreen = ({
       }
       // eslint-disable-next-line no-catch-shadow
     } catch (error) {
-      if (error?.data?.message) showToast('error', error.data.message);
+      if (error?.data?.message) message(error.data.message, 'error');
       else console.log(error);
     } finally {
       setLoading(false);
@@ -239,6 +238,14 @@ const AddExpenseScreen = ({
     if (id) getExpense();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  useEffect(() => {
+    Keyboard.addListener('keyboardDidShow', e =>
+      setKeyboardVisible(e.endCoordinates.height),
+    );
+    Keyboard.addListener('keyboardDidHide', () => setKeyboardVisible(0));
+    return () => Keyboard.removeAllListeners('');
+  }, []);
 
   return (
     <>
@@ -460,7 +467,18 @@ const AddExpenseScreen = ({
         )}
         {data.type === expenseTypes.friend && (
           <View className="mt-2">
-            <Text>Split Expense</Text>
+            <View className="flex flex-row justify-between items-baseline">
+              <Text>Split Expense</Text>
+              {selected.length === 2 && (
+                <Text
+                  className="font-semibold text-sm"
+                  style={{ color: primary }}
+                  onPress={() => setManual(true)}
+                >
+                  Split Manually
+                </Text>
+              )}
+            </View>
             <View className="p-2 border border-gray-400 mt-3 rounded-lg">
               <SplitFriend
                 og={`${authUser.name?.trim().split(' ')[0]} (You)`}
@@ -505,6 +523,74 @@ const AddExpenseScreen = ({
           onPress={addExpense}
         />
       </ScrollView>
+      {manual && selected.length === 2 && (
+        <>
+          <Pressable
+            className="absolute top-0 left-0 right-0 bottom-0 bg-[#000000] opacity-50"
+            onPress={() => setManual(false)}
+          />
+          <BottomSheet ref={bottomSheetRef}>
+            <BottomSheetView className="py-2 px-5 max-h-[600] z-10">
+              <Text className="font-bold text-lg mb-2">
+                The amount or percentage you enter will be shared with your
+                friend.
+              </Text>
+
+              <View className="flex flex-row items-center justify-between">
+                <View className="w-[48%]">
+                  <Text className="font-semibold text-gray-400 mb-1">
+                    Amount
+                  </Text>
+                  <TextInput
+                    className="border-b border-gray-400 p-2 w-full text-black"
+                    placeholder="Amount"
+                    value={friendSplitValue.toString()}
+                    onChangeText={text => {
+                      let amount = isNaN(parseInt(text || '0', 10))
+                        ? 0
+                        : parseInt(text || '0', 10);
+                      if (amount > payload.amount) amount = payload.amount;
+                      setFriendSplitValue(amount);
+                    }}
+                    inputMode="numeric"
+                  />
+                </View>
+                <View className="w-[48%]">
+                  <Text className="font-semibold text-gray-400 mb-1">
+                    Percentage (%)
+                  </Text>
+                  <TextInput
+                    className="border-b border-gray-400 p-2 w-full text-black"
+                    placeholder="Percentage"
+                    value={(
+                      (friendSplitValue * 100) /
+                      (payload.amount || 1)
+                    ).toFixed(0)}
+                    onChangeText={text => {
+                      let percentage = isNaN(parseInt(text || '0', 10))
+                        ? 0
+                        : parseInt(text || '0', 10);
+                      if (percentage > 100) percentage = 100;
+                      const amount = Math.round(
+                        (percentage * payload.amount) / 100,
+                      );
+                      setFriendSplitValue(amount);
+                    }}
+                    inputMode="numeric"
+                  />
+                </View>
+              </View>
+              <Bicon
+                title="Done"
+                cls="my-10"
+                txtCls="font-bold text-base"
+                onPress={() => setManual(false)}
+              />
+              <View style={{ height: keyboardVisible }} />
+            </BottomSheetView>
+          </BottomSheet>
+        </>
+      )}
     </>
   );
 };

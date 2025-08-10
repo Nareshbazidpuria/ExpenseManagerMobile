@@ -14,12 +14,12 @@ import { Keyboard } from 'react-native';
 import { loginAPI, signupAPI } from '../api/auth';
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import { CheckBox } from 'rn-inkpad';
-import { showToast } from '../utils/Toast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAuthUser } from '../redux/auth';
 import { getFcmToken } from '../utils/firebaseNotificationService';
 import { RootState } from '../redux/store';
+import { message } from '../utils/common';
 
 const LoginSignup = ({ navigation }) => {
   const route = useRoute();
@@ -69,7 +69,7 @@ const LoginSignup = ({ navigation }) => {
       if ([200, 201].includes(res.status)) {
         if (signUp) {
           setSignUp(false);
-          showToast('success', res.data?.message || 'Signup successful');
+          message(res.data?.message || 'Signup successful');
         } else {
           setPayload({ email: '', password: '' });
           await AsyncStorage.setItem(
@@ -82,7 +82,7 @@ const LoginSignup = ({ navigation }) => {
       }
       // eslint-disable-next-line no-catch-shadow
     } catch (error) {
-      if (error?.data?.message) showToast('error', error.data.message);
+      if (error?.data?.message) message(error.data.message, 'error');
       else console.log(error);
     } finally {
       setLoading(false);

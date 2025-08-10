@@ -3,7 +3,7 @@ import Avatar from './Avatar';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import { primary } from '../utils/global';
 import React from 'react';
-import { showToast } from '../utils/Toast';
+import { message } from '../utils/common';
 
 interface SplitFriendProps {
   og?: string;
@@ -30,7 +30,7 @@ const SplitFriend: React.FC<SplitFriendProps> = ({
     selected.includes(id)
       ? setSelected([...selected].filter(e => e !== id))
       : setSelected(prev => [...prev, id]);
-    if (msg) showToast('info', msg);
+    if (msg) message(msg, 'info');
   };
 
   return (

@@ -6,38 +6,28 @@ import {
   Pressable,
   ScrollView,
   Text,
-  ToastAndroid,
   View,
 } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
 import {
   backgroundLight,
   expenseTypes,
   primary,
   screens,
 } from '../utils/global';
-import { RootStackParamList } from '../utils/types';
 import TopBar from '../components/TopBar';
 import Group from '../components/Group';
 import IonIcon from 'react-native-vector-icons/Ionicons';
-import { useIsFocused } from '@react-navigation/native';
-import { groupListAPI, groupListHomeAPI } from '../api/apis';
+import { groupListHomeAPI } from '../api/apis';
 import { editProfileAPI } from '../api/auth';
 import { alertListAPI } from '../api/notification';
 import { RefreshControl } from 'react-native-gesture-handler';
-import { useDispatch, useSelector } from 'react-redux';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { setAuthUser } from '../redux/auth';
-import { navigationRef } from '../navigation/AppNavigator';
+import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
+import { message } from '../utils/common';
 
 const HomeScreen: React.FC = ({ navigation }) => {
-  const dispatch = useDispatch();
   const authUser = useSelector((state: RootState) => state.authUser);
   const [selected, setSelected] = useState<string[]>([]);
-
-  const message = (msg: string) => ToastAndroid.show(msg, ToastAndroid.LONG);
-  const isFocused = useIsFocused();
   const [refreshing, setRefreshing] = useState(false);
   const [list, setList] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -96,23 +86,12 @@ const HomeScreen: React.FC = ({ navigation }) => {
     }
   };
 
-  const checkLoggedIn = async () => {
-    if (!authUser) {
-      const loggedIn = await AsyncStorage.getItem('user');
-      if (!loggedIn) navigationRef?.navigate(screens.Login);
-      else dispatch(setAuthUser(JSON.parse(loggedIn)));
-    }
-  };
-
-  useEffect(() => {
-    checkLoggedIn();
-  }, [isFocused, refreshing]);
-
   useEffect(() => {
     if (authUser) {
       groupList();
       getUnreadNotificationsCount();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authUser]);
 
   return (
