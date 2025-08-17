@@ -521,6 +521,8 @@ const AddExpenseScreen = ({
           cls="w-full mt-5 mb-10"
           txtCls="font-bold text-base"
           onPress={addExpense}
+          disabled={loading}
+          loading={loading}
         />
       </ScrollView>
       {manual && selected.length === 2 && (

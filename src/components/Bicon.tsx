@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, Text, TouchableOpacity } from 'react-native';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import { primary } from '../utils/global';
 
@@ -12,6 +12,7 @@ const Bicon = ({
   disabled,
   borderColor,
   txtStyle = {},
+  loading,
 }) => (
   <TouchableOpacity
     className={`flex flex-row items-center gap-1 p-2 rounded w-22 justify-center border ${
@@ -23,7 +24,7 @@ const Bicon = ({
       backgroundColor: bg,
       borderColor: borderColor || (bg !== primary ? bg : 'transparent'),
     }}
-    disabled={disabled}
+    disabled={disabled || loading}
   >
     <Text
       className={`${bg === primary ? 'text-white' : ''} ${txtCls}`}
@@ -31,6 +32,12 @@ const Bicon = ({
     >
       {title}
     </Text>
+    {loading && (
+      <ActivityIndicator
+        size={20}
+        color={borderColor || (bg !== primary ? bg : '#ffffff')}
+      />
+    )}
     {name && (
       <IonIcon
         name={name}
