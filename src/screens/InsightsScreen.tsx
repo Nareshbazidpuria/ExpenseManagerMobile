@@ -1053,6 +1053,7 @@ export default function InsightsScreen() {
             />
           </Animated.View>
         )}
+        <View className="h-12" />
       </ScrollView>
     </>
   );
