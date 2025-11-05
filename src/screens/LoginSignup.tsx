@@ -1,12 +1,14 @@
 import {
+  Animated,
   ActivityIndicator,
   Dimensions,
   Platform,
   Text,
   TextInput,
   View,
+  Easing,
 } from 'react-native';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { emailRegex, primary, screens } from '../utils/global';
 import Bicon from '../components/Bicon';
 // import CheckBox from 'react-native-check-box';
@@ -19,23 +21,30 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setAuthUser } from '../redux/auth';
 import { getFcmToken } from '../utils/firebaseNotificationService';
 import { RootState } from '../redux/store';
-import { message } from '../utils/common';
+import { message, shake } from '../utils/common';
 
-const LoginSignup = ({ navigation }) => {
-  const route = useRoute();
+const LoginSignup = ({ navigation }: any) => {
+  const route: any = useRoute();
+  const shakeAnim = useRef(new Animated.Value(0)).current;
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
   const authUser = useSelector((state: RootState) => state.authUser);
-
-  const [signUp, setSignUp] = useState();
-  const [showPassword, setShowPassword] = useState();
-  const [keyboardVisible, setKeyboardVisible] = useState();
-  const [error, setError] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [payload, setPayload] = useState({ email: '', password: '' });
+  const [signUp, setSignUp] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [keyboardVisible, setKeyboardVisible] = useState<boolean>(false);
+  const [error, setError] = useState<{ [key: string]: string }>({});
+  const [loading, setLoading] = useState<boolean>(false);
+  const [payload, setPayload] = useState<{
+    email: string;
+    password: string;
+    name?: string;
+  }>({
+    email: '',
+    password: '',
+  });
 
   const validatePayload = () => {
-    const errors = {};
+    const errors: { [key: string]: string } = {};
     if (signUp) {
       if (!payload.name) errors.name = 'Plaese enter name';
       else if (payload.name.length < 3)
@@ -47,9 +56,9 @@ const LoginSignup = ({ navigation }) => {
     else if (!payload.email?.toLowerCase().match(emailRegex))
       errors.email = 'Plaese enter valid email';
     if (!payload.password) errors.password = 'Plaese enter password';
-    else if (payload.password.length < 8)
+    else if (signUp && payload.password.length < 8)
       errors.password = 'Password should be atleast 8 characters long';
-    else if (payload.password.length > 30)
+    else if (signUp && payload.password.length > 30)
       errors.password = 'Password allows maximum 30 characters';
     setError(errors);
     if (Object.values(errors).length) return 1;
@@ -59,7 +68,7 @@ const LoginSignup = ({ navigation }) => {
     try {
       setLoading(true);
       route?.params?.clear && (route.params.clear = false);
-      if (validatePayload()) return;
+      if (validatePayload()) return shake(shakeAnim);
       const res = signUp
         ? await signupAPI(payload)
         : await loginAPI({
@@ -81,8 +90,11 @@ const LoginSignup = ({ navigation }) => {
         }
       }
       // eslint-disable-next-line no-catch-shadow
-    } catch (error) {
-      if (error?.data?.message) message(error.data.message, 'error');
+    } catch (error: any) {
+      if (error?.data?.key) {
+        setError({ [error.data.key]: error.data.message });
+        shake(shakeAnim);
+      } else if (error?.data?.message) message(error.data.message, 'error');
       else console.log(error);
     } finally {
       setLoading(false);
@@ -94,7 +106,7 @@ const LoginSignup = ({ navigation }) => {
       route.params.clear = false;
       dispatch(setAuthUser(null));
       await AsyncStorage.clear();
-    } else if (authUser) navigation?.navigate(screens.Tabs);
+    } else if (authUser) navigation?.replace(screens.Tabs);
   };
 
   useEffect(() => {
@@ -113,8 +125,8 @@ const LoginSignup = ({ navigation }) => {
   }, [signUp]);
 
   useEffect(() => {
-    Keyboard.addListener('keyboardDidShow', () => setKeyboardVisible(1));
-    Keyboard.addListener('keyboardDidHide', () => setKeyboardVisible(0));
+    Keyboard.addListener('keyboardDidShow', () => setKeyboardVisible(true));
+    Keyboard.addListener('keyboardDidHide', () => setKeyboardVisible(false));
     return () => {
       Keyboard.removeAllListeners('');
     };
@@ -132,7 +144,10 @@ const LoginSignup = ({ navigation }) => {
         paddingBottom: keyboardVisible ? 0 : 50,
       }}
     >
-      <View className={`bg-white w-[90%] p-4 rounded shadow`}>
+      <Animated.View
+        className={`bg-white w-[90%] p-4 rounded shadow`}
+        style={{ transform: [{ translateX: shakeAnim }] }}
+      >
         {loading ? (
           <ActivityIndicator color={primary} size={50} />
         ) : (
@@ -146,7 +161,7 @@ const LoginSignup = ({ navigation }) => {
                   <Text>Name</Text>
                   <TextInput
                     className={`border-b border-gray-400 `}
-                    keyboardType="name-address"
+                    keyboardType="ascii-capable" // todo - verify in real device
                     value={payload.name}
                     onChangeText={name => setPayload({ ...payload, name })}
                   />
@@ -186,7 +201,7 @@ const LoginSignup = ({ navigation }) => {
                     navigation?.navigate(screens.ForgotPwd, payload?.email)
                   }
                 >
-                  Forgot password ?
+                  Forgot password?
                 </Text>
               </Text>
             </View>
@@ -197,7 +212,7 @@ const LoginSignup = ({ navigation }) => {
               onPress={login}
             />
             <Text className={`text-center mt-3`}>
-              {signUp ? 'Already' : "Don't"} have an account ?&nbsp;
+              {signUp ? 'Already' : "Don't"} have an account?&nbsp;
               <Text
                 onPress={() => setSignUp(!signUp)}
                 className={`font-semibold`}
@@ -208,7 +223,7 @@ const LoginSignup = ({ navigation }) => {
             </Text>
           </>
         )}
-      </View>
+      </Animated.View>
     </View>
   );
 };

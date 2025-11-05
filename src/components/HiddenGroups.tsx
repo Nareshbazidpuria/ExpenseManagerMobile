@@ -14,7 +14,7 @@ import { primary } from '../utils/global';
 const HiddenGroups = ({ setContent, hiddenGroups, unhide }) => {
   const [selected, setSelected] = useState([]),
     [list, setList] = useState([]),
-    [loading, setLoading] = useState();
+    [loading, setLoading] = useState<boolean>(false);
 
   const groupList = async () => {
     let data = [];
@@ -33,14 +33,22 @@ const HiddenGroups = ({ setContent, hiddenGroups, unhide }) => {
 
   useEffect(() => {
     groupList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hiddenGroups]);
 
   return (
-    <View className={`p-2`}>
-      {hiddenGroups.length ? (
+    <View className="px-6 py-4">
+      {list.length ? (
         <View>
-          <Text className={`text-center font-bold text-lg`}>Hidden Groups</Text>
-          <ScrollView className={`max-h-70`}>
+          <Text className={`text-center font-bold text-lg mb-2`}>
+            Hidden Groups
+          </Text>
+          <ScrollView
+            // eslint-disable-next-line react-native/no-inline-styles
+            style={{
+              maxHeight: list.length * 40 > 300 ? 300 : list.length * 40,
+            }}
+          >
             {loading ? (
               <View className={`p-20`}>
                 <ActivityIndicator color={primary} size={50} />
@@ -76,6 +84,7 @@ const HiddenGroups = ({ setContent, hiddenGroups, unhide }) => {
               title="Cancel"
               cls="w-[48%]"
               bg="#ffffff"
+              borderColor={primary}
               txtCls="font-bold text-base"
               onPress={() => setContent(null)}
             />

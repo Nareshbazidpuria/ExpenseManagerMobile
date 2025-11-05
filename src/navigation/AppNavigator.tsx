@@ -25,10 +25,9 @@ import { requestUserPermission } from '../utils/firebaseNotificationService';
 import messaging from '@react-native-firebase/messaging';
 import { setLastPush } from '../redux/push';
 import InsightsScreen from '../screens/InsightsScreen';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { setAuthUser } from '../redux/auth';
 import notifee, { AndroidStyle, EventType } from '@notifee/react-native';
 import { safeParse } from '../utils/common';
+import SplashScreen from '../screens/SplashScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -52,18 +51,9 @@ export let navigationRef: any = null;
 const AppNavigator: React.FC = () => {
   navigationRef = useRef(null);
   const dispatch = useDispatch();
-  const authUser = useSelector((state: RootState) => state.authUser);
   const statusBarColor = useSelector(
     (state: RootState) => state.statusBarColor,
   );
-
-  const checkLoggedIn = async () => {
-    if (!authUser) {
-      const loggedIn = await AsyncStorage.getItem('user');
-      if (!loggedIn) navigationRef?.current?.navigate(screens.Login);
-      else dispatch(setAuthUser(JSON.parse(loggedIn)));
-    }
-  };
 
   const onFgPush = async (push: any) => {
     dispatch(setLastPush(push?.data));
@@ -253,11 +243,6 @@ const AppNavigator: React.FC = () => {
     Platform.OS === 'android' && requestUserPermission();
   }, []);
 
-  useEffect(() => {
-    checkLoggedIn();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
     <SafeAreaProvider>
       <SafeAreaView
@@ -272,6 +257,7 @@ const AppNavigator: React.FC = () => {
         />
         <NavigationContainer ref={navigationRef}>
           <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name={screens.Splash} component={SplashScreen} />
             <Stack.Screen name={screens.Tabs} component={Tabs} />
             <Stack.Screen name={screens.QR} component={QRScreen} />
             <Stack.Screen

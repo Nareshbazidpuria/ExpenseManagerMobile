@@ -18,11 +18,11 @@ const Popup: React.FC<{
         }}
       >
         <View
-          style={{
-            width: width || Dimensions.get('screen').width - 40,
-            height: height || Dimensions.get('screen').width,
-          }}
-          className={`bg-white rounded shadow ${cls}`}
+          // style={{
+          //   width: width || Dimensions.get('screen').width - 40,
+          //   height: height || Dimensions.get('screen').width,
+          // }}
+          className={`bg-white rounded m-4 ${cls}`}
         >
           {content}
         </View>

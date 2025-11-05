@@ -24,6 +24,7 @@ export const primary = '#00807b',
   Notifications = 'Notifications',
   Login = 'Login',
   ForgotPwd = 'ForgotPwd',
+  Splash = 'Splash',
   screens = {
     Tabs: 'Tabs',
     Home,
@@ -37,6 +38,7 @@ export const primary = '#00807b',
     Login,
     ForgotPwd,
     AddExpense,
+    Splash,
   };
 
 export const emailRegex =

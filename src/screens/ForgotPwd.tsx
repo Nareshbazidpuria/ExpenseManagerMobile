@@ -1,20 +1,22 @@
 import {
   ActivityIndicator,
+  Animated,
   Dimensions,
   Text,
   TextInput,
   View,
 } from 'react-native';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { emailRegex, primary } from '../utils/global';
 import Bicon from '../components/Bicon';
 import { Keyboard } from 'react-native';
 import { forgotPwdAPI, resetPwdAPI } from '../api/auth';
 import { CheckBox } from 'rn-inkpad';
-import { message } from '../utils/common';
+import { message, shake } from '../utils/common';
 // import OTPTextInput from "react-native-otp-textinput";
 
 const ForgotPwd = ({ route, navigation }) => {
+  const shakeAnim = useRef(new Animated.Value(0)).current;
   const [otpSent, setOtpSent] = useState();
   const [keyboardVisible, setKeyboardVisible] = useState();
   const [error, setError] = useState({});
@@ -44,7 +46,7 @@ const ForgotPwd = ({ route, navigation }) => {
   const reset = async () => {
     try {
       setLoading(true);
-      if (validatePayload()) return;
+      if (validatePayload()) return shake(shakeAnim);
       const res = otpSent
         ? await resetPwdAPI(payload)
         : await forgotPwdAPI(payload);
@@ -56,9 +58,10 @@ const ForgotPwd = ({ route, navigation }) => {
         message(res.data?.message);
       }
     } catch (error) {
-      if (error?.data?.message)
+      if (error?.data?.message) {
         setError({ [otpSent ? 'otp' : 'email']: error.data.message });
-      else console.log(error);
+        shake(shakeAnim);
+      } else console.log(error);
     } finally {
       setLoading(false);
     }
@@ -84,7 +87,10 @@ const ForgotPwd = ({ route, navigation }) => {
         paddingBottom: keyboardVisible ? 0 : 50,
       }}
     >
-      <View className={`bg-white w-[90%] p-4 rounded shadow`}>
+      <Animated.View
+        className={`bg-white w-[90%] p-4 rounded shadow`}
+        style={{ transform: [{ translateX: shakeAnim }] }}
+      >
         {loading ? (
           <ActivityIndicator color={primary} size={50} />
         ) : (
@@ -150,7 +156,7 @@ const ForgotPwd = ({ route, navigation }) => {
             />
           </>
         )}
-      </View>
+      </Animated.View>
     </View>
   );
 };

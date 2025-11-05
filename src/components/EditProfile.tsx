@@ -1,11 +1,11 @@
 import { ActivityIndicator, Text, TextInput, View } from 'react-native';
 import Bicon from './Bicon';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { editProfileAPI } from '../api/auth';
 import { primary } from '../utils/global';
 import { message } from '../utils/common';
 
-const EditProfile = ({ profile, cancel }) => {
+const EditProfile: React.FC<any> = ({ profile, cancel, getProfile }) => {
   const [loading, setLoading] = useState();
   const [error, setError] = useState({});
   const [payload, setPayload] = useState({
@@ -29,6 +29,7 @@ const EditProfile = ({ profile, cancel }) => {
       const res = await editProfileAPI(payload);
       if (res?.status === 200) {
         message(res?.data?.message);
+        getProfile?.(true);
         cancel?.();
       }
     } catch (error) {
@@ -40,52 +41,47 @@ const EditProfile = ({ profile, cancel }) => {
   };
 
   return (
-    <View>
+    <View className="px-6 py-4">
       <Text className={`text-center font-bold text-lg`}>Edit Profile</Text>
-      <View className={`p-4`}>
-        {loading ? (
-          <ActivityIndicator color={primary} size={50} />
-        ) : (
-          <>
-            <View className={`p-2`}>
-              <Text>Name</Text>
-              <TextInput
-                className={`border-b border-gray-400 `}
-                value={payload.name}
-                autoCapitalize="words"
-                onChangeText={name => setPayload({ ...payload, name })}
-              />
-              <Text className={`text-xs text-red-400`}>{error.name}</Text>
-              <Text>Monthly Expense Limit</Text>
-              <TextInput
-                className={`border-b border-gray-400 `}
-                value={payload.monthlyLimit}
-                onChangeText={monthlyLimit =>
-                  setPayload({ ...payload, monthlyLimit })
-                }
-              />
-              <Text className={`text-xs text-red-400`}>
-                {error.monthlyLimit}
-              </Text>
-              <View className={`flex flex-row justify-between`}>
-                <Bicon
-                  title="Cancel"
-                  cls="w-[48%]"
-                  bg="#ffffff"
-                  txtCls="font-bold text-base"
-                  onPress={cancel}
-                />
-                <Bicon
-                  title="Update"
-                  cls="w-[48%]"
-                  txtCls="font-bold text-base"
-                  onPress={update}
-                />
-              </View>
-            </View>
-          </>
-        )}
-      </View>
+      {loading ? (
+        <ActivityIndicator color={primary} size={50} />
+      ) : (
+        <View>
+          <Text>Name</Text>
+          <TextInput
+            className={`border-b border-gray-400 `}
+            value={payload.name}
+            autoCapitalize="words"
+            onChangeText={name => setPayload({ ...payload, name })}
+          />
+          <Text className={`text-xs text-red-400`}>{error.name}</Text>
+          <Text>Monthly Expense Limit</Text>
+          <TextInput
+            className={`border-b border-gray-400 `}
+            value={payload.monthlyLimit}
+            onChangeText={monthlyLimit =>
+              setPayload({ ...payload, monthlyLimit })
+            }
+          />
+          <Text className={`text-xs text-red-400`}>{error.monthlyLimit}</Text>
+          <View className={`flex flex-row justify-between`}>
+            <Bicon
+              title="Cancel"
+              cls="w-[48%]"
+              borderColor={primary}
+              bg="#ffffff"
+              txtCls="font-bold text-base"
+              onPress={cancel}
+            />
+            <Bicon
+              title="Update"
+              cls="w-[48%]"
+              txtCls="font-bold text-base"
+              onPress={update}
+            />
+          </View>
+        </View>
+      )}
     </View>
   );
 };

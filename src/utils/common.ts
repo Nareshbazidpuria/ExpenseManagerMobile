@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { DateData } from 'react-native-calendars';
 import { uploadImageApi, uploadImagesApi } from '../api/apis';
-import { Platform, ToastAndroid } from 'react-native';
+import { Animated, Easing, Platform, ToastAndroid } from 'react-native';
 import { showToast } from './Toast';
 
 export const stringToDateData = (dateString: string): DateData => {
@@ -77,7 +77,7 @@ export const uploadImages = async (images: any = []) => {
   }
 };
 
-export const safeParse = (data: string, defaultReturn = null) => {
+export const safeParse = (data: string, defaultReturn: any = null) => {
   try {
     return JSON.parse(data);
   } catch (error) {
@@ -88,4 +88,40 @@ export const safeParse = (data: string, defaultReturn = null) => {
 export const message = (text: string, type?: 'success' | 'error' | 'info') => {
   if (Platform.OS === 'ios' || type) showToast(type, text);
   else ToastAndroid.show(text, ToastAndroid.SHORT);
+};
+
+export const shake = shakeAnim => {
+  shakeAnim.setValue(0);
+  Animated.sequence([
+    Animated.timing(shakeAnim, {
+      toValue: 10,
+      duration: 50,
+      easing: Easing.linear,
+      useNativeDriver: true,
+    }),
+    Animated.timing(shakeAnim, {
+      toValue: -10,
+      duration: 50,
+      easing: Easing.linear,
+      useNativeDriver: true,
+    }),
+    Animated.timing(shakeAnim, {
+      toValue: 6,
+      duration: 50,
+      easing: Easing.linear,
+      useNativeDriver: true,
+    }),
+    Animated.timing(shakeAnim, {
+      toValue: -6,
+      duration: 50,
+      easing: Easing.linear,
+      useNativeDriver: true,
+    }),
+    Animated.timing(shakeAnim, {
+      toValue: 0,
+      duration: 50,
+      easing: Easing.linear,
+      useNativeDriver: true,
+    }),
+  ]).start();
 };

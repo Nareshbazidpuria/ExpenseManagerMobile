@@ -36,8 +36,8 @@ const CreateGroupScreen = ({ navigation, route }) => {
     if (!name) errors.name = 'Plaese enter name';
     else if (name.length < 3 || name.length > 20)
       errors.name = 'Name should be between 3 to 20 characters';
-    else if (!members?.length)
-      errors.secretCode = 'Please add atleast 1 member to create group';
+    else if (!members?.length || members.length < 2)
+      errors.secretCode = 'Please add atleast 3 members to create group';
 
     setError(errors);
     if (Object.values(errors).length) return 1;
@@ -174,6 +174,7 @@ const CreateGroupScreen = ({ navigation, route }) => {
                   </Pressable>
                 </View>
               </ScrollView>
+              <Text className={`text-xs text-red-400`}>{error.secretCode}</Text>
               <Bicon
                 title="Create"
                 cls="w-full mt-5"
@@ -225,6 +226,11 @@ const CreateGroupScreen = ({ navigation, route }) => {
                     )}
                   </Pressable>
                 ))}
+                {freinds?.length === 0 && (
+                  <Text className="text-center my-10 text-gray-500">
+                    No friends found. Add friends to create group.
+                  </Text>
+                )}
               </ScrollView>
               <Bicon
                 title="Done"

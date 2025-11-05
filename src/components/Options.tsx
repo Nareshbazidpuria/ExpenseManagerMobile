@@ -9,11 +9,15 @@ const Options = ({ setContent, options = [], update }) => {
     [typing, setTyping] = useState('');
 
   return (
-    <View className={`mx-5`}>
+    <View className="px-6 py-4">
       <Text className={`text-center font-bold text-lg mb-2`}>
         Expense Options
       </Text>
-      <ScrollView className={`max-h-50`}>
+      <ScrollView
+        style={{
+          maxHeight: opts.length * 28 > 300 ? 300 : opts.length * 28,
+        }}
+      >
         {opts.map((opt, i) => (
           <View
             className={`bg-green-50 px-2 py-1 mb-1 rounded flex flex-row items-center justify-between`}
@@ -49,13 +53,14 @@ const Options = ({ setContent, options = [], update }) => {
             }
           }}
         >
-          <IonIcon className={`text-white`} name="add" size={16} />
+          <IonIcon color="white" name="add" size={16} />
         </Pressable>
       </View>
       <View className={`flex flex-row justify-between mt-4`}>
         <Bicon
           title="Cancel"
           cls="w-[48%]"
+          borderColor={primary}
           bg="#ffffff"
           txtCls="font-bold text-base"
           onPress={setContent.bind({}, null)}
@@ -64,6 +69,7 @@ const Options = ({ setContent, options = [], update }) => {
           title="Update"
           cls="w-[48%]"
           txtCls="font-bold text-base"
+          disabled={typing}
           onPress={update.bind({}, { options: opts })}
         />
       </View>

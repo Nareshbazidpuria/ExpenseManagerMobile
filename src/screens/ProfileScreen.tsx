@@ -20,30 +20,30 @@ import ConfirmLogout from '../components/ConfirmLogout';
 import Popup from '../components/Popup';
 import { primary, screens } from '../utils/global';
 import TopBar from '../components/TopBar';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { setAuthUser } from '../redux/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { RootState } from '../redux/store';
 import { message } from '../utils/common';
+import EditProfile from '../components/EditProfile';
 
 type Props = { navigation: any };
 
 const ProfileScreen: React.FC<Props> = ({ navigation }) => {
   const isFocused = useIsFocused(),
     [profile, setProfile] = useState({}),
-    [content, setContent] = useState(),
+    [content, setContent] = useState<any>(),
     [loading, setLoading] = useState<boolean>(false),
-    dispatch = useDispatch(),
-    authUser = useSelector((state: RootState) => state.authUser);
+    dispatch = useDispatch();
 
-  const getProfile = async () => {
+  const getProfile = async update => {
     try {
       setLoading(true);
       const res = await profileAPI();
       if (res?.status === 200) {
-        setProfile(res.data?.data);
-        dispatch(setAuthUser(res.data?.data));
-        // await AsyncStorage.setItem('user', JSON.stringify(res.data.data));
+        const data = res.data?.data;
+        setProfile(data);
+        if (update) dispatch(setAuthUser(data));
+        await AsyncStorage.setItem('user', JSON.stringify(data));
       }
     } catch (error) {
       // console.log(error?.data || error);
@@ -107,11 +107,6 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFocused]);
 
-  useEffect(() => {
-    !authUser && navigation?.navigate(screens.Login);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authUser]);
-
   return (
     <View>
       <TopBar name="My Profile" />
@@ -145,9 +140,15 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
                 name="pencil"
                 size={20}
                 style={{ color: primary }}
-                // onPress={() =>
-                //   setContent(<EditProfile profile={profile} editProfile={editProfile} />)
-                // }
+                onPress={() =>
+                  setContent(
+                    <EditProfile
+                      profile={profile}
+                      getProfile={getProfile}
+                      cancel={() => setContent(null)}
+                    />,
+                  )
+                }
               />
             </View>
           </View>
@@ -232,11 +233,11 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
               setContent(<ChangePwd cancel={() => setContent(null)} />)
             }
           />
-          <ProfileOpt
+          {/* <ProfileOpt
             label="Delete Account"
             icon="trash"
             onPress={() => Alert('Not available yet')}
-          />
+          /> */}
           <ProfileOpt
             label="Logout"
             icon="log-out"
@@ -248,7 +249,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
           />
         </>
       )}
-      {content && <Popup content={content} height={130} width={330} />}
+      {content && <Popup content={content} />}
     </View>
   );
 };

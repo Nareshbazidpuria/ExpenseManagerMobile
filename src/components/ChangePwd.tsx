@@ -42,60 +42,57 @@ const ChangePwd = ({ cancel }) => {
   };
 
   return (
-    <View>
+    <View className="px-6 py-4">
       <Text className={`text-center font-bold text-lg`}>Change Password</Text>
-      <View className={`p-4`}>
-        {loading ? (
-          <ActivityIndicator color={primary} size={50} />
-        ) : (
-          <>
-            <View className={`p-2`}>
-              <Text>Current Password</Text>
-              <TextInput
-                secureTextEntry={!showPassword}
-                className={`border-b border-gray-400 `}
-                value={payload.password}
-                onChangeText={password => setPayload({ ...payload, password })}
-              />
-              <Text className={`text-xs text-red-400`}>{error.password}</Text>
-              <Text>New Password</Text>
-              <TextInput
-                secureTextEntry={!showPassword}
-                className={`border-b border-gray-400 `}
-                value={payload.newPassword}
-                onChangeText={newPassword =>
-                  setPayload({ ...payload, newPassword })
-                }
-              />
-              <Text className={`text-xs text-red-400`}>
-                {error.newPassword}
-              </Text>
-              {/* <CheckBox
+      {loading ? (
+        <ActivityIndicator color={primary} size={50} />
+      ) : (
+        <>
+          <View className={`p-2`}>
+            <Text>Current Password</Text>
+            <TextInput
+              secureTextEntry={!showPassword}
+              className={`border-b border-gray-400 `}
+              value={payload.password}
+              onChangeText={password => setPayload({ ...payload, password })}
+            />
+            <Text className={`text-xs text-red-400`}>{error.password}</Text>
+            <Text>New Password</Text>
+            <TextInput
+              secureTextEntry={!showPassword}
+              className={`border-b border-gray-400 `}
+              value={payload.newPassword}
+              onChangeText={newPassword =>
+                setPayload({ ...payload, newPassword })
+              }
+            />
+            <Text className={`text-xs text-red-400`}>{error.newPassword}</Text>
+            {/* <CheckBox
                 onClick={() => setShowPassword(!showPassword)}
                 isChecked={showPassword}
                 checkedCheckBoxColor={primary}
                 checkBoxColor={primary}
                 rightText="Show Password"
               /> */}
-              <View className={`flex flex-row justify-between mt-2`}>
-                <Bicon
-                  title="Cancel"
-                  cls="w-[48%]"
-                  bg="#ffffff"
-                  txtCls="font-bold text-base"
-                  onPress={cancel}
-                />
-                <Bicon
-                  title="Change"
-                  cls="w-[48%]"
-                  txtCls="font-bold text-base"
-                  onPress={update}
-                />
-              </View>
+            <View className={`flex flex-row justify-between mt-2`}>
+              <Bicon
+                title="Cancel"
+                cls="w-[48%]"
+                borderColor={primary}
+                bg="#ffffff"
+                txtCls="font-bold text-base"
+                onPress={cancel}
+              />
+              <Bicon
+                title="Change"
+                cls="w-[48%]"
+                txtCls="font-bold text-base"
+                onPress={update}
+              />
             </View>
-          </>
-        )}
-      </View>
+          </View>
+        </>
+      )}
     </View>
   );
 };

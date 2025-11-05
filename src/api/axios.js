@@ -3,9 +3,9 @@ import { navigationRef } from '../navigation/AppNavigator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { screens } from '../utils/global';
 
-// export const baseURL = 'http://10.211.191.182:4040';
+export const baseURL = 'http://10.225.8.182:4040';
 // export const baseURL = "http://35.154.168.37:4040";
-export const baseURL = 'https://expense-manager-vstu.onrender.com';
+// export const baseURL = 'https://expense-manager-vstu.onrender.com';
 // export const baseURL = 'https://expensemanager-047k.onrender.com';
 
 export const Axios = axios.create({ baseURL });

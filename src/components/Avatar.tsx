@@ -1,4 +1,4 @@
-import { Dimensions, Image, Pressable, Text, View } from 'react-native';
+import { Dimensions, Image, Modal, Pressable, Text, View } from 'react-native';
 import n from '../assets/n.gif';
 import Partner from '../assets/Partner.jpg';
 import Popup from './Popup';
@@ -66,9 +66,21 @@ const Avatar: React.FC<{ value?: string; w?: number }> = ({
     <>
       {renderAvatar(value, w)}
       {visible && (
-        <Popup
-          content={
-            <>
+        <Modal animationType="slide" transparent={true} visible={visible}>
+          <View
+            className={`bg-[#00000055] flex items-center pb-16 justify-center`}
+            style={{
+              width: Dimensions.get('screen').width,
+              height: Dimensions.get('screen').height,
+            }}
+          >
+            <View
+              style={{
+                width: Dimensions.get('screen').width - 40,
+                height: Dimensions.get('screen').width,
+              }}
+              className={`bg-white rounded shadow`}
+            >
               <IonIcon
                 name="close"
                 size={28}
@@ -84,9 +96,9 @@ const Avatar: React.FC<{ value?: string; w?: number }> = ({
                   <Text className="text-center text-lg">{originalValue}</Text>
                 </View>
               </View>
-            </>
-          }
-        />
+            </View>
+          </View>
+        </Modal>
       )}
     </>
   );

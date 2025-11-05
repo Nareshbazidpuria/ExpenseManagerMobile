@@ -24,6 +24,7 @@ import { RefreshControl } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { message } from '../utils/common';
+import { useIsFocused } from '@react-navigation/native';
 
 const HomeScreen: React.FC = ({ navigation }) => {
   const authUser = useSelector((state: RootState) => state.authUser);
@@ -32,6 +33,7 @@ const HomeScreen: React.FC = ({ navigation }) => {
   const [list, setList] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState<boolean>(false);
+  const isFocused = useIsFocused();
 
   const groupList = async () => {
     setLoading(true);
@@ -87,12 +89,12 @@ const HomeScreen: React.FC = ({ navigation }) => {
   };
 
   useEffect(() => {
-    if (authUser) {
+    if (isFocused) {
       groupList();
       getUnreadNotificationsCount();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authUser]);
+  }, [isFocused]);
 
   return (
     <>
