@@ -24,7 +24,11 @@ import { message } from '../utils/common';
 
 const { IosBackHandler } = NativeModules;
 
-const ScanQR: React.FC = ({ navigation }) => {
+const ScanQR: React.FC<{ navigation: any }> = ({
+  navigation,
+}: {
+  navigation: any;
+}) => {
   const device = useCameraDevice('back');
   const { hasPermission, requestPermission } = useCameraPermission();
   const [isActive, setIsActive] = useState<boolean>(true);
@@ -76,7 +80,7 @@ const ScanQR: React.FC = ({ navigation }) => {
         navigation.navigate(screens.Tabs);
         message(res?.data?.message || 'Friend added successfully');
       } else res?.data?.message && message(res?.data?.message, 'error');
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
       if (error?.data?.message)
         Alert.alert('Oops! Try again', error.data.message, [
@@ -143,6 +147,12 @@ const ScanQR: React.FC = ({ navigation }) => {
           }
         }}
       />
+      <Text className="text-center text-gray-600 mt-4">OR</Text>
+      <Bicon
+        cls="mt-4"
+        title="Connect Manually"
+        onPress={() => navigation.navigate(screens.AddFriend)}
+      />
     </View>
   ) : (
     <View className="flex-1 items-center justify-center">
@@ -159,6 +169,12 @@ const ScanQR: React.FC = ({ navigation }) => {
         <Text className="text-white mt-4 text-base">
           Align QR code within the box
         </Text>
+        <Text className="text-center text-white mt-4">OR</Text>
+        <Bicon
+          cls="mt-4"
+          title="Connect Manually"
+          onPress={() => navigation.navigate(screens.AddFriend)}
+        />
       </View>
     </View>
   );

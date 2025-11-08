@@ -1,7 +1,13 @@
 import { Dimensions, Text, View } from 'react-native';
 import Avatar from './Avatar';
 
-const Member = ({ value, name }) => (
+const Member = ({
+  value = '',
+  name = '',
+}: {
+  value?: string;
+  name?: string;
+}) => (
   <View
     className="flex flex-row items-center justify-center relative"
     style={{ width: Dimensions.get('screen').width / 4 - 16 }}

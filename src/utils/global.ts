@@ -1,4 +1,5 @@
-export const primary = '#00807b',
+export const version = '4.0.0',
+  primary = '#00807b',
   secondary = '#50E3C2',
   active = '#c4f5f3',
   inactive = '#F8F8F8',
@@ -25,6 +26,7 @@ export const primary = '#00807b',
   Login = 'Login',
   ForgotPwd = 'ForgotPwd',
   Splash = 'Splash',
+  AddFriend = 'AddFriend',
   screens = {
     Tabs: 'Tabs',
     Home,
@@ -39,6 +41,7 @@ export const primary = '#00807b',
     ForgotPwd,
     AddExpense,
     Splash,
+    AddFriend,
   };
 
 export const emailRegex =

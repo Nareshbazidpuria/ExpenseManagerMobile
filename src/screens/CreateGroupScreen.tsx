@@ -11,27 +11,23 @@ import { useEffect, useRef, useState } from 'react';
 import { primary, screens } from '../utils/global';
 import Bicon from '../components/Bicon';
 import Member from '../components/Member';
-import { createGroupAPI, friendListAPI, getMemberAPI } from '../api/group';
+import { createGroupAPI, friendListAPI } from '../api/group';
 import Avatar from '../components/Avatar';
-// import Info from '../components/Info';
 import TopBar from '../components/TopBar';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import { message } from '../utils/common';
 
-const CreateGroupScreen = ({ navigation, route }) => {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState({});
-  const [payload, setPayload] = useState({});
+const CreateGroupScreen = ({ navigation }: any) => {
+  const [loading, setLoading] = useState<{ [key: string]: boolean }>({});
+  const [error, setError] = useState<{ [key: string]: string }>({});
+  const [payload, setPayload] = useState<{ [key: string]: any }>({});
   const [freinds, setFreinds] = useState([]);
   const [visible, setVisible] = useState<boolean>(false);
-
   const bottomSheetRef = useRef<BottomSheet>(null);
 
-  // callbacks
-
   const validatePayload = () => {
-    const errors = {},
+    const errors: { [key: string]: string } = {},
       { name, members } = payload;
     if (!name) errors.name = 'Plaese enter name';
     else if (name.length < 3 || name.length > 20)
@@ -45,88 +41,39 @@ const CreateGroupScreen = ({ navigation, route }) => {
 
   const create = async () => {
     try {
-      setLoading(true);
+      setLoading(prev => ({ ...prev, create: true }));
       if (validatePayload()) return;
       const { name, members } = payload;
       const res = await createGroupAPI({
         name,
-        members: members?.map(({ _id }) => _id),
+        members: members?.map(({ _id }: any) => _id),
       });
       if ([200, 201].includes(res.status)) {
         setPayload({});
         navigation.navigate(screens.Tabs);
         message(res.data?.message);
       }
-    } catch (error) {
-      if (error?.data?.message) message(error.data.message, 'error');
-      else console.log(error);
+    } catch (err: any) {
+      if (err?.data?.message) message(err.data.message, 'error');
+      else console.log(err);
     } finally {
-      setLoading(false);
+      setLoading(prev => ({ ...prev, create: false }));
     }
   };
 
   const friendList = async (params = {}) => {
+    setLoading(prev => ({ ...prev, freinds: true }));
     let data = [];
     try {
-      // setLoading(true);
       const res = await friendListAPI(params);
       if (res?.status === 200) data = res?.data?.data;
-    } catch (error) {
-      console.log(error);
+    } catch (err: any) {
+      console.log(err);
     } finally {
-      // setLoading(false);
       setFreinds(data);
+      setLoading(prev => ({ ...prev, freinds: false }));
     }
   };
-
-  const onSecretCode = async secretCode => {
-    try {
-      if (secretCode?.length === 11) {
-        const res = await getMemberAPI({ secretCode });
-        if (res?.status === 200) {
-          const member = res.data.data;
-          if (payload.members?.find(({ _id }) => _id === member._id)) {
-            setError({ secretCode: 'Member already selected' });
-            return;
-          }
-          setPayload({
-            ...payload,
-            secretCode: '',
-            members: [
-              ...(payload.members || []),
-              { name: member.name, _id: member._id },
-            ],
-          });
-          return;
-        }
-      } else if (secretCode?.length > 11) {
-        setError({ secretCode: 'Invalid secret code' });
-        return;
-      }
-    } catch (err) {
-      if (err?.data?.message) setError({ secretCode: err.data.message });
-      else {
-        console.log(err);
-        setError({ secretCode: 'Invalid secret code' });
-      }
-    }
-    setPayload({ ...payload, secretCode });
-  };
-
-  const remove = async _id => {
-    setPayload({
-      ...payload,
-      members: [...(payload.members || [])].filter(
-        member => _id !== member?._id,
-      ),
-    });
-  };
-
-  useEffect(() => {
-    if (route?.params?.code) {
-      onSecretCode(route.params.code);
-    }
-  }, [route?.params?.code]);
 
   useEffect(() => {
     friendList();
@@ -136,7 +83,7 @@ const CreateGroupScreen = ({ navigation, route }) => {
     <View className="flex-1">
       <TopBar name="Create a New Group" />
       <View className={`p-4`}>
-        {loading ? (
+        {loading.create ? (
           <ActivityIndicator color={primary} size={50} />
         ) : (
           <>
@@ -156,8 +103,8 @@ const CreateGroupScreen = ({ navigation, route }) => {
               <ScrollView className={`min-h-12 mt-2 rounded-lg max-h-[320]`}>
                 <View className="flex flex-row flex-wrap items-center gap-2">
                   <Member key={'_id'} name={'You'} />
-                  {payload.members?.map(({ name, _id }) => (
-                    <Member key={_id} name={name} close={() => remove(_id)} />
+                  {payload.members?.map(({ name, _id }: any) => (
+                    <Member key={_id} name={name} />
                   ))}
                   <Pressable
                     className="flex justify-center items-center gap-1"
@@ -194,39 +141,43 @@ const CreateGroupScreen = ({ navigation, route }) => {
           <BottomSheet ref={bottomSheetRef}>
             <BottomSheetView className="py-2 px-5 max-h-[600]">
               <ScrollView className="max-h-[500]">
-                {freinds?.map(({ name, _id }) => (
-                  <Pressable
-                    key={_id}
-                    className={`p-2 flex flex-row items-center justify-between`}
-                    onPress={() =>
-                      setPayload(prev => ({
-                        ...prev,
-                        members: payload.members
-                          ?.map(member => member._id)
-                          .includes(_id)
-                          ? [...(prev?.members || [])].filter(
-                              member => member._id !== _id,
-                            )
-                          : [...(prev?.members || []), { name, _id }],
-                      }))
-                    }
-                  >
-                    <View className="flex flex-row items-center gap-3">
-                      <Avatar value={name} />
-                      <Text className="font-bold text-lg">{name}</Text>
-                    </View>
-                    {payload.members
-                      ?.map(member => member._id)
-                      .includes(_id) && (
-                      <IonIcon
-                        name="checkmark-circle"
-                        size={28}
-                        style={{ color: primary }}
-                      />
-                    )}
-                  </Pressable>
-                ))}
-                {freinds?.length === 0 && (
+                {loading.freinds ? (
+                  <ActivityIndicator color={primary} size={50} />
+                ) : (
+                  freinds?.map(({ name, _id }) => (
+                    <Pressable
+                      key={_id}
+                      className={`p-2 flex flex-row items-center justify-between`}
+                      onPress={() =>
+                        setPayload(prev => ({
+                          ...prev,
+                          members: payload.members
+                            ?.map((member: any) => member._id)
+                            .includes(_id)
+                            ? [...(prev?.members || [])].filter(
+                                member => member._id !== _id,
+                              )
+                            : [...(prev?.members || []), { name, _id }],
+                        }))
+                      }
+                    >
+                      <View className="flex flex-row items-center gap-3">
+                        <Avatar value={name} />
+                        <Text className="font-bold text-lg">{name}</Text>
+                      </View>
+                      {payload.members
+                        ?.map((member: any) => member._id)
+                        .includes(_id) && (
+                        <IonIcon
+                          name="checkmark-circle"
+                          size={28}
+                          style={{ color: primary }}
+                        />
+                      )}
+                    </Pressable>
+                  ))
+                )}
+                {freinds?.length === 0 && !loading.freinds && (
                   <Text className="text-center my-10 text-gray-500">
                     No friends found. Add friends to create group.
                   </Text>

@@ -88,7 +88,8 @@ const AddExpenseScreen = ({
         const apiPayload = res?.data?.data || {};
         if (apiPayload?.images?.length)
           apiPayload.images = apiPayload?.images?.map((i: string) => ({
-            uri: `${baseURL}${i}`,
+            uri: i,
+            // uri: `${baseURL}${i}`,
             edit: true,
           }));
         // setSelected(apiPayload?.members?.map((i: string) => i));

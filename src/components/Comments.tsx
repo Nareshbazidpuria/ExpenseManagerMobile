@@ -10,29 +10,59 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { primary } from '../utils/global';
+import { expenseTypes, primary } from '../utils/global';
 import { useEffect, useState } from 'react';
 import Avatar from './Avatar';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
 import { baseURL } from '../api/axios';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setStatusBarColor } from '../redux/common';
+import { RootState } from '../redux/store';
 
 const Comments = ({ data }) => {
-  const dispatch = useDispatch(),
+  const dispatch = useDispatch();
+  const authUser: any = useSelector((state: RootState) => state.authUser),
     [comments, setComments] = useState([]),
     [payload, setPayload] = useState({ comment: '' }),
     [replying, setReplying] = useState(),
     [sliderImages, setSliderImages] = useState<string[]>([]),
     [initialScrollIndex, setInitialScrollIndex] = useState<number>(0);
+  const [splitInfo, setSplitInfo] = useState<{ they: number; you: number }>({
+    they: 0,
+    you: 0,
+  });
 
   useEffect(() => {
     dispatch(setStatusBarColor(sliderImages.length ? '#000000' : primary));
   }, [sliderImages.length]);
 
+  useEffect(() => {
+    if (!data) return;
+    if (data.expenseType === expenseTypes.friend) {
+      const { to, amount, splitedAmount } = data;
+      const they = to === authUser._id ? amount - splitedAmount : splitedAmount;
+      const you = to === authUser._id ? splitedAmount : amount - splitedAmount;
+      console.log(2222, { they, you });
+      setSplitInfo({ they, you });
+    } else if (data.expenseType === expenseTypes.group) {
+      const they = data.amount - data.amount / data.splitedIn.length;
+      const you = data.amount / data.splitedIn.length;
+      setSplitInfo({ they, you });
+    }
+  }, [data]);
+
   return (
     <View className="my-2">
+      {data?.expenseType !== expenseTypes.own && (
+        <View className="mb-1 flex flex-row justify-between">
+          <Text className="text-gray-500">They</Text>
+          <Text className="text-gray-500">
+            ₹{splitInfo.they} | ₹{splitInfo.you}
+          </Text>
+          <Text className="text-gray-500">You</Text>
+        </View>
+      )}
       <Text className="mb-1">
         <Text className="text-gray-500">
           Description
@@ -65,7 +95,8 @@ const Comments = ({ data }) => {
               className="border border-gray-300 rounded-lg overflow-hidden"
             >
               <Image
-                source={{ uri: baseURL + image }}
+                source={{ uri: image }}
+                // source={{ uri: baseURL + image }}
                 className="object-cover"
                 style={{
                   width: Dimensions.get('screen').width / 4 - 13,
@@ -102,7 +133,8 @@ const Comments = ({ data }) => {
                 }}
               >
                 <Image
-                  source={{ uri: baseURL + image.item }}
+                  source={{ uri: image.item }}
+                  // source={{ uri: baseURL + image.item }}
                   className="w-full h-full"
                   style={{ objectFit: 'contain' }}
                 />

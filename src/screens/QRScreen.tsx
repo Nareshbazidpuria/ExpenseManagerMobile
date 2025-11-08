@@ -9,7 +9,7 @@ import { useRoute } from '@react-navigation/native';
 const Tab = createMaterialTopTabNavigator();
 
 const QRScreen: React.FC = () => {
-  const route = useRoute();
+  const route: any = useRoute();
   // Default to "My Code" if not specified
   const initialTab = route.params?.tab || 'My Code';
 

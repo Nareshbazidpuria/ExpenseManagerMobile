@@ -3,16 +3,16 @@ import IonIcon from 'react-native-vector-icons/Ionicons';
 import { primary } from '../utils/global';
 
 const Bicon = ({
-  title,
-  name,
+  title = '',
+  name = '',
   bg = primary,
-  onPress,
-  cls,
-  txtCls,
-  disabled,
-  borderColor,
+  onPress = () => {},
+  cls = '',
+  txtCls = '',
+  disabled = false,
+  borderColor = '',
   txtStyle = {},
-  loading,
+  loading = false,
 }) => (
   <TouchableOpacity
     className={`flex flex-row items-center gap-1 p-2 rounded w-22 justify-center border ${

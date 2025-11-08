@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  Alert,
-  Dimensions,
-  ActivityIndicator,
-  Share,
-} from 'react-native';
+import { View, Text, Dimensions, ActivityIndicator, Share } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { editProfileAPI, logoutAPI, profileAPI } from '../api/auth';
 import IonIcon from 'react-native-vector-icons/Ionicons';
@@ -18,7 +11,7 @@ import Options from '../components/Options';
 import ChangePwd from '../components/ChangePwd';
 import ConfirmLogout from '../components/ConfirmLogout';
 import Popup from '../components/Popup';
-import { primary, screens } from '../utils/global';
+import { primary, screens, version } from '../utils/global';
 import TopBar from '../components/TopBar';
 import { useDispatch } from 'react-redux';
 import { setAuthUser } from '../redux/auth';
@@ -153,7 +146,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
             </View>
           </View>
           <ProfileOpt
-            label="Secret Code"
+            label="My Connection Code"
             value={profile.secretCode}
             icon="lock-closed"
             onPress={() => share(profile.secretCode)}
@@ -247,6 +240,9 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
               )
             }
           />
+          <Text className={`text-center font-bold text-sm mt-5 text-gray-500`}>
+            Version {version}
+          </Text>
         </>
       )}
       {content && <Popup content={content} />}
