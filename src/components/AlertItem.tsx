@@ -1,10 +1,10 @@
 import { Dimensions, Pressable, Text, View } from 'react-native';
-import { primary } from '../utils/global';
+import { expenseTypes, primary } from '../utils/global';
 import moment from 'moment';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import { readAlertAPI } from '../api/notification';
 
-const AlertItem = ({ alert, navigation }) => {
+const AlertItem = ({ alert, navigation }: any) => {
   const {
     unread,
     user,
@@ -20,7 +20,9 @@ const AlertItem = ({ alert, navigation }) => {
   const onPress = async () => {
     try {
       await readAlertAPI(_id);
-      navigation.navigate('Expenses', { data: group });
+      navigation.navigate('Expenses', {
+        data: { ...group, type: expenseTypes.group },
+      });
     } catch (error) {}
   };
 
@@ -63,7 +65,7 @@ const AlertItem = ({ alert, navigation }) => {
         <View className={`flex flex-row items-center gap-1 mt-1`}>
           <IonIcon name="time" color="gray" />
           <Text className={`text-xs`}>
-            {moment(time)?.format('hh:mm A DD/MM/YY')}
+            {moment(time).format('DD MMM, YYYY hh:mm A')}
           </Text>
         </View>
       </View>

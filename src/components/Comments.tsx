@@ -75,7 +75,7 @@ const Comments = ({ data }) => {
       </Text>
       <Text className="mb-1">
         <Text className="text-gray-500">Added on:&nbsp;</Text>
-        <Text>{moment(data?.createdAt)?.format('hh:mm A DD/MM/YY')}</Text>
+        <Text>{moment(data?.createdAt).format('DD MMM, YYYY hh:mm A')}</Text>
       </Text>
       {!!data?.images?.length && (
         <View className="flex flex-row items-center gap-2 mt-2">

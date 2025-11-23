@@ -5,7 +5,6 @@ import {
   Text,
   View,
 } from 'react-native';
-import { primary } from '../utils/global';
 import React, { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';

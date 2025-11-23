@@ -16,7 +16,8 @@ export const version = '4.0.0',
   darkGray = '#757575',
   Home = 'Home',
   Insights = 'Insights',
-  Reports = 'Reports',
+  Reports = 'Settlements',
+  ReportHistory = 'Settlement History',
   Profile = 'Profile',
   QR = 'QR',
   Expenses = 'Expenses',
@@ -42,6 +43,7 @@ export const version = '4.0.0',
     AddExpense,
     Splash,
     AddFriend,
+    ReportHistory,
   };
 
 export const emailRegex =

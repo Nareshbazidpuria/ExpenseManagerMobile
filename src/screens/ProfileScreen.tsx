@@ -83,6 +83,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
         await AsyncStorage.clear();
         setContent(null);
         dispatch(setAuthUser(null));
+        navigation?.replace(screens.Login);
       }
     } catch (error) {
       console.log(error?.data || error);
@@ -102,7 +103,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View>
-      <TopBar name="My Profile" />
+      <TopBar name="My Profile" back={false} />
       {loading ? (
         <View
           className={`fle items-center justify-center bg-[#f2f2f2]`}

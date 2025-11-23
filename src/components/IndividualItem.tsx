@@ -16,7 +16,7 @@ const IndividualItem = ({ avatar, e, onPress }) => (
         <Text className={`font-semibold text-base`}>₹{e?.amount}</Text>
       </View>
       <Text style={{ fontSize: 11 }}>
-        {moment(e?.createdAt).format('hh:mm A DD-MM-YY')}
+        {moment(e?.createdAt).format('DD MMM, YYYY hh:mm A')}
       </Text>
     </View>
   </Pressable>

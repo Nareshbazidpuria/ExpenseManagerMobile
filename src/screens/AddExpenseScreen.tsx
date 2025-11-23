@@ -454,6 +454,7 @@ const AddExpenseScreen = ({
                 amount={payload.amount}
               />
               {data.memberss.map((member, index: number) => (
+                // member?._id !== authUser._id &&
                 <SplitMember
                   key={index}
                   value={member?.name}

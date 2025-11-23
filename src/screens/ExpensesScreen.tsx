@@ -294,8 +294,10 @@ const ExpensesScreen = ({ route, navigation }) => {
         />
       ) : (
         <View className={`flex items-center justify-center bg-[#f2f2f2] py-56`}>
-          <IonIcon name="folder-open-outline" size={70} />
-          <Text className={`text-lg font-semibold`}>No Records</Text>
+          <IonIcon name="folder-open-outline" size={70} color={'gray'} />
+          <Text className={`text-lg font-semibold text-gray-400`}>
+            No Records
+          </Text>
         </View>
       )}
       <Pressable

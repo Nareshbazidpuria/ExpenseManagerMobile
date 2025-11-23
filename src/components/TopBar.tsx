@@ -7,10 +7,11 @@ import { useNavigation } from '@react-navigation/native';
 const { IosBackHandler } = NativeModules;
 
 const TopBar: React.FC<{
+  back?: boolean;
   name: string | React.ReactNode;
   search?: boolean;
   extra?: React.ReactNode;
-}> = ({ name, search, extra }) => {
+}> = ({ name, search, extra, back = true }) => {
   const navigation = useNavigation();
   const handleBack = () => {
     if (navigation.canGoBack()) navigation.goBack();
@@ -26,13 +27,15 @@ const TopBar: React.FC<{
       style={{ backgroundColor: primary }}
     >
       <View className="flex-row items-center">
-        <IonIcon
-          name="chevron-back"
-          size={24}
-          color={background}
-          // onPress={() => BackHandler.goBack?.()}
-          onPress={handleBack}
-        />
+        {back && (
+          <IonIcon
+            name="chevron-back"
+            size={24}
+            color={background}
+            // onPress={() => BackHandler.goBack?.()}
+            onPress={handleBack}
+          />
+        )}
         <Text className="text-xl font-bold ml-2" style={{ color: background }}>
           {name}
         </Text>

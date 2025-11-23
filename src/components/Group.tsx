@@ -13,7 +13,7 @@ const Group: React.FC<{
 
   return (
     <Pressable
-      className={`flex flex-row gap-2 items-center py-2 px-3 ${
+      className={`flex flex-row gap-2 items-center py-2 px-4 ${
         selected.includes(data._id) ? 'bg-green-100' : 'bg-white'
       } border-b border-gray-200`}
       onPress={() =>

@@ -99,6 +99,7 @@ const HomeScreen: React.FC = ({ navigation }) => {
   return (
     <>
       <TopBar
+        back={false}
         name="Expenses"
         extra={
           <View className="flex-row items-center gap-5">
@@ -176,8 +177,10 @@ const HomeScreen: React.FC = ({ navigation }) => {
             className={`flex items-center justify-center bg-[#f2f2f2]`}
             style={{ height: Dimensions.get('window').height - 100 }}
           >
-            <IonIcon name="folder-open-outline" size={70} />
-            <Text className={`text-lg font-semibold`}>No Records</Text>
+            <IonIcon name="folder-open-outline" size={70} color={'gray'} />
+            <Text className={`text-lg font-semibold text-gray-400`}>
+              No Records
+            </Text>
           </View>
         )}
       </ScrollView>

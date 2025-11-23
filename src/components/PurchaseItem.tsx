@@ -67,7 +67,7 @@ const PurchageItem = ({ data, loading, verifyExpense }) => {
                 </Text>
               </View>
               <Text className="text-xs">
-                {moment(data?.createdAt)?.format('hh:mm A DD/MM/YY')}
+                {moment(data?.createdAt).format('DD MMM, YYYY hh:mm A')}
               </Text>
             </View>
           )}

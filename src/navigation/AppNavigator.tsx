@@ -29,6 +29,7 @@ import notifee, { AndroidStyle, EventType } from '@notifee/react-native';
 import { safeParse } from '../utils/common';
 import SplashScreen from '../screens/SplashScreen';
 import AddFriendScreen from '../screens/AddFriendScreen';
+import ReportHistoryScreen from '../screens/ReportHisttoryScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -279,6 +280,10 @@ const AppNavigator: React.FC = () => {
             <Stack.Screen
               name={screens.AddFriend}
               component={AddFriendScreen}
+            />
+            <Stack.Screen
+              name={screens.ReportHistory}
+              component={ReportHistoryScreen}
             />
           </Stack.Navigator>
         </NavigationContainer>

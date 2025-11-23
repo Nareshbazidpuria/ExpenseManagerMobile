@@ -838,7 +838,7 @@ export default function InsightsScreen() {
 
   return (
     <>
-      <TopBar name="Insights" />
+      <TopBar name="Insights" back={false} />
       <ScrollView className="flex-1 p-4" showsVerticalScrollIndicator={false}>
         {/* Quick Stats */}
         <View>
