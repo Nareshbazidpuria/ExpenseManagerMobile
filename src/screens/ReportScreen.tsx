@@ -77,12 +77,20 @@ const ReportScreen: React.FC = ({ navigation }: any) => {
         back={false}
         name={screens.Reports}
         extra={
-          <IonIcon
-            name="time-outline"
-            color={'white'}
-            size={20}
-            onPress={() => navigation.navigate(screens.ReportHistory)}
-          />
+          <View className="flex flex-row gap-2">
+            <IonIcon
+              name="person-outline"
+              color={'white'}
+              size={20}
+              onPress={() => navigation.navigate(screens.PersonalExpenses)}
+            />
+            <IonIcon
+              name="time-outline"
+              color={'white'}
+              size={20}
+              onPress={() => navigation.navigate(screens.ReportHistory)}
+            />
+          </View>
         }
       />
       <ScrollView

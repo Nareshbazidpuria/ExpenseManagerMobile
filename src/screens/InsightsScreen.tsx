@@ -839,6 +839,11 @@ export default function InsightsScreen() {
   return (
     <>
       <TopBar name="Insights" back={false} />
+      <View className="flex-1 absolute top-0 left-0 right-0 bg-[#000000c8] z-10 h-full justify-center items-center">
+        <Text className="text-2xl font-bold text-white">
+          Coming Soon, Stay Tuned!
+        </Text>
+      </View>
       <ScrollView className="flex-1 p-4" showsVerticalScrollIndicator={false}>
         {/* Quick Stats */}
         <View>

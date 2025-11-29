@@ -19,7 +19,7 @@ import LimitCrossed from './LimitCrossed';
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import TopBar from '../components/TopBar';
 import { Dropdown } from 'react-native-element-dropdown';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Bicon from '../components/Bicon';
 // import { AsyncStorage } from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
@@ -33,6 +33,7 @@ import { message, uploadImages } from '../utils/common';
 import { baseURL } from '../api/axios';
 import { RootState } from '../redux/store';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import { setAuthUser } from '../redux/auth';
 
 const AddExpenseScreen = ({
   navigation,
@@ -69,7 +70,8 @@ const AddExpenseScreen = ({
         : [],
     ),
     [friendSplitValue, setFriendSplitValue] = useState<number>(100),
-    authUser = useSelector((state: RootState) => state.authUser);
+    authUser: any = useSelector((state: RootState) => state.authUser),
+    dispatch = useDispatch();
 
   const valid = payload => {
     const err = { amount: '', purpose: '' };
@@ -99,9 +101,9 @@ const AddExpenseScreen = ({
         setPayload(apiPayload);
       }
       // eslint-disable-next-line no-catch-shadow
-    } catch (error) {
-      if (error?.data?.message) message(error.data.message, 'error');
-      else console.log(error);
+    } catch (err: any) {
+      if (err?.data?.message) message(err.data.message, 'error');
+      else console.log(err);
     } finally {
       setLoading(false);
     }
@@ -112,7 +114,7 @@ const AddExpenseScreen = ({
       //splitedIn
       setLoading(true);
       if (!valid(payload)) return;
-      const apiPayload = {
+      const apiPayload: any = {
         ...payload,
         to: data._id,
         expenseType: data.type,
@@ -142,6 +144,21 @@ const AddExpenseScreen = ({
             i.uri.replace(baseURL, ''),
           );
       }
+      if (id) {
+        [
+          '_id',
+          'user',
+          'additional',
+          'setteled',
+          'verified',
+          'verifiedBy',
+          'edited',
+          'createdAt',
+          'updatedAt',
+          '__v',
+          'members',
+        ].forEach(key => delete apiPayload[key]);
+      }
       // const res = edit
       //   ? await editExpenseAPI(edit?._id, payload )
       //   : await addExpenseAPI({ ...payload, to:data._id });
@@ -161,11 +178,18 @@ const AddExpenseScreen = ({
         //       setContent={setContent}
         //     />,
         //   );
+        if (!authUser?.options?.includes(payload.purpose))
+          dispatch(
+            setAuthUser({
+              ...authUser,
+              options: [payload.purpose, ...(authUser?.options || [])],
+            }),
+          );
       }
       // eslint-disable-next-line no-catch-shadow
-    } catch (error) {
-      if (error?.data?.message) message(error.data.message, 'error');
-      else console.log(error);
+    } catch (err: any) {
+      if (err?.data?.message) message(err.data.message, 'error');
+      else console.log(err);
     } finally {
       setLoading(false);
     }
@@ -462,6 +486,7 @@ const AddExpenseScreen = ({
                   setSelected={setSelected}
                   id={member?._id}
                   amount={payload.amount}
+                  minSelect={2}
                 />
               ))}
             </ScrollView>

@@ -29,7 +29,7 @@ const TopBar: React.FC<{
       <View className="flex-row items-center">
         {back && (
           <IonIcon
-            name="chevron-back"
+            name={Platform.OS === 'ios' ? 'chevron-back' : 'arrow-back'}
             size={24}
             color={background}
             // onPress={() => BackHandler.goBack?.()}

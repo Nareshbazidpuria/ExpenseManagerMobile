@@ -18,6 +18,7 @@ export const version = '4.0.0',
   Insights = 'Insights',
   Reports = 'Settlements',
   ReportHistory = 'Settlement History',
+  PersonalExpenses = 'Monthly Expenses',
   Profile = 'Profile',
   QR = 'QR',
   Expenses = 'Expenses',
@@ -44,6 +45,7 @@ export const version = '4.0.0',
     Splash,
     AddFriend,
     ReportHistory,
+    PersonalExpenses,
   };
 
 export const emailRegex =

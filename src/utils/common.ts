@@ -81,6 +81,7 @@ export const safeParse = (data: string, defaultReturn: any = null) => {
   try {
     return JSON.parse(data);
   } catch (error) {
+    console.log(error);
     return defaultReturn;
   }
 };
@@ -88,6 +89,42 @@ export const safeParse = (data: string, defaultReturn: any = null) => {
 export const message = (text: string, type?: 'success' | 'error' | 'info') => {
   if (Platform.OS === 'ios' || type) showToast(type, text);
   else ToastAndroid.show(text, ToastAndroid.SHORT);
+};
+
+export const shakeSmall = shakeAnim => {
+  shakeAnim.setValue(0);
+  Animated.sequence([
+    Animated.timing(shakeAnim, {
+      toValue: 5,
+      duration: 30,
+      easing: Easing.linear,
+      useNativeDriver: true,
+    }),
+    Animated.timing(shakeAnim, {
+      toValue: -5,
+      duration: 30,
+      easing: Easing.linear,
+      useNativeDriver: true,
+    }),
+    Animated.timing(shakeAnim, {
+      toValue: 2,
+      duration: 30,
+      easing: Easing.linear,
+      useNativeDriver: true,
+    }),
+    Animated.timing(shakeAnim, {
+      toValue: -2,
+      duration: 30,
+      easing: Easing.linear,
+      useNativeDriver: true,
+    }),
+    Animated.timing(shakeAnim, {
+      toValue: 0,
+      duration: 30,
+      easing: Easing.linear,
+      useNativeDriver: true,
+    }),
+  ]).start();
 };
 
 export const shake = shakeAnim => {
